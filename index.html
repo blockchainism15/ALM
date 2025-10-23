@@ -55,11 +55,6 @@
       color: #111;
     }
 
-    .course-tile p {
-      margin: 4px 0;
-      color: #555;
-    }
-
     .loading {
       text-align: center;
       font-size: 1.1rem;
@@ -102,6 +97,7 @@
       animation: slideUp 0.4s ease;
       overflow-y: auto;
       max-height: 80vh;
+      position: relative;
     }
 
     @keyframes fadeIn {
@@ -150,7 +146,7 @@
     <div id="loading" class="loading">Loading courses...</div>
   </main>
 
-  <footer>Powered by Adobe Learning Manager Non-Logged-In APIs</footer>
+  <footer>Powered by Adobe Learning Manager Public CDN</footer>
 
   <!-- Modal -->
   <div id="courseModal" class="modal">
@@ -161,8 +157,14 @@
   </div>
 
   <script>
-    const searchBaseURL = "https://primeapps.adobe.com/almsearch/api/v1/production/108079/9b1e6b7f-20f3-4c49-a9c8-f5f4131096f8";
     const cdnBaseURL = "https://cpcontents.adobe.com/public/guest/production/api/9b1e6b7f-20f3-4c49-a9c8-f5f4131096f8/108079";
+
+    // ===== List of course IDs to display =====
+    const courseIds = [
+      "course:14453052",
+      "course:14453054"
+      // Add more course IDs here
+    ];
 
     const modal = document.getElementById("courseModal");
     const modalBody = document.getElementById("modalBody");
@@ -172,48 +174,31 @@
     window.onclick = (e) => { if (e.target === modal) modal.style.display = "none"; };
 
     async function fetchCourses() {
-      try {
-        const response = await fetch(`${searchBaseURL}/search`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            query: "",
-            filters: { terms: { loType: ["course"] } },
-            size: 12,
-            lang: ["en-US"]
-          }),
-        });
-
-        const data = await response.json();
-        const results = data.results || [];
-
-        document.getElementById("loading").style.display = "none";
-        displayCourseTiles(results);
-      } catch (error) {
-        console.error("Error fetching courses:", error);
-        document.getElementById("loading").innerText = "Failed to load courses.";
-      }
-    }
-
-    function displayCourseTiles(courses) {
+      document.getElementById("loading").innerText = "Loading course metadata...";
       const container = document.getElementById("courses-container");
       container.innerHTML = "";
 
-      courses.forEach(course => {
-        const name = course.name || "Untitled Course";
-        const authors = course.authorNames?.join(", ") || "Unknown Author";
-        const duration = course.duration ? `${Math.round(course.duration / 60)} mins` : "N/A";
+      for (const id of courseIds) {
+        try {
+          const response = await fetch(`${cdnBaseURL}/course/${id}.json`);
+          const json = await response.json();
+          const course = json.data?.attributes || {};
+          const localized = course.localizedMetadata?.[0] || {};
 
-        const tile = document.createElement("div");
-        tile.className = "course-tile";
-        tile.innerHTML = `
-          <h3>${name}</h3>
-          <p><strong>Author:</strong> ${authors}</p>
-          <p><strong>Duration:</strong> ${duration}</p>
-        `;
-        tile.addEventListener("click", () => showCourseDetails(course.id, name));
-        container.appendChild(tile);
-      });
+          const tile = document.createElement("div");
+          tile.className = "course-tile";
+          tile.innerHTML = `
+            <h3>${localized.name || "Untitled Course"}</h3>
+            <p><strong>Author:</strong> ${(course.authorNames || []).join(", ") || "Unknown"}</p>
+          `;
+          tile.addEventListener("click", () => showCourseDetails(id, localized.name));
+          container.appendChild(tile);
+        } catch (e) {
+          console.error("Failed to load:", id, e);
+        }
+      }
+
+      document.getElementById("loading").style.display = "none";
     }
 
     async function showCourseDetails(courseId, courseName) {
