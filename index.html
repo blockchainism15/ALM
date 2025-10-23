@@ -1,320 +1,260 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cyber Glass - Neural Interface Design</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link href="templatemo-neural-style.css" rel="stylesheet">
-<!--
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Adobe Learning Manager Courses</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+      background: #f5f5f7;
+      color: #333;
+      margin: 0;
+      padding: 0;
+    }
 
-TemplateMo 597 Neural Glass
+    header {
+      background: #000;
+      color: #fff;
+      text-align: center;
+      padding: 20px 10px;
+      font-size: 1.5rem;
+      font-weight: 600;
+      letter-spacing: 1px;
+    }
 
-https://templatemo.com/tm-597-neural-glass
+    main {
+      max-width: 1200px;
+      margin: 30px auto;
+      padding: 0 20px;
+    }
 
--->
-    <style>
-       
-    </style>
+    .course-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 20px;
+    }
+
+    .course-tile {
+      background: #fff;
+      border-radius: 20px;
+      padding: 20px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .course-tile:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.15);
+    }
+
+    .course-tile h3 {
+      margin: 0 0 10px;
+      font-size: 1.2rem;
+      color: #111;
+    }
+
+    .course-tile p {
+      margin: 4px 0;
+      color: #555;
+    }
+
+    .loading {
+      text-align: center;
+      font-size: 1.1rem;
+      color: #666;
+      margin-top: 40px;
+    }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      color: #666;
+      font-size: 0.9rem;
+      margin-top: 50px;
+      border-top: 1px solid #ddd;
+    }
+
+    /* === Modal Styling === */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      backdrop-filter: blur(6px);
+      background: rgba(0, 0, 0, 0.4);
+      justify-content: center;
+      align-items: center;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .modal-content {
+      background: #fff;
+      border-radius: 20px;
+      padding: 30px;
+      width: 90%;
+      max-width: 700px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      animation: slideUp 0.4s ease;
+      overflow-y: auto;
+      max-height: 80vh;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes slideUp {
+      from { transform: translateY(20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 20px;
+      right: 25px;
+      background: #f44336;
+      color: #fff;
+      border: none;
+      border-radius: 50%;
+      width: 32px;
+      height: 32px;
+      cursor: pointer;
+      font-size: 18px;
+      transition: background 0.2s ease;
+    }
+
+    .close-btn:hover {
+      background: #d32f2f;
+    }
+
+    .modal-content h2 {
+      margin-top: 0;
+    }
+
+    ul {
+      padding-left: 20px;
+    }
+  </style>
 </head>
 <body>
-    <!-- Epic Neural Background -->
-    <div class="neural-background"></div>
-    
-    <!-- Floating Geometric Shapes -->
-    <div class="geometric-shapes">
-        <div class="shape"></div>
-        <div class="shape"></div>
-        <div class="shape"></div>
-        <div class="shape"></div>
+  <header>🎓 Adobe Learning Manager Courses</header>
+
+  <main>
+    <div id="courses-container" class="course-grid"></div>
+    <div id="loading" class="loading">Loading courses...</div>
+  </main>
+
+  <footer>Powered by Adobe Learning Manager Non-Logged-In APIs</footer>
+
+  <!-- Modal -->
+  <div id="courseModal" class="modal">
+    <div class="modal-content" id="modalContent">
+      <button class="close-btn" id="closeModal">&times;</button>
+      <div id="modalBody">Loading...</div>
     </div>
+  </div>
 
-    <!-- Neural Network Lines -->
-    <div class="neural-lines">
-        <div class="neural-line"></div>
-        <div class="neural-line"></div>
-        <div class="neural-line"></div>
-    </div>
+  <script>
+    const searchBaseURL = "https://primeapps.adobe.com/almsearch/api/v1/production/108079/9b1e6b7f-20f3-4c49-a9c8-f5f4131096f8";
+    const cdnBaseURL = "https://cpcontents.adobe.com/public/guest/production/api/9b1e6b7f-20f3-4c49-a9c8-f5f4131096f8/108079";
 
-    <!-- Header -->
-    <header class="glass">
-        <nav>
-            <a href="#home" class="logo">
-                <svg class="logo-icon" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                    <defs>
-                        <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" style="stop-color:#e0a3ff"/>
-                            <stop offset="50%" style="stop-color:#ff69b4"/>
-                            <stop offset="100%" style="stop-color:#9370db"/>
-                        </linearGradient>
-                    </defs>
-                    <circle cx="50" cy="30" r="8" fill="url(#logoGradient)" opacity="0.8">
-                        <animate attributeName="opacity" values="0.8;1;0.8" dur="2s" repeatCount="indefinite"/>
-                    </circle>
-                    <circle cx="30" cy="60" r="6" fill="url(#logoGradient)" opacity="0.6">
-                        <animate attributeName="opacity" values="0.6;1;0.6" dur="2.5s" repeatCount="indefinite"/>
-                    </circle>
-                    <circle cx="70" cy="65" r="7" fill="url(#logoGradient)" opacity="0.7">
-                        <animate attributeName="opacity" values="0.7;1;0.7" dur="1.8s" repeatCount="indefinite"/>
-                    </circle>
-                    <line x1="50" y1="30" x2="30" y2="60" stroke="url(#logoGradient)" stroke-width="2" opacity="0.6">
-                        <animate attributeName="opacity" values="0.6;1;0.6" dur="3s" repeatCount="indefinite"/>
-                    </line>
-                    <line x1="50" y1="30" x2="70" y2="65" stroke="url(#logoGradient)" stroke-width="2" opacity="0.6">
-                        <animate attributeName="opacity" values="0.6;1;0.6" dur="2.2s" repeatCount="indefinite"/>
-                    </line>
-                    <line x1="30" y1="60" x2="70" y2="65" stroke="url(#logoGradient)" stroke-width="2" opacity="0.6">
-                        <animate attributeName="opacity" values="0.6;1;0.6" dur="2.8s" repeatCount="indefinite"/>
-                    </line>
-                </svg>
-                NEURALGLASS
-            </a>
-            <ul class="nav-links">
-                <li><a href="#features">Neural</a></li>
-                <li><a href="#showcase">Matrix</a></li>
-                <li><a href="#timeline">Evolution</a></li>
-                <li><a href="#contact">Connect</a></li>
-                <li><a href="https://example.com" target="_blank" class="external-link">External</a></li>
-</ul>
-            </ul>
-            <div class="mobile-menu-toggle">
-                <div class="hamburger-line"></div>
-                <div class="hamburger-line"></div>
-                <div class="hamburger-line"></div>
-            </div>
-        </nav>
-        <div class="mobile-nav">
-            <a href="#features">Neural</a>
-            <a href="#showcase">Matrix</a>
-            <a href="#timeline">Evolution</a>
-            <a href="#contact">Connect</a>
-            <a href="https://example.com" target="_blank" class="external-link">External</a>
-        </div>
-    </header>
+    const modal = document.getElementById("courseModal");
+    const modalBody = document.getElementById("modalBody");
+    const closeModal = document.getElementById("closeModal");
 
-    <!-- Section 1: Hero -->
-    <section class="hero" id="home">
-        <div class="hero-content">
-            <div class="hero-subtitle">Welcome to the Future</div>
-            <h1>NEURAL INTERFACE</h1>
-            
-            <div class="hero-description">
-                <p>Experience the convergence of consciousness and technology through quantum-enhanced glassmorphism interfaces. Step into a reality where digital dreams become tangible experiences, transcending the boundaries between mind and machine.</p>
-            </div>
+    closeModal.onclick = () => (modal.style.display = "none");
+    window.onclick = (e) => { if (e.target === modal) modal.style.display = "none"; };
 
-            <div class="hero-stats">
-                <div class="hero-stat">
-                    <span class="hero-stat-number">99.9%</span>
-                    <span class="hero-stat-label">Neural Sync Rate</span>
-                </div>
-                <div class="hero-stat">
-                    <span class="hero-stat-number">∞</span>
-                    <span class="hero-stat-label">Processing Power</span>
-                </div>
-                <div class="hero-stat">
-                    <span class="hero-stat-number">0.001</span>
-                    <span class="hero-stat-label">Latency (ms)</span>
-                </div>
-                <div class="hero-stat">
-                    <span class="hero-stat-number">24/7</span>
-                    <span class="hero-stat-label">Neural Access</span>
-                </div>
-            </div>
-            
-            <div class="cta-buttons">
-                <a href="#features" class="cta-button">Initialize Neural Link</a>
-                <a href="#showcase" class="cta-button secondary">Explore Matrix</a>
-            </div>
-        </div>
-    </section>
+    async function fetchCourses() {
+      try {
+        const response = await fetch(`${searchBaseURL}/search`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            query: "",
+            filters: { terms: { loType: ["course"] } },
+            size: 12,
+            lang: ["en-US"]
+          }),
+        });
 
-    <!-- Section 2: Diagonal Features -->
-    <section class="features" id="features">
-        <div class="features-container">
-            <h2 class="section-title">QUANTUM CAPABILITIES</h2>
-            <div class="diagonal-grid">
-                <div class="feature-row">
-                    <div class="feature-content glass">
-                        <div class="feature-icon">🧠</div>
-                        <h3>Neural Processing</h3>
-                        <p>Advanced AI-driven interfaces that adapt to your consciousness patterns, creating personalized digital experiences that evolve with your neural pathways.</p>
-                    </div>
-                    <div class="feature-visual glass"></div>
-                </div>
-                
-                <div class="feature-row">
-                    <div class="feature-content glass">
-                        <div class="feature-icon">⚡</div>
-                        <h3>Quantum Speed</h3>
-                        <p>Instantaneous data processing through quantum tunneling algorithms, delivering response times that exist outside conventional spacetime constraints.</p>
-                    </div>
-                    <div class="feature-visual glass"></div>
-                </div>
-                
-                <div class="feature-row">
-                    <div class="feature-content glass">
-                        <div class="feature-icon">🌐</div>
-                        <h3>Dimensional Sync</h3>
-                        <p>Seamless synchronization across multiple reality layers, ensuring your digital presence remains consistent throughout parallel dimensions.</p>
-                    </div>
-                    <div class="feature-visual glass"></div>
-                </div>
-            </div>
-        </div>
-    </section>
+        const data = await response.json();
+        const results = data.results || [];
 
-    <!-- Section 3: Hexagonal Showcase -->
-    <section class="showcase" id="showcase">
-        <h2 class="section-title">MATRIX PROTOCOLS</h2>
-        <div class="hexagon-container">
-            <div class="hexagon">
-                <div class="hexagon-inner glass">
-                    <div class="hexagon-icon">🔮</div>
-                    <h4>Holographic UI</h4>
-                    <p>3D interfaces projected into reality space</p>
-                </div>
-            </div>
-            <div class="hexagon">
-                <div class="hexagon-inner glass">
-                    <div class="hexagon-icon">🛡️</div>
-                    <h4>Quantum Security</h4>
-                    <p>Unbreakable encryption protocols</p>
-                </div>
-            </div>
-            <div class="hexagon">
-                <div class="hexagon-inner glass">
-                    <div class="hexagon-icon">🚀</div>
-                    <h4>Warp Navigation</h4>
-                    <p>Instant travel between data nodes</p>
-                </div>
-            </div>
-            <div class="hexagon">
-                <div class="hexagon-inner glass">
-                    <div class="hexagon-icon">💎</div>
-                    <h4>Crystal Storage</h4>
-                    <p>Infinite capacity data crystals</p>
-                </div>
-            </div>
-            <div class="hexagon">
-                <div class="hexagon-inner glass">
-                    <div class="hexagon-icon">🎯</div>
-                    <h4>Neural Targeting</h4>
-                    <p>Thought-based interaction systems</p>
-                </div>
-            </div>
-            <div class="hexagon">
-                <div class="hexagon-inner glass">
-                    <div class="hexagon-icon">⭐</div>
-                    <h4>Stellar Network</h4>
-                    <p>Galactic-scale connectivity matrix</p>
-                </div>
-            </div>
-        </div>
-    </section>
+        document.getElementById("loading").style.display = "none";
+        displayCourseTiles(results);
+      } catch (error) {
+        console.error("Error fetching courses:", error);
+        document.getElementById("loading").innerText = "Failed to load courses.";
+      }
+    }
 
-    <!-- Section 4: Timeline -->
-    <section class="timeline" id="timeline">
-        <h2 class="section-title">EVOLUTION TIMELINE</h2>
-        <div class="timeline-container">
-            <div class="timeline-line"></div>
-            
-            <div class="timeline-item">
-                <div class="timeline-content glass">
-                    <div class="timeline-year">2024</div>
-                    <h4>Genesis Protocol</h4>
-                    <p>NeuralGlass is a cutting-edge cyberpunk glassmorphism HTML template featuring a striking purple, pink, and green color palette with futuristic neural network aesthetics.</p>
-                </div>
-                <div class="timeline-dot"></div>
-            </div>
-            
-            <div class="timeline-item">
-                <div class="timeline-content glass">
-                    <div class="timeline-year">2025</div>
-                    <h4>Matrix Integration</h4>
-                    <p>Built with pure HTML/CSS and vanilla JavaScript, it offers smooth scrolling, mobile-responsive navigation with hamburger menu, parallax effects, and dynamic visual elements that respond to user interaction.</p>
-                </div>
-                <div class="timeline-dot"></div>
-            </div>
-            
-            <div class="timeline-item">
-                <div class="timeline-content glass">
-                    <div class="timeline-year">2026</div>
-                    <h4>Quantum Leap</h4>
-                    <p>This HTML CSS template is brought to you by TemplateMo website. Perfect for tech startups, AI companies, gaming platforms, or any project requiring a bold, futuristic web presence.</p>
-                </div>
-                <div class="timeline-dot"></div>
-            </div>
-            
-            <div class="timeline-item">
-                <div class="timeline-content glass">
-                    <div class="timeline-year">2027</div>
-                    <h4>Neural Singularity</h4>
-                    <p>Human consciousness successfully merges with AI systems, creating hybrid intelligences that transcend biological limitations.</p>
-                </div>
-                <div class="timeline-dot"></div>
-            </div>
-        </div>
-    </section>
+    function displayCourseTiles(courses) {
+      const container = document.getElementById("courses-container");
+      container.innerHTML = "";
 
-    <!-- Section 5: Contact -->
-    <section class="contact" id="contact">
-        <div class="contact-container">
-            <div class="contact-info glass">
-                <h3>ESTABLISH CONNECTION</h3>
-                <p>Ready to interface with the future? Our neural network specialists are standing by to guide you through the quantum realm of possibilities.</p>
-                <p>Connect through the dimensional gateway and let us initialize your journey into the digital consciousness matrix.</p>
-                
-                <div class="social-links">
-                    <a href="#" class="glass">📡</a>
-                    <a href="#" class="glass">🌐</a>
-                    <a href="#" class="glass">💬</a>
-                    <a href="#" class="glass">📨</a>
-                </div>
-            </div>
-            
-            <div class="contact-form glass">
-                <div class="form-group">
-                    <input type="text" placeholder="Neural ID (Name)" required>
-                </div>
-                <div class="form-group">
-                    <input type="email" placeholder="Quantum Channel (Email)" required>
-                </div>
-                <div class="form-group">
-                    <input type="text" placeholder="Mission Objective (Subject)" required>
-                </div>
-                <div class="form-group">
-                    <textarea rows="5" placeholder="Transmission Data (Message)" required></textarea>
-                </div>
-                <button type="submit" class="submit-btn">TRANSMIT TO MATRIX</button>
-            </div>
-        </div>
-    </section>
+      courses.forEach(course => {
+        const name = course.name || "Untitled Course";
+        const authors = course.authorNames?.join(", ") || "Unknown Author";
+        const duration = course.duration ? `${Math.round(course.duration / 60)} mins` : "N/A";
 
-    <!-- Footer -->
-    <footer>
-        <div class="footer-content">
-            <div class="footer-links">
-                <a href="#features">Neural Networks</a>
-                <a href="#showcase">Matrix Protocols</a>
-                <a href="#timeline">Evolution</a>
-                <a href="#">Privacy Policy</a>
-                <a href="#">Terms of Service</a>
-                <a href="#">Documentation</a>
-                <!-- Add external links -->
-    			<a href="https://github.com/yourproject" target="_blank" rel="noopener">GitHub</a>
-            </div>
-            <div class="footer-copyright">
-                <p>&copy; 2025 NeuralGlass Interface. All quantum rights reserved across dimensions.</p>
-            </div>
-            <div class="footer-design">
-                Design: <a href="https://templatemo.com" target="_blank" rel="nofollow noopener">TemplateMo</a> | 
-                Enhanced by Neural AI Systems | 
-                <a href="#">Quantum Framework</a>
-            </div>
-        </div>
-    </footer>
-<script src="templatemo-neural-scripts.js"></script>
+        const tile = document.createElement("div");
+        tile.className = "course-tile";
+        tile.innerHTML = `
+          <h3>${name}</h3>
+          <p><strong>Author:</strong> ${authors}</p>
+          <p><strong>Duration:</strong> ${duration}</p>
+        `;
+        tile.addEventListener("click", () => showCourseDetails(course.id, name));
+        container.appendChild(tile);
+      });
+    }
+
+    async function showCourseDetails(courseId, courseName) {
+      modal.style.display = "flex";
+      modalBody.innerHTML = `<p>Loading details for <strong>${courseName}</strong>...</p>`;
+
+      try {
+        const response = await fetch(`${cdnBaseURL}/course/${courseId}.json`);
+        const json = await response.json();
+        const courseData = json.data?.attributes || {};
+        const localized = courseData.localizedMetadata?.[0] || {};
+        const author = courseData.authorNames?.join(", ") || "Unknown";
+        const duration = courseData.duration ? `${Math.round(courseData.duration / 60)} mins` : "N/A";
+
+        let html = `
+          <h2>${localized.name}</h2>
+          <p>${localized.description || "No description available."}</p>
+          <p><strong>Author:</strong> ${author}</p>
+          <p><strong>Duration:</strong> ${duration}</p>
+        `;
+
+        if (json.included) {
+          const modules = json.included
+            .filter(item => item.type === "learningObjectResource")
+            .map(item => `<li>${item.attributes.name}</li>`)
+            .join("");
+
+          html += `
+            <h3>Modules</h3>
+            <ul>${modules || "<li>No modules found.</li>"}</ul>
+          `;
+        }
+
+        modalBody.innerHTML = html;
+      } catch (error) {
+        console.error("Error fetching details:", error);
+        modalBody.innerHTML = "<p>Failed to load course details.</p>";
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", fetchCourses);
+  </script>
 </body>
 </html>
