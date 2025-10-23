@@ -1,246 +1,232 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Adobe Learning Manager Courses</title>
-  <style>
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
-      background: #f5f5f7;
-      color: #333;
-      margin: 0;
-      padding: 0;
-    }
-
-    header {
-      background: #000;
-      color: #fff;
-      text-align: center;
-      padding: 20px 10px;
-      font-size: 1.5rem;
-      font-weight: 600;
-      letter-spacing: 1px;
-    }
-
-    main {
-      max-width: 1200px;
-      margin: 30px auto;
-      padding: 0 20px;
-    }
-
-    .course-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 20px;
-    }
-
-    .course-tile {
-      background: #fff;
-      border-radius: 20px;
-      padding: 20px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-
-    .course-tile:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.15);
-    }
-
-    .course-tile h3 {
-      margin: 0 0 10px;
-      font-size: 1.2rem;
-      color: #111;
-    }
-
-    .loading {
-      text-align: center;
-      font-size: 1.1rem;
-      color: #666;
-      margin-top: 40px;
-    }
-
-    footer {
-      text-align: center;
-      padding: 20px;
-      color: #666;
-      font-size: 0.9rem;
-      margin-top: 50px;
-      border-top: 1px solid #ddd;
-    }
-
-    /* === Modal Styling === */
-    .modal {
-      display: none;
-      position: fixed;
-      z-index: 1000;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      backdrop-filter: blur(6px);
-      background: rgba(0, 0, 0, 0.4);
-      justify-content: center;
-      align-items: center;
-      animation: fadeIn 0.3s ease;
-    }
-
-    .modal-content {
-      background: #fff;
-      border-radius: 20px;
-      padding: 30px;
-      width: 90%;
-      max-width: 700px;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-      animation: slideUp 0.4s ease;
-      overflow-y: auto;
-      max-height: 80vh;
-      position: relative;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-
-    @keyframes slideUp {
-      from { transform: translateY(20px); opacity: 0; }
-      to { transform: translateY(0); opacity: 1; }
-    }
-
-    .close-btn {
-      position: absolute;
-      top: 20px;
-      right: 25px;
-      background: #f44336;
-      color: #fff;
-      border: none;
-      border-radius: 50%;
-      width: 32px;
-      height: 32px;
-      cursor: pointer;
-      font-size: 18px;
-      transition: background 0.2s ease;
-    }
-
-    .close-btn:hover {
-      background: #d32f2f;
-    }
-
-    .modal-content h2 {
-      margin-top: 0;
-    }
-
-    ul {
-      padding-left: 20px;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Adobe Learning Manager Courses</title>
+<style>
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    background: #f5f5f7;
+    color: #333;
+    margin: 0;
+    padding: 0;
+  }
+  header {
+    background: #000;
+    color: #fff;
+    text-align: center;
+    padding: 20px 10px;
+    font-size: 1.5rem;
+    font-weight: 600;
+  }
+  main {
+    max-width: 1200px;
+    margin: 30px auto;
+    padding: 0 20px;
+  }
+  .course-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 20px;
+  }
+  .course-tile {
+    background: #fff;
+    border-radius: 20px;
+    padding: 15px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+  }
+  .course-tile:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 14px rgba(0,0,0,0.15);
+  }
+  .course-tile img {
+    width: 100%;
+    height: 140px;
+    object-fit: cover;
+    border-radius: 15px;
+    margin-bottom: 10px;
+  }
+  .course-tile h3 {
+    margin: 5px 0;
+    font-size: 1.2rem;
+    color: #111;
+  }
+  .course-tile p {
+    margin: 2px 0;
+    font-size: 0.9rem;
+    color: #555;
+  }
+  .loading {
+    text-align: center;
+    font-size: 1.1rem;
+    color: #666;
+    margin-top: 40px;
+  }
+  footer {
+    text-align: center;
+    padding: 20px;
+    color: #666;
+    font-size: 0.9rem;
+    margin-top: 50px;
+    border-top: 1px solid #ddd;
+  }
+  /* Modal styling */
+  .modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    backdrop-filter: blur(6px);
+    background: rgba(0,0,0,0.4);
+    justify-content: center;
+    align-items: center;
+  }
+  .modal-content {
+    background: #fff;
+    border-radius: 20px;
+    padding: 30px;
+    width: 90%;
+    max-width: 700px;
+    max-height: 80vh;
+    overflow-y: auto;
+    position: relative;
+  }
+  .close-btn {
+    position: absolute;
+    top: 20px;
+    right: 25px;
+    background: #f44336;
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    cursor: pointer;
+    font-size: 18px;
+  }
+  .close-btn:hover { background: #d32f2f; }
+  ul { padding-left: 20px; }
+</style>
 </head>
 <body>
-  <header>🎓 Adobe Learning Manager Courses</header>
 
-  <main>
-    <div id="courses-container" class="course-grid"></div>
-    <div id="loading" class="loading">Loading courses...</div>
-  </main>
+<header>🎓 Adobe Learning Manager Courses</header>
 
-  <footer>Powered by Adobe Learning Manager Public CDN</footer>
+<main>
+  <div id="courses-container" class="course-grid"></div>
+  <div id="loading" class="loading">Loading courses...</div>
+</main>
 
-  <!-- Modal -->
-  <div id="courseModal" class="modal">
-    <div class="modal-content" id="modalContent">
-      <button class="close-btn" id="closeModal">&times;</button>
-      <div id="modalBody">Loading...</div>
-    </div>
+<footer>Powered by Adobe Learning Manager Public CDN</footer>
+
+<!-- Modal -->
+<div id="courseModal" class="modal">
+  <div class="modal-content" id="modalContent">
+    <button class="close-btn" id="closeModal">&times;</button>
+    <div id="modalBody">Loading...</div>
   </div>
+</div>
 
-  <script>
-    const cdnBaseURL = "https://cpcontents.adobe.com/public/guest/production/api/9b1e6b7f-20f3-4c49-a9c8-f5f4131096f8/108079";
+<script>
+const cdnBaseURL = "https://cpcontents.adobe.com/public/guest/production/api/9b1e6b7f-20f3-4c49-a9c8-f5f4131096f8/108079";
 
-    // ===== List of course IDs to display =====
-    const courseIds = [
-      "14453052",
-      "14453054"
-      // Add more course IDs here
-    ];
+// Enter **numeric course IDs only**
+const courseIds = ["14453052", "14453054"];
 
-    const modal = document.getElementById("courseModal");
-    const modalBody = document.getElementById("modalBody");
-    const closeModal = document.getElementById("closeModal");
+const modal = document.getElementById("courseModal");
+const modalBody = document.getElementById("modalBody");
+const closeModal = document.getElementById("closeModal");
 
-    closeModal.onclick = () => (modal.style.display = "none");
-    window.onclick = (e) => { if (e.target === modal) modal.style.display = "none"; };
+closeModal.onclick = () => (modal.style.display = "none");
+window.onclick = (e) => { if (e.target === modal) modal.style.display = "none"; };
 
-    async function fetchCourses() {
-      document.getElementById("loading").innerText = "Loading course metadata...";
-      const container = document.getElementById("courses-container");
-      container.innerHTML = "";
+async function fetchCourses() {
+  document.getElementById("loading").innerText = "Loading course metadata...";
+  const container = document.getElementById("courses-container");
+  container.innerHTML = "";
 
-      for (const id of courseIds) {
-        try {
-          const response = await fetch(`${cdnBaseURL}/course/${id}.json`);
-          const json = await response.json();
-          const course = json.data?.attributes || {};
-          const localized = course.localizedMetadata?.[0] || {};
+  for (const id of courseIds) {
+    try {
+      const response = await fetch(`${cdnBaseURL}/course/${id}.json`);
+      const json = await response.json();
+      const course = json.data?.attributes || {};
+      const localized = course.localizedMetadata?.[0] || {};
+      const author = course.authorNames?.[0] || "Unknown";
+      const duration = course.duration ? `${course.duration} mins` : "N/A";
+      const loType = course.loType || "N/A";
 
-          const tile = document.createElement("div");
-          tile.className = "course-tile";
-          tile.innerHTML = `
-            <h3>${localized.name || "Untitled Course"}</h3>
-            <p><strong>Author:</strong> ${(course.authorNames || []).join(", ") || "Unknown"}</p>
-          `;
-          tile.addEventListener("click", () => showCourseDetails(id, localized.name));
-          container.appendChild(tile);
-        } catch (e) {
-          console.error("Failed to load:", id, e);
-        }
-      }
+      // Use author avatar if available, otherwise placeholder image
+      const authorData = json.included?.find(i => i.type === "user" && i.id === json.data.relationships.authors.data[0]?.id);
+      const imgUrl = authorData?.attributes?.avatarUrl || "https://via.placeholder.com/300x140.png?text=Course+Image";
 
-      document.getElementById("loading").style.display = "none";
+      const tile = document.createElement("div");
+      tile.className = "course-tile";
+      tile.innerHTML = `
+        <img src="${imgUrl}" alt="${localized.name}">
+        <h3>${localized.name}</h3>
+        <p><strong>Author:</strong> ${author}</p>
+        <p><strong>Duration:</strong> ${duration}</p>
+        <p><strong>Type:</strong> ${loType}</p>
+      `;
+      tile.addEventListener("click", () => showCourseDetails(id, localized.name));
+      container.appendChild(tile);
+    } catch (e) {
+      console.error("Failed to load:", id, e);
     }
+  }
 
-    async function showCourseDetails(courseId, courseName) {
-      modal.style.display = "flex";
-      modalBody.innerHTML = `<p>Loading details for <strong>${courseName}</strong>...</p>`;
+  document.getElementById("loading").style.display = "none";
+}
 
-      try {
-        const response = await fetch(`${cdnBaseURL}/course/${courseId}.json`);
-        const json = await response.json();
-        const courseData = json.data?.attributes || {};
-        const localized = courseData.localizedMetadata?.[0] || {};
-        const author = courseData.authorNames?.join(", ") || "Unknown";
-        const duration = courseData.duration ? `${Math.round(courseData.duration / 60)} mins` : "N/A";
+async function showCourseDetails(courseId, courseName) {
+  modal.style.display = "flex";
+  modalBody.innerHTML = `<p>Loading details for <strong>${courseName}</strong>...</p>`;
 
-        let html = `
-          <h2>${localized.name}</h2>
-          <p>${localized.description || "No description available."}</p>
-          <p><strong>Author:</strong> ${author}</p>
-          <p><strong>Duration:</strong> ${duration}</p>
-        `;
+  try {
+    const response = await fetch(`${cdnBaseURL}/course/${courseId}.json`);
+    const json = await response.json();
+    const course = json.data?.attributes || {};
+    const localized = course.localizedMetadata?.[0] || {};
+    const author = course.authorNames?.join(", ") || "Unknown";
+    const duration = course.duration ? `${course.duration} mins` : "N/A";
+    const loType = course.loType || "N/A";
 
-        if (json.included) {
-          const modules = json.included
-            .filter(item => item.type === "learningObjectResource")
-            .map(item => `<li>${item.attributes.name}</li>`)
-            .join("");
+    // Get learningObjectResources
+    const resources = json.included
+      ?.filter(i => i.type === "learningObjectResource")
+      .map(r => {
+        const name = r.attributes.localizedMetadata?.[0]?.name || "Untitled Resource";
+        const locale = r.attributes.localizedMetadata?.[0]?.locale || "N/A";
+        return `<li>${name} (Locale: ${locale})</li>`;
+      })
+      .join("") || "<li>No resources found</li>";
 
-          html += `
-            <h3>Modules</h3>
-            <ul>${modules || "<li>No modules found.</li>"}</ul>
-          `;
-        }
+    const html = `
+      <h2>${localized.name}</h2>
+      <p><strong>Description:</strong> ${localized.description || "No description available."}</p>
+      <p><strong>Author:</strong> ${author}</p>
+      <p><strong>Duration:</strong> ${duration}</p>
+      <p><strong>Type:</strong> ${loType}</p>
+      <h3>Resources</h3>
+      <ul>${resources}</ul>
+    `;
 
-        modalBody.innerHTML = html;
-      } catch (error) {
-        console.error("Error fetching details:", error);
-        modalBody.innerHTML = "<p>Failed to load course details.</p>";
-      }
-    }
+    modalBody.innerHTML = html;
+  } catch (error) {
+    console.error("Error fetching details:", error);
+    modalBody.innerHTML = "<p>Failed to load course details.</p>";
+  }
+}
 
-    document.addEventListener("DOMContentLoaded", fetchCourses);
-  </script>
+document.addEventListener("DOMContentLoaded", fetchCourses);
+</script>
+
 </body>
 </html>
-
