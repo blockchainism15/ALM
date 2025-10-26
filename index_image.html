@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Learning Objects Portal</title>
+<style>
+  body { font-family: Arial, sans-serif; margin: 0; background-color: #f5f5f5; }
+  #container { display: flex; min-height: 100vh; }
+  #filters { width: 250px; background-color: #fff; padding: 20px; border-right: 2px solid #ccc; overflow-y: auto; }
+  #filters h3 { margin-top: 0; }
+  #filters label { display: block; margin: 5px 0; font-weight: bold; }
+  #filters select { width: 100%; }
+  #filters button { margin-top: 15px; padding: 8px 12px; background-color: #0070c9; color: #fff; border: none; cursor: pointer; border-radius: 5px; width: 100%; }
+  #filters button:hover { background-color: #005a9e; }
+  #results { flex: 1; padding: 20px; display: grid; grid-template-columns: repeat(auto-fill,minmax(280px,1fr)); gap: 20px; }
+  .card { background-color: #fff; border-radius: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); padding: 15px; display: flex; flex-direction: column; justify-content: space-between; transition: transform 0.2s, box-shadow 0.2s; cursor: pointer; text-decoration: none; color: inherit; }
+  .card:hover { transform: translateY(-5px); box-shadow: 0 6px 12px rgba(0,0,0,0.2); }
+  .card img { max-width: 100%; height: 150px; object-fit: cover; border-radius: 5px; margin-bottom: 10px; background-color: #eee; }
+  .card h4 { margin: 5px 0; font-size: 1.1em; }
+  .card p { margin: 2px 0; font-size: 0.9em; color: #555; }
+  .rating { color: #f39c12; }
+</style>
+</head>
+<body>
+<div id="container">
+  <div id="filters">
+    <h3>Filters</h3>
+    <label>Learning Object Type:</label>
+    <select id="loTypeSelect" multiple size="3"></select>
+    <label>Delivery Type:</label>
+    <select id="deliveryTypeSelect" multiple size="5"></select>
+    <label>Skill Levels:</label>
+    <select id="loSkillLevelsSelect" multiple size="3"></select>
+    <label>Skills:</label>
+    <select id="loSkillNamesSelect" multiple size="5"></select>
+    <label>Catalogs:</label>
+    <select id="catalogNamesSelect" multiple size="5"></select>
+    <label>Tags:</label>
+    <select id="tagsSelect" multiple size="5"></select>
+    <button id="applyFilters">Apply Filters</button>
+    <button id="clearFilters">Clear All Filters</button>
+  </div>
+  <div id="results">
+    <p>Loading results...</p>
+  </div>
+</div>
+
+<script>
+const accountId = "108079"; // Replace with your account ID
+const filterOptions = {
+  loType: ["course","learningProgram","certification"],
+  deliveryType: ["Self Paced","Classroom","Blended","Activity","Virtual Classroom"],
+  loSkillLevels: ["1","2","3"],
+  loSkillNames: ["Java Programming","LP SKILLS","Anupam's admin trial"],
+  catalogNames: ["Default Catalog","CATALOG 101","TEST"],
+  tags: ["anup","Diagnostic","ALM"]
+};
+
+function populateSelect(id, options){
+  const select = document.getElementById(id);
+  select.innerHTML = "";
+  options.forEach(opt => {
+    const option = document.createElement("option");
+    option.value = opt;
+    option.text = opt;
+    select.add(option);
+  });
+}
+
+populateSelect("loTypeSelect", filterOptions.loType);
+populateSelect("deliveryTypeSelect", filterOptions.deliveryType);
+populateSelect("loSkillLevelsSelect", filterOptions.loSkillLevels);
+populateSelect("loSkillNamesSelect", filterOptions.loSkillNames);
+populateSelect("catalogNamesSelect", filterOptions.catalogNames);
+populateSelect("tagsSelect", filterOptions.tags);
+
+async function fetchResults(filters={}) {
+  const apiUrl = "https://primeapps.adobe.com/almsearch/api/v1/production/108079/9b1e6b7f-20f3-4c49-a9c8-f5f4131096f8/search?size=20";
+  const body = { query:"", filters:{ terms: filters } };
+
+  try {
+    const res = await fetch(apiUrl,{
+      method:"POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body)
+    });
+    const data = await res.json();
+
+    const container = document.getElementById("results");
+    container.innerHTML = "";
+
+    if(!data.results || data.results.length === 0) {
+      container.innerHTML = "<p>No results found for selected filters.</p>";
+      return;
+    }
+
+    // Progressive rendering
+    data.results.forEach(async lo => {
+      const card = document.createElement("a");
+      card.href = "#";
+      card.target = "_blank";
+      card.className = "card";
+
+      const img = document.createElement("img");
+      img.src = "https://cpcontents.adobe.com/public/images/default_courses/2.png";
+      card.appendChild(img);
+
+      const h4 = document.createElement("h4");
+      h4.textContent = lo.name;
+      card.appendChild(h4);
+
+      const typeP = document.createElement("p");
+      typeP.textContent = `${lo.loType} | ${lo.deliveryType} | Duration: ${lo.duration} mins`;
+      card.appendChild(typeP);
+
+      const skills = document.createElement("p");
+      skills.textContent = "Skills: " + (lo.loSkillNames?.join(", ") || "N/A");
+      card.appendChild(skills);
+
+      const rating = document.createElement("p");
+      rating.innerHTML = `Rating: <span class="rating">${lo.averageRating || 0}★</span> (${lo.ratingsCount || 0})`;
+      card.appendChild(rating);
+
+      container.appendChild(card);
+
+      // Fetch detailed LO info asynchronously
+      const numericId = lo.loId.split(":")[1];
+      try {
+        const detailRes = await fetch(`https://cpcontents.adobe.com/public/guest/production/api/${accountId}/course/${numericId}.json`);
+        const detailData = await detailRes.json();
+        if(detailData?.data?.attributes?.imageUrl){
+          img.src = detailData.data.attributes.imageUrl;
+        }
+      } catch(e){
+        console.warn("Failed to fetch LO details for image:", lo.loId);
+      }
+    });
+
+  } catch(err) {
+    document.getElementById("results").innerHTML = "<p>Error fetching results.</p>";
+    console.error(err);
+  }
+}
+
+document.getElementById("applyFilters").addEventListener("click", () => {
+  const filters = {
+    loType: Array.from(document.getElementById("loTypeSelect").selectedOptions).map(o=>o.value),
+    deliveryType: Array.from(document.getElementById("deliveryTypeSelect").selectedOptions).map(o=>o.value),
+    loSkillLevels: Array.from(document.getElementById("loSkillLevelsSelect").selectedOptions).map(o=>o.value),
+    loSkillNames: Array.from(document.getElementById("loSkillNamesSelect").selectedOptions).map(o=>o.value),
+    catalogNames: Array.from(document.getElementById("catalogNamesSelect").selectedOptions).map(o=>o.value),
+    tags: Array.from(document.getElementById("tagsSelect").selectedOptions).map(o=>o.value)
+  };
+  fetchResults(filters);
+});
+
+document.getElementById("clearFilters").addEventListener("click", () => {
+  document.querySelectorAll("select").forEach(sel=>sel.selectedIndex=-1);
+  fetchResults({});
+});
+
+// Initial load
+fetchResults({});
+</script>
+</body>
+</html>
