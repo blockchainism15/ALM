@@ -169,7 +169,7 @@ async function fetchCourses() {
       const tile = document.createElement("div");
       tile.className = "course-tile";
       tile.innerHTML = `
-        <img src="${imgUrl}" alt="${localized.name}">
+        <img src="${imageUrl}" alt="${localized.name}">
         <h3>${localized.name}</h3>
         <p><strong>Author:</strong> ${author}</p>
         <p><strong>Duration:</strong> ${duration}</p>
@@ -230,3 +230,4 @@ document.addEventListener("DOMContentLoaded", fetchCourses);
 
 </body>
 </html>
+
