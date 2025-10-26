@@ -3,212 +3,287 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Learning Manager – Public Search Filters</title>
+<title>ALM Learning Object Filter - Apple Style</title>
 <style>
   body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    background: #f5f5f7;
-    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     display: flex;
+    margin: 0;
     height: 100vh;
+    background-color: #f5f5f7;
   }
 
-  /* Left filter panel */
-  #filters {
-    width: 320px;
-    background: #fff;
-    border-right: 1px solid #e0e0e0;
+  /* Filter Panel */
+  #filterPanel {
+    width: 280px;
+    padding: 20px;
+    border-right: 1px solid #ddd;
+    background-color: #fff;
+    overflow-y: auto;
+  }
+
+  #filterPanel h2 {
+    font-size: 1.4em;
+    margin-bottom: 10px;
+  }
+
+  .filter-group {
+    margin-bottom: 20px;
+  }
+
+  .filter-group label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 600;
+    font-size: 0.95em;
+    color: #333;
+  }
+
+  .filter-group input {
+    width: 100%;
+    padding: 6px 8px;
+    margin-bottom: 6px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 0.9em;
+  }
+
+  .filter-group select {
+    width: 100%;
+    border-radius: 6px;
+    padding: 6px;
+    font-size: 0.9em;
+  }
+
+  .badge-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+  }
+
+  .badge {
+    background-color: #0071e3;
+    color: #fff;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 0.8em;
+  }
+
+  /* Results Panel */
+  #resultsPanel {
+    flex: 1;
     padding: 20px;
     overflow-y: auto;
   }
-  #filters h2 {
-    font-size: 1.2rem;
-    margin-bottom: 10px;
-    color: #1d1d1f;
-  }
-  details {
-    margin-bottom: 15px;
-  }
-  summary {
-    font-weight: 600;
-    cursor: pointer;
-    color: #0071e3;
-    margin-bottom: 5px;
-  }
-  label {
-    display: block;
-    margin-left: 15px;
-    margin-bottom: 4px;
-    font-size: 0.9rem;
-  }
-  input[type="checkbox"] {
-    margin-right: 8px;
-  }
-  button {
-    background-color: #0071e3;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    padding: 10px 15px;
-    font-size: 0.95rem;
-    cursor: pointer;
-    margin-top: 10px;
-    width: 100%;
-    transition: all 0.2s ease;
-  }
-  button:hover {
-    background-color: #005bb5;
-  }
 
-  /* Right results section */
-  #results {
-    flex: 1;
-    padding: 25px;
-    overflow-y: auto;
-  }
-  #results h2 {
-    margin-top: 0;
-    color: #1d1d1f;
+  #resultsPanel h2 {
+    font-size: 1.4em;
+    margin-bottom: 15px;
   }
 
   .card {
-    background: #fff;
-    border-radius: 16px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-    padding: 20px;
+    background-color: #fff;
+    border-radius: 14px;
+    padding: 16px;
     margin-bottom: 15px;
-    transition: transform 0.2s ease;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
   }
+
   .card:hover {
-    transform: translateY(-3px);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(0,0,0,0.12);
   }
-  .card-title {
-    font-size: 1.1rem;
-    font-weight: 600;
+
+  .card h3 {
+    margin-top: 0;
+    margin-bottom: 8px;
+    font-size: 1.1em;
     color: #111;
-    margin-bottom: 5px;
   }
-  .card-detail {
-    font-size: 0.9rem;
-    color: #555;
+
+  .card p {
+    margin: 3px 0;
+    font-size: 0.9em;
+    color: #444;
   }
-  .loader {
-    text-align: center;
-    margin-top: 30px;
-    color: #0071e3;
-    font-weight: 500;
+
+  .card p b {
+    color: #000;
   }
 </style>
 </head>
 <body>
 
-<!-- Left: Filters -->
-<div id="filters">
-  <h2>Filter Options</h2>
-  <div id="filterContainer"></div>
-  <button id="applyFilter">Apply Filter</button>
+<div id="filterPanel">
+  <h2>Filters</h2>
+
+  <div class="filter-group">
+    <label for="catalogNames">Catalogs:</label>
+    <input type="text" placeholder="Search catalog..." id="searchCatalog">
+    <select id="catalogNames" multiple></select>
+    <div class="badge-container" id="catalogBadges"></div>
+  </div>
+
+  <div class="filter-group">
+    <label for="loType">Learning Object Type:</label>
+    <select id="loType" multiple>
+      <option value="course">Course</option>
+      <option value="learningProgram">Learning Program</option>
+      <option value="certification">Certification</option>
+    </select>
+    <div class="badge-container" id="typeBadges"></div>
+  </div>
+
+  <div class="filter-group">
+    <label for="deliveryType">Delivery Type:</label>
+    <input type="text" placeholder="Search delivery..." id="searchDelivery">
+    <select id="deliveryType" multiple></select>
+    <div class="badge-container" id="deliveryBadges"></div>
+  </div>
+
+  <div class="filter-group">
+    <label for="loSkillLevels">Skill Levels:</label>
+    <select id="loSkillLevels" multiple></select>
+    <div class="badge-container" id="levelBadges"></div>
+  </div>
+
+  <div class="filter-group">
+    <label for="loSkillNames">Skills:</label>
+    <input type="text" placeholder="Search skills..." id="searchSkills">
+    <select id="loSkillNames" multiple></select>
+    <div class="badge-container" id="skillBadges"></div>
+  </div>
 </div>
 
-<!-- Right: Results -->
-<div id="results">
+<div id="resultsPanel">
   <h2>Search Results</h2>
-  <div id="cardsContainer">No results yet. Apply filters to search.</div>
+  <div id="results">Select filters to see results...</div>
 </div>
 
 <script>
-/* ====== Public Search Filter Data ====== */
-const filterableData = {
-  "terms": {
-    "loSkillLevels": ["1","2","3"],
-    "catalogNames": ["AnupamCAT","Cat courses","eff LPs","Category B Learning objects","TESTY","CATALOG 101","CAT111 Vix","TESTStock","Harvard ManageMentor","WASA","Category A Learning objects","DELHI","Default Catalog","TEST","Anup2Raji","GET THE JOBS","RUSSIA","CAT_FOR_LP_TEST","Catalog Demo","TEST1"],
-    "loType": ["course","learningProgram","certification"],
-    "cities": ["Adobe Bangalore 101","Adobe Bangaloree Blr","Blr"],
-    "deliveryType": ["Self Paced","Classroom","Blended","Activity","Virtual Classroom"],
-    "loSkillNames": ["SKILL_three","Art","SKILL_one","LP SKILLS","Chemist","Pilot Vix","Migration Skill","Java Programming","After Effects**","LMS Basics","Mastering Illustrator","Lightroom","After Effects","After Effects*","Lightroom*","SKILL _two","CryptoGraphy","SKILL A","Onboarded","TEST1","Vector Illustrator","C.skill","Data analysis","skill Name1","Anupam's admin trial","Dpom","IT","skill Name2","skill Name3","Gamification","TEST SKILL C1","SKILL_105","SKILL_four","General","SKILL_103","Photoshop","SKILL_104","SKILL_101","SKILL_102"],
-    "catalogLabelIds": ["1497_6246","1497_3751","4210_10670"],
-    "tags": ["TER","ALM","RSSR","Cardiac Diagnostic","Diagnostic","mig","Tag1","Catalog ABC","MultiEnrollmentEnabled","Toon","Tag3","Tag2","tg1","spanish","KCheck","tagw1","test","Keyword","anup","tg11","anu","Multi Enrollment Enabled","Q2-2024","MyTags","ALM1","Q2-2025","1","TR1","ppt","YourTags","TR","anupam"],
-    "averageRating": ["0.0","2.0","3.0","4.0","5.0"],
-    "ratingsCount": ["0","1","2","3"]
-  }
-};
-
-/* ====== Build Filter UI ====== */
-const filterContainer = document.getElementById("filterContainer");
-for (const [category, values] of Object.entries(filterableData.terms)) {
-  const details = document.createElement("details");
-  const summary = document.createElement("summary");
-  summary.textContent = category;
-  details.appendChild(summary);
-
-  values.forEach(value => {
-    const label = document.createElement("label");
-    const checkbox = document.createElement("input");
-    checkbox.type = "checkbox";
-    checkbox.name = category;
-    checkbox.value = value;
-    label.appendChild(checkbox);
-    label.append(value);
-    details.appendChild(label);
-  });
-  filterContainer.appendChild(details);
-}
-
-/* ====== Fetch Learning Objects ====== */
-const baseUrl = "https://primeapps.adobe.com/almsearch/api/v1/production/108079/9b1e6b7f-20f3-4c49-a9c8-f5f4131096f8/search?size=50";
-
-document.getElementById("applyFilter").addEventListener("click", async () => {
-  const selectedFilters = {};
-  document.querySelectorAll('#filters input[type="checkbox"]:checked').forEach(cb => {
-    if (!selectedFilters[cb.name]) selectedFilters[cb.name] = [];
-    selectedFilters[cb.name].push(cb.value);
-  });
-
-  const payload = {
-    query: "",
-    filters: { terms: selectedFilters }
+  const filterData = {
+    catalogNames: ["AnupamCAT","Cat courses","eff LPs","Category B Learning objects","TESTY","CATALOG 101","CAT111 Vix","TESTStock","Harvard ManageMentor","WASA","Category A Learning objects","DELHI","Default Catalog","TEST","Anup2Raji","GET THE JOBS","RUSSIA","CAT_FOR_LP_TEST","Catalog Demo","TEST1"],
+    deliveryType: ["Self Paced","Classroom","Blended","Activity","Virtual Classroom"],
+    loSkillLevels: ["1","2","3"],
+    loSkillNames: ["SKILL_three","Art","SKILL_one","LP SKILLS","Chemist","Pilot Vix","Migration Skill","Java Programming","After Effects**","LMS Basics","Mastering Illustrator","Lightroom","After Effects","After Effects*","Lightroom*","SKILL _two","CryptoGraphy","SKILL A","Onboarded","TEST1","Vector Illustrator","C.skill","Data analysis","skill Name1","Anupam's admin trial","Dpom","IT","skill Name2","skill Name3","Gamification","TEST SKILL C1","SKILL_105","SKILL_four","General","SKILL_103","Photoshop","SKILL_104","SKILL_101","SKILL_102"]
   };
 
-  const container = document.getElementById("cardsContainer");
-  container.innerHTML = '<div class="loader">Loading results...</div>';
-
-  try {
-    const response = await fetch(baseUrl, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload)
+  function populateSelect(id, options) {
+    const select = document.getElementById(id);
+    select.innerHTML = '';
+    options.forEach(opt => {
+      const option = document.createElement('option');
+      option.value = opt;
+      option.textContent = opt;
+      select.appendChild(option);
     });
+  }
 
-    if (!response.ok) throw new Error("HTTP " + response.status);
-    const data = await response.json();
+  populateSelect('catalogNames', filterData.catalogNames);
+  populateSelect('deliveryType', filterData.deliveryType);
+  populateSelect('loSkillLevels', filterData.loSkillLevels);
+  populateSelect('loSkillNames', filterData.loSkillNames);
 
-    const results = data?.hits?.hits || [];
-    if (results.length === 0) {
-      container.textContent = "No results found for selected filters.";
+  function getSelectedValues(id) {
+    return Array.from(document.getElementById(id).selectedOptions).map(o => o.value);
+  }
+
+  function renderBadges(selectId, badgeContainerId) {
+    const badges = getSelectedValues(selectId);
+    const container = document.getElementById(badgeContainerId);
+    container.innerHTML = '';
+    badges.forEach(b => {
+      const span = document.createElement('span');
+      span.className = 'badge';
+      span.textContent = b;
+      container.appendChild(span);
+    });
+  }
+
+  function renderResults(data) {
+    const resultsDiv = document.getElementById('results');
+    resultsDiv.innerHTML = '';
+
+    const items = data.results || [];
+    if (!items.length) {
+      resultsDiv.innerHTML = '<p>No results found for selected filters.</p>';
       return;
     }
 
-    container.innerHTML = "";
-    results.forEach(hit => {
-      const item = hit._source;
-      const card = document.createElement("div");
-      card.className = "card";
+    items.forEach(item => {
+      const card = document.createElement('div');
+      card.className = 'card';
+      const catalogNames = (item.catalogInfo || []).map(c => c.name).join(', ');
       card.innerHTML = `
-        <div class="card-title">${item.name}</div>
-        <div class="card-detail">Type: ${item.loType || "N/A"}</div>
-        <div class="card-detail">Delivery: ${item.deliveryType || "N/A"}</div>
-        <div class="card-detail">Duration: ${item.duration || "N/A"} mins</div>
-        <div class="card-detail">Catalogs: ${item.catalogNames?.join(", ") || "N/A"}</div>
-        <div class="card-detail">Skills: ${item.skillNames?.join(", ") || "N/A"}</div>
-        <div class="card-detail">Rating: ${item.averageRating || "N/A"}</div>
+        <h3>${item.name || 'Untitled'}</h3>
+        <p><b>Type:</b> ${item.loType || '-'}</p>
+        <p><b>Delivery:</b> ${item.deliveryType || '-'}</p>
+        <p><b>Catalog:</b> ${catalogNames}</p>
+        <p><b>Authors:</b> ${(item.authors || []).join(', ')}</p>
+        <p><b>Skills:</b> ${(item.loSkillNames || []).join(', ')}</p>
+        <p><b>Skill Levels:</b> ${(item.loSkillLevels || []).join(', ')}</p>
+        <p><b>Duration:</b> ${item.duration || 0} mins</p>
+        <p><b>Status:</b> ${item.status || '-'}</p>
       `;
-      container.appendChild(card);
+      resultsDiv.appendChild(card);
     });
-
-  } catch (err) {
-    console.error(err);
-    container.textContent = "Error fetching results. Check console for details.";
   }
-});
+
+  async function fetchData() {
+    const apiUrl = 'https://primeapps.adobe.com/almsearch/api/v1/production/108079/9b1e6b7f-20f3-4c49-a9c8-f5f4131096f8/search?size=50';
+    const filters = {
+      terms: {
+        catalogNames: getSelectedValues('catalogNames'),
+        loType: getSelectedValues('loType'),
+        deliveryType: getSelectedValues('deliveryType'),
+        loSkillLevels: getSelectedValues('loSkillLevels'),
+        loSkillNames: getSelectedValues('loSkillNames')
+      }
+    };
+
+    const body = { query: "", filters };
+    try {
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Origin': window.location.origin
+        },
+        body: JSON.stringify(body)
+      });
+      const data = await response.json();
+      renderResults(data);
+    } catch(err) {
+      console.error('Error fetching data:', err);
+      document.getElementById('results').innerHTML = '<p>Error fetching data</p>';
+    }
+  }
+
+  // Event listeners
+  ['catalogNames','loType','deliveryType','loSkillLevels','loSkillNames'].forEach(id => {
+    document.getElementById(id).addEventListener('change', () => {
+      renderBadges(id, id.replace('Names','Badges').replace('Type','TypeBadges').replace('Levels','LevelBadges'));
+      fetchData();
+    });
+  });
+
+  // Simple search inside select
+  function addSearch(inputId, selectId) {
+    const input = document.getElementById(inputId);
+    const select = document.getElementById(selectId);
+    input.addEventListener('input', () => {
+      const filter = input.value.toLowerCase();
+      Array.from(select.options).forEach(opt => {
+        opt.style.display = opt.value.toLowerCase().includes(filter) ? '' : 'none';
+      });
+    });
+  }
+
+  addSearch('searchCatalog','catalogNames');
+  addSearch('searchDelivery','deliveryType');
+  addSearch('searchSkills','loSkillNames');
 </script>
+
 </body>
 </html>
