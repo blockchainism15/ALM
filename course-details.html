@@ -1,228 +1,216 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Course Details | ALM</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
-      background: #f5f7fa;
-      color: #333;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Course Details</title>
+<style>
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background-color: #f5f7fa;
+    margin: 0;
+    padding: 0;
+    color: #1e1e1e;
+  }
 
-    header {
-      background: linear-gradient(90deg, #007aff, #00aaff);
-      color: #fff;
-      text-align: center;
-      padding: 1rem 0;
-      font-size: 1.5rem;
-      font-weight: 600;
-      letter-spacing: 0.5px;
-    }
+  header {
+    text-align: center;
+    background: linear-gradient(135deg, #007aff, #4facfe);
+    color: white;
+    padding: 18px 0;
+    font-size: 1.6em;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+  }
 
-    .container {
-      max-width: 1100px;
-      margin: 2rem auto;
-      padding: 0 1rem;
-    }
+  .container {
+    max-width: 900px;
+    margin: 30px auto;
+    padding: 0 20px;
+  }
 
-    .card {
-      background: white;
-      border: 2px solid transparent;
-      border-image: linear-gradient(to right, #007aff, #00aaff) 1;
-      border-radius: 20px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-      margin-bottom: 1.5rem;
-      padding: 1.5rem;
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
+  .card {
+    background: white;
+    border: 2px solid transparent;
+    border-radius: 16px;
+    background-image: linear-gradient(white, white),
+                      linear-gradient(135deg, #4facfe, #007aff);
+    background-origin: border-box;
+    background-clip: content-box, border-box;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    margin-bottom: 20px;
+    padding: 20px;
+    transition: all 0.3s ease;
+  }
 
-    .card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 6px 20px rgba(0,0,0,0.12);
-    }
+  .card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+  }
 
-    .card h2, .card h3, .card h4 {
-      margin-top: 0;
-      color: #007aff;
-    }
+  h2, h3 {
+    margin-top: 0;
+  }
 
-    .meta {
-      font-size: 0.95rem;
-      color: #666;
-      margin-bottom: 0.5rem;
-    }
+  .module {
+    margin-top: 10px;
+    padding-left: 10px;
+  }
 
-    .expand-btn {
-      background: none;
-      border: none;
-      color: #007aff;
-      font-weight: 600;
-      cursor: pointer;
-      margin-top: 0.5rem;
-      padding: 0;
-      transition: color 0.2s;
-    }
+  .collapsible {
+    cursor: pointer;
+    background: linear-gradient(135deg, #4facfe, #007aff);
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    width: 100%;
+    text-align: left;
+    border-radius: 10px;
+    font-size: 1em;
+    margin-top: 10px;
+    transition: background 0.3s ease;
+  }
 
-    .expand-btn:hover {
-      color: #005ecc;
-      text-decoration: underline;
-    }
+  .collapsible:hover {
+    background: linear-gradient(135deg, #6fc3ff, #339aff);
+  }
 
-    .section {
-      margin-top: 1rem;
-      border-top: 1px solid #e3e3e3;
-      padding-top: 1rem;
-    }
+  .content {
+    padding: 10px 15px;
+    display: block;
+    background-color: #f9fbff;
+    border-radius: 10px;
+    margin-top: 8px;
+  }
 
-    .sub-card {
-      background: #f9fbff;
-      border-radius: 12px;
-      border: 1px solid #dce7ff;
-      padding: 1rem;
-      margin-top: 1rem;
-    }
+  .chapter {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 0;
+  }
 
-    .hidden {
-      display: none;
-    }
+  .chapter img {
+    width: 20px;
+    height: 20px;
+    filter: hue-rotate(190deg) saturate(1.5);
+  }
 
-    .register-btn {
-      display: inline-block;
-      margin-top: 1rem;
-      padding: 0.6rem 1.2rem;
-      font-weight: 600;
-      background: linear-gradient(90deg, #007aff, #00aaff);
-      color: #fff;
-      border: none;
-      border-radius: 10px;
-      text-decoration: none;
-      transition: all 0.3s ease;
-    }
+  footer {
+    text-align: center;
+    padding: 15px 0;
+    color: #555;
+    background-color: #f0f3f8;
+    border-top: 1px solid #dfe3e8;
+    margin-top: 40px;
+  }
 
-    .register-btn:hover {
-      background: linear-gradient(90deg, #005ecc, #0084cc);
-      transform: translateY(-2px);
-    }
+  .register-btn {
+    display: inline-block;
+    background: linear-gradient(135deg, #4facfe, #007aff);
+    color: white;
+    text-decoration: none;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-weight: 500;
+    margin-top: 10px;
+    transition: all 0.3s ease;
+  }
 
-    footer {
-      background: linear-gradient(90deg, #007aff, #00aaff);
-      color: white;
-      text-align: center;
-      padding: 1rem 0;
-      margin-top: 3rem;
-      font-size: 0.9rem;
-    }
-
-    @media (max-width: 768px) {
-      .card { padding: 1rem; }
-      .sub-card { padding: 0.8rem; }
-    }
-  </style>
+  .register-btn:hover {
+    background: transparent;
+    color: #007aff;
+    border: 2px solid #007aff;
+  }
+</style>
 </head>
 <body>
-  <header>Learning Details</header>
-  <div class="container">
-    <div id="courseDetails">Loading details...</div>
-  </div>
-  <footer>© 2025 Adobe Learning Manager Styled Portal</footer>
 
-  <script>
-  const params = new URLSearchParams(window.location.search);
-  const courseParam = params.get('courseId');
-  const [type, id] = courseParam.split(':');
-  const apiBase = 'https://cpcontents.adobe.com/public/guest/production/api/9b1e6b7f-20f3-4c49-a9c8-f5f4131096f8/108079/';
-  const detailsDiv = document.getElementById('courseDetails');
+<header>Course Details</header>
 
-  async function fetchDetails() {
-    try {
-      const response = await fetch(`${apiBase}${type}/${id}.json`);
-      if (!response.ok) throw new Error('Invalid response');
-      const data = await response.json();
-      displayDetails(data);
-    } catch (err) {
-      console.error('Fetch error:', err);
-      detailsDiv.innerHTML = `<p style="color:red">Error loading details. Check courseId or API path.</p>`;
-    }
+<div class="container" id="courseDetails">Loading details...</div>
+
+<footer>© 2025 Adobe Learning Manager | Apple UI Theme</footer>
+
+<script>
+async function fetchDetails() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const courseId = urlParams.get("courseId") || "3958497";
+  const apiUrl = `https://cpcontents.adobe.com/public/guest/production/api/9b1e6b7f-20f3-4c49-a9c8-f5f4131096f8/108079/course/${courseId}.json`;
+  const container = document.getElementById("courseDetails");
+
+  try {
+    const res = await fetch(apiUrl);
+    const data = await res.json();
+
+    container.innerHTML = generateHTML(data);
+  } catch (err) {
+    container.innerHTML = `<p style="color:red;">Error loading details.</p>`;
+    console.error(err);
   }
+}
 
-  function displayDetails(data) {
-    const main = data.data;
-    const included = data.included || [];
-    const meta = main.attributes.localizedMetadata?.[0] || {};
+function generateHTML(data) {
+  const lo = data.learningObject || {};
+  const title = lo.title || "Untitled";
+  const description = lo.description || "No description available.";
 
-    let html = `
+  let html = `
+    <div class="card">
+      <h2>${title}</h2>
+      <p>${description}</p>
+      <a class="register-btn" href="https://learningmanager.adobe.com/accountiplogin?ipId=18979&accesskey=bsni4medbhhps" target="_blank">Register</a>
+    </div>
+  `;
+
+  const modules = (data.resources || []).map(m => createModuleCard(m)).join("");
+
+  if (modules) {
+    html += `
       <div class="card">
-        <h2>${meta.name || 'Untitled'}</h2>
-        <div class="meta">Type: ${main.attributes.loType} | Format: ${main.attributes.loFormat}</div>
-        <p>${meta.description || 'No description available.'}</p>
-        <p><strong>Duration:</strong> ${main.attributes.duration || 'N/A'} sec</p>
-        <a class="register-btn" href="https://learningmanager.adobe.com/accountiplogin?ipId=18979&accesskey=bsni4medbhhps" target="_blank">Register</a>
+        <h3>Modules</h3>
+        ${modules}
+      </div>
     `;
-
-    const subLOs = main.relationships?.subLOs?.data || [];
-    if (subLOs.length > 0) {
-      html += `<div class="section"><h3>Modules / Sub-Courses</h3>`;
-      subLOs.forEach(sub => {
-        const subObj = included.find(i => i.id === sub.id);
-        if (subObj) html += renderSubLO(subObj, included);
-      });
-      html += `</div>`;
-    }
-
-    html += `</div>`;
-    detailsDiv.innerHTML = html;
   }
 
-  function renderSubLO(subObj, included) {
-    const meta = subObj.attributes.localizedMetadata?.[0] || {};
-    const resources = included.filter(i =>
-      i.type === 'learningObjectResource' &&
-      i.relationships.learningObject?.data.id === subObj.id
-    );
+  return html;
+}
 
-    let html = `
-      <div class="sub-card">
-        <h4>${meta.name || 'Module / Course'}</h4>
-        <p>${meta.description || ''}</p>
-        <p><strong>Type:</strong> ${subObj.attributes.loType} | <strong>Format:</strong> ${subObj.attributes.loFormat}</p>
-    `;
+function createModuleCard(module) {
+  const name = module.title || "Untitled Module";
+  const format = module.resourceType || "Unknown";
+  const chapters = (module.resources || []).map(r => createChapter(r)).join("");
 
-    if (resources.length > 0) {
-      html += `<button class="expand-btn" onclick="toggleSection(this)">Hide Formats</button>
-      <div class="section formats">`;
-      resources.forEach(res => {
-        const resRel = res.relationships.resources?.data || [];
-        resRel.forEach(rr => {
-          const resObj = included.find(i => i.id === rr.id);
-          if (resObj) {
-            html += `
-              <div class="sub-card">
-                <p><strong>Format Name:</strong> ${resObj.attributes.name}</p>
-                <p><strong>Type:</strong> ${resObj.attributes.contentType}</p>
-                <a href="${resObj.attributes.location}" target="_blank" class="register-btn">Open Content</a>
-              </div>
-            `;
-          }
-        });
-      });
-      html += `</div>`;
-    }
+  return `
+    <button class="collapsible">${name}</button>
+    <div class="content">
+      <strong>Format:</strong> ${format}
+      <div class="module">${chapters}</div>
+    </div>
+  `;
+}
 
-    html += `</div>`;
-    return html;
-  }
+function createChapter(res) {
+  const format = (res.format || "").toLowerCase();
+  const title = res.title || "Untitled Chapter";
 
-  function toggleSection(btn) {
-    const section = btn.nextElementSibling;
-    section.classList.toggle('hidden');
-    btn.textContent = section.classList.contains('hidden') ? 'Show Formats' : 'Hide Formats';
-  }
+  let icon = "📄";
+  if (format.includes("scorm")) icon = "⚙️";
+  else if (["pdf", "ppt", "pptx", "doc", "docx"].some(f => format.includes(f))) icon = "📘";
+  else if (["mp4", "mov", "video"].some(f => format.includes(f))) icon = "🎞️";
+  else if (format.includes("vc")) icon = "💻";
+  else if (format.includes("cr")) icon = "🏫";
 
-  fetchDetails();
+  return `
+    <div class="chapter">
+      <span>${icon}</span> <span>${title}</span>
+    </div>
+  `;
+}
+
+fetchDetails();
 </script>
-
 </body>
 </html>
