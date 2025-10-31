@@ -216,7 +216,7 @@ async function fetchResults(filters = {}, page = 0) {
     paginationDiv.innerHTML = "";
     loadingDiv.style.display = "block";
 
-    const apiUrl = `https://primeapps.adobe.com/almsearch/api/v1/production/${accountId}/${apiKey}/search?size=${pageSize}&from=${page * pageSize}`;
+    const apiUrl = `https://primeapps.adobe.com/almsearch/api/v1/eu/production/${accountId}/${apiKey}/search?size=${pageSize}&from=${page * pageSize}`;
 
     let filterTerms = {};
     if (filters.loType?.length) filterTerms.loType = filters.loType; // ✅ fixed singular
