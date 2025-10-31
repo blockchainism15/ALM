@@ -176,7 +176,8 @@
       }
 
       const [type, id] = courseId.split(':');
-      const apiUrl = `https://cpcontents.adobe.com/eu/public/guest/eu/api/5fc01dd5-de45-408d-9b07-b267d40ebef9/9759${type}/${id}.json`;
+      // ✅ Correct EU-based API path
+      const apiUrl = `https://cpcontents.adobe.com/eu/public/guest/eu/api/5fc01dd5-de45-408d-9b07-b267d40ebef9/9759/${type}/${id}.json`;
 
       try {
         const response = await fetch(apiUrl);
