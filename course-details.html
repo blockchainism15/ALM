@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
+<meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Course Details</title>
 <style>
@@ -12,7 +12,6 @@
     padding: 0;
     color: #1e1e1e;
   }
-
   header {
     text-align: center;
     background: linear-gradient(135deg, #007aff, #4facfe);
@@ -20,22 +19,18 @@
     padding: 18px 0;
     font-size: 1.6em;
     font-weight: 600;
-    letter-spacing: 0.5px;
     box-shadow: 0 3px 6px rgba(0,0,0,0.1);
   }
-
   .container {
     max-width: 900px;
     margin: 30px auto;
     padding: 0 20px;
   }
-
   .card {
     background: white;
     border: 2px solid transparent;
     border-radius: 16px;
-    background-image: linear-gradient(white, white),
-                      linear-gradient(135deg, #4facfe, #007aff);
+    background-image: linear-gradient(white, white), linear-gradient(135deg, #4facfe, #007aff);
     background-origin: border-box;
     background-clip: content-box, border-box;
     box-shadow: 0 4px 12px rgba(0,0,0,0.05);
@@ -43,21 +38,10 @@
     padding: 20px;
     transition: all 0.3s ease;
   }
-
   .card:hover {
     transform: translateY(-3px);
     box-shadow: 0 6px 18px rgba(0,0,0,0.08);
   }
-
-  h2, h3 {
-    margin-top: 0;
-  }
-
-  .module {
-    margin-top: 10px;
-    padding-left: 10px;
-  }
-
   .collapsible {
     cursor: pointer;
     background: linear-gradient(135deg, #4facfe, #007aff);
@@ -71,11 +55,9 @@
     margin-top: 10px;
     transition: background 0.3s ease;
   }
-
   .collapsible:hover {
     background: linear-gradient(135deg, #6fc3ff, #339aff);
   }
-
   .content {
     padding: 10px 15px;
     display: block;
@@ -83,20 +65,17 @@
     border-radius: 10px;
     margin-top: 8px;
   }
-
   .chapter {
     display: flex;
     align-items: center;
     gap: 8px;
     padding: 6px 0;
   }
-
   .chapter img {
     width: 20px;
     height: 20px;
     filter: hue-rotate(190deg) saturate(1.5);
   }
-
   footer {
     text-align: center;
     padding: 15px 0;
@@ -105,7 +84,6 @@
     border-top: 1px solid #dfe3e8;
     margin-top: 40px;
   }
-
   .register-btn {
     display: inline-block;
     background: linear-gradient(135deg, #4facfe, #007aff);
@@ -117,7 +95,6 @@
     margin-top: 10px;
     transition: all 0.3s ease;
   }
-
   .register-btn:hover {
     background: transparent;
     color: #007aff;
@@ -128,9 +105,7 @@
 <body>
 
 <header>Course Details</header>
-
 <div class="container" id="courseDetails">Loading details...</div>
-
 <footer>© 2025 Adobe Learning Manager | Apple UI Theme</footer>
 
 <script>
@@ -142,19 +117,21 @@ async function fetchDetails() {
 
   try {
     const res = await fetch(apiUrl);
-    const data = await res.json();
+    if (!res.ok) throw new Error("Network response was not ok");
+    const json = await res.json();
 
-    container.innerHTML = generateHTML(data);
+    container.innerHTML = buildDetails(json);
   } catch (err) {
-    container.innerHTML = `<p style="color:red;">Error loading details.</p>`;
     console.error(err);
+    container.innerHTML = `<p style="color:red;">Error loading details.</p>`;
   }
 }
 
-function generateHTML(data) {
-  const lo = data.learningObject || {};
-  const title = lo.title || "Untitled";
-  const description = lo.description || "No description available.";
+function buildDetails(data) {
+  // Get main object safely
+  const item = data.data?.attributes || {};
+  const title = item.localizedMetadata?.[0]?.name || "Untitled";
+  const description = item.localizedMetadata?.[0]?.description || "No description available.";
 
   let html = `
     <div class="card">
@@ -164,37 +141,36 @@ function generateHTML(data) {
     </div>
   `;
 
-  const modules = (data.resources || []).map(m => createModuleCard(m)).join("");
+  // Fetch included modules
+  const included = data.included || [];
+  const modules = included.filter(x => x.type === "learningObjectResource" || x.type === "learningObject");
 
-  if (modules) {
-    html += `
-      <div class="card">
-        <h3>Modules</h3>
-        ${modules}
-      </div>
-    `;
+  if (modules.length > 0) {
+    html += `<div class="card"><h3>Modules</h3>`;
+    modules.forEach(mod => {
+      const modTitle = mod.attributes?.localizedMetadata?.[0]?.name || "Untitled Module";
+      const modDesc = mod.attributes?.localizedMetadata?.[0]?.description || "";
+      const modFormat = mod.attributes?.resourceType || "Unknown";
+
+      const resources = included.filter(r => r.type === "resource" && r.relationships?.parentLoResource?.data?.id === mod.id);
+      html += `
+        <button class="collapsible">${modTitle}</button>
+        <div class="content">
+          <p>${modDesc}</p>
+          <strong>Type:</strong> ${modFormat}
+          <div class="module">${resources.map(createChapter).join("")}</div>
+        </div>
+      `;
+    });
+    html += `</div>`;
   }
 
   return html;
 }
 
-function createModuleCard(module) {
-  const name = module.title || "Untitled Module";
-  const format = module.resourceType || "Unknown";
-  const chapters = (module.resources || []).map(r => createChapter(r)).join("");
-
-  return `
-    <button class="collapsible">${name}</button>
-    <div class="content">
-      <strong>Format:</strong> ${format}
-      <div class="module">${chapters}</div>
-    </div>
-  `;
-}
-
-function createChapter(res) {
-  const format = (res.format || "").toLowerCase();
-  const title = res.title || "Untitled Chapter";
+function createChapter(r) {
+  const format = (r.attributes?.format || "").toLowerCase();
+  const title = r.attributes?.localizedMetadata?.[0]?.name || "Untitled Chapter";
 
   let icon = "📄";
   if (format.includes("scorm")) icon = "⚙️";
@@ -203,11 +179,7 @@ function createChapter(res) {
   else if (format.includes("vc")) icon = "💻";
   else if (format.includes("cr")) icon = "🏫";
 
-  return `
-    <div class="chapter">
-      <span>${icon}</span> <span>${title}</span>
-    </div>
-  `;
+  return `<div class="chapter"><span>${icon}</span><span>${title}</span></div>`;
 }
 
 fetchDetails();
