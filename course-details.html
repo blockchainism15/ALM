@@ -1,226 +1,608 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Course Details | Apple Style</title>
-  <style>
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background: #f9fbff;
-      margin: 0;
-      padding: 0;
-      color: #222;
-    }
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Learning Object Details</title>
+<style>
+  :root{
+    --navy:#002743;
+    --blue-start:#007aff;
+    --blue-end:#00b4ff;
+    --muted:#6b7280;
+    --card-radius:14px;
+    --container:1100px;
+  }
 
-    header {
-      background: linear-gradient(to right, #007aff, #00b4ff);
-      color: white;
-      text-align: center;
-      padding: 1.5rem 0;
-      font-size: 1.8rem;
-      font-weight: 600;
-      letter-spacing: 0.5px;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    }
+  /* Page */
+  body{
+    margin:0;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,Helvetica,sans-serif;
+    background:#f6f9ff;
+    color:#111827;
+    -webkit-font-smoothing:antialiased;
+  }
 
-    .container {
-      max-width: 1200px;
-      margin: 2rem auto;
-      padding: 1rem;
-    }
+  header{
+    background:linear-gradient(90deg,var(--navy),#004a99);
+    color:white;
+    padding:28px 20px;
+    text-align:center;
+    box-shadow:0 4px 18px rgba(2,6,23,0.08);
+  }
+  header h1{margin:0;font-size:1.4rem;font-weight:700;letter-spacing:0.2px;}
+  header .top-cta{margin-top:10px}
+  header .top-cta a{background:white;color:var(--navy);padding:8px 14px;border-radius:999px;font-weight:700;text-decoration:none;display:inline-block}
 
-    .card {
-      background: white;
-      border: 2px solid;
-      border-image: linear-gradient(to right, #007aff, #00b4ff) 1;
-      border-radius: 16px;
-      padding: 1.5rem;
-      margin-bottom: 1.5rem;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-      transition: transform 0.2s ease;
-    }
+  /* container */
+  .wrap{max-width:var(--container);margin:28px auto;padding:0 18px 80px;display:flex;flex-direction:column;gap:18px;}
 
-    .card:hover {
-      transform: scale(1.01);
-    }
+  /* control row */
+  .controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+  .controls .small-btn{background:linear-gradient(90deg,var(--blue-start),var(--blue-end));color:white;padding:8px 12px;border-radius:8px;border:none;cursor:pointer;font-weight:700}
 
-    .card h2 {
-      color: #007aff;
-      margin-top: 0;
-      font-size: 1.5rem;
-    }
+  /* Overview layout */
+  .overview{
+    display:grid;
+    grid-template-columns:320px 1fr;
+    gap:18px;
+  }
+  .banner-card, .info-card{
+    background:white;border-radius:var(--card-radius);box-shadow:0 6px 20px rgba(2,6,23,0.06);overflow:hidden;border-top:6px solid var(--blue-start);
+  }
+  .banner-card img{width:100%;height:220px;object-fit:cover;display:block}
+  .info-card{padding:18px}
+  .info-card h2{margin:0;color:var(--navy);font-size:1.4rem}
+  .meta-grid{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px;color:var(--muted)}
+  .pill{background:#f0f7ff;color:var(--blue-start;padding:6px 10px;border-radius:999px;font-weight:600;font-size:0.88rem;padding:6px 10px}
 
-    .section-title {
-      border-left: 5px solid #007aff;
-      padding-left: 10px;
-      font-size: 1.3rem;
-      margin: 2rem 0 1rem;
-      font-weight: 600;
-    }
+  /* Section title */
+  .section-title{margin-top:6px;margin-bottom:8px;color:var(--blue-start);font-weight:700;border-left:4px solid var(--blue-start);padding-left:10px;padding-top:12px;padding-bottom:6px;font-size:1.05rem}
 
-    .info-line {
-      margin: 0.3rem 0;
-      font-size: 1rem;
-    }
+  /* Cards */
+  .card{background:white;border-radius:14px;padding:16px;border:1px solid rgba(0,122,255,0.06);box-shadow:0 6px 18px rgba(2,6,23,0.04);margin-top:12px}
+  .card h3{margin:0;color:var(--navy)}
+  .card p{margin:6px 0;color:#24303b}
 
-    .badge {
-      width: 70px;
-      height: 70px;
-      border-radius: 12px;
-      object-fit: contain;
-      border: 2px solid #007aff;
-      margin-right: 10px;
-    }
+  /* Module card (long) */
+  .module-card{border-left:6px solid var(--blue-start);padding:14px;border-radius:12px;background:#fff;transition:all .18s}
+  .module-card:hover{transform:translateY(-4px);box-shadow:0 10px 30px rgba(2,6,23,0.06)}
 
-    .register-btn {
-      display: inline-block;
-      background: linear-gradient(to right, #007aff, #00b4ff);
-      color: white;
-      padding: 12px 24px;
-      border-radius: 10px;
-      font-weight: 600;
-      text-decoration: none;
-      transition: all 0.3s ease;
-    }
+  .resource-list{margin-top:12px;display:flex;flex-direction:column;gap:10px}
 
-    .register-btn:hover {
-      background: white;
-      color: #007aff;
-      border: 2px solid #007aff;
-    }
+  .resource-card{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px;border-radius:10px;background:#f8fbff;border-left:4px solid rgba(0,122,255,0.12)}
+  .resource-info{flex:1}
+  .resource-info p{margin:0}
+  .resource-actions{display:flex;gap:8px;align-items:center}
 
-    footer {
-      text-align: center;
-      padding: 1rem;
-      background: linear-gradient(to right, #007aff, #00b4ff);
-      color: white;
-      font-weight: 500;
-      border-top: 2px solid #007aff;
-    }
+  .btn{background:linear-gradient(90deg,var(--blue-start),var(--blue-end));color:white;padding:8px 12px;border-radius:10px;border:none;font-weight:700;cursor:pointer;text-decoration:none}
+  .btn.alt{background:white;color:var(--blue-start);border:1px solid rgba(0,122,255,0.12)}
+  .link-small{color:var(--blue-start);text-decoration:none;font-weight:700}
 
-    @media (max-width: 768px) {
-      .card {
-        padding: 1rem;
-      }
-      .card h2 {
-        font-size: 1.3rem;
-      }
-    }
-  </style>
+  /* Toggle arrow */
+  .toggle{cursor:pointer;user-select:none;display:inline-flex;align-items:center;gap:8px}
+  .arrow{transition:transform .18s}
+
+  /* controls row for expand/collapse */
+  .expand-controls{display:flex;gap:8px;align-items:center}
+
+  /* footer */
+  footer{margin-top:28px;padding:20px;text-align:center;color:var(--muted);font-size:0.95rem}
+
+  /* loading & error */
+  .center{display:flex;align-items:center;justify-content:center}
+  .loader{height:140px}
+  .spinner{width:44px;height:44px;border:5px solid #e6eefb;border-top:5px solid var(--blue-start);border-radius:50%;animation:spin 1s linear infinite}
+  @keyframes spin{100%{transform:rotate(360deg)}}
+
+  /* small helper */
+  .muted{color:var(--muted);font-size:0.95rem}
+  .sublo-list{display:flex;flex-wrap:wrap;gap:10px;margin-top:8px}
+
+  @media (max-width:980px){
+    .overview{grid-template-columns:1fr}
+    .banner-card img{height:200px}
+    .controls{justify-content:space-between}
+  }
+  @media (max-width:560px){
+    header h1{font-size:1.1rem}
+    .banner-card img{height:160px}
+  }
+</style>
 </head>
 <body>
-  <header>Learning Object Details</header>
-  <div class="container" id="content">
-    <p>Loading details...</p>
+  <header>
+    <h1 id="pageTitle">Learning Object Details</h1>
+    <div class="top-cta"><a id="registerBtn" href="https://learningmanager.adobe.com/accountiplogin?ipId=18979&accesskey=bsni4medbhhps" target="_blank" rel="noopener">Register Now</a></div>
+  </header>
+
+  <div class="wrap">
+    <div id="status" class="center loader"><div class="spinner"></div></div>
+
+    <div id="controlsRow" style="display:none" class="controls">
+      <div class="expand-controls">
+        <button id="expandAll" class="small-btn">Expand all</button>
+        <button id="collapseAll" class="small-btn">Collapse all</button>
+      </div>
+    </div>
+
+    <div id="overview" style="display:none" class="overview" aria-live="polite">
+      <div class="banner-card" id="bannerCard">
+        <img id="bannerImg" src="https://cpcontents.adobe.com/public/images/default_courses/2.png" alt="banner">
+      </div>
+
+      <div class="info-card" id="infoCard">
+        <h2 id="loTitle">Loading...</h2>
+        <div class="meta-grid" id="metaGrid"></div>
+        <div style="margin-top:12px" id="descArea"></div>
+        <div id="badgeArea" style="margin-top:12px"></div>
+      </div>
+    </div>
+
+    <!-- For courses: modules -->
+    <div id="modulesContainer" style="display:none">
+      <div class="section-title">Modules</div>
+      <div id="modulesList"></div>
+    </div>
+
+    <!-- For LPs/certifications: sub learning objects (courses) -->
+    <div id="subLoContainer" style="display:none">
+      <div class="section-title">Courses in this Program/Certification</div>
+      <div id="subLoList"></div>
+    </div>
+
+    <!-- skills -->
+    <div id="skillsContainer" style="display:none">
+      <div class="section-title">Skills & Badges</div>
+      <div id="skillsList"></div>
+    </div>
+
+    <div id="bottomError" style="display:none"></div>
   </div>
-  <footer>Adobe Learning Manager – Course Viewer</footer>
 
-  <script>
-    async function fetchDetails() {
-      const content = document.getElementById("content");
-      const params = new URLSearchParams(window.location.search);
-      const courseId = params.get("courseId");
+  <footer>© 2025 Adobe Learning Manager integration</footer>
 
-      if (!courseId) {
-        content.innerHTML = "<p>No courseId found in URL.</p>";
-        return;
+<script>
+/* ---------- Configuration ---------- */
+const API_UUID = '9b1e6b7f-20f3-4c49-a9c8-f5f4131096f8';
+const ACCOUNT_ID = '108079';
+const REGISTER_URL = 'https://learningmanager.adobe.com/accountiplogin?ipId=18979&accesskey=bsni4medbhhps';
+
+/* ---------- Utilities ---------- */
+function el(tag, cls, html){ const e=document.createElement(tag); if(cls) e.className=cls; if(html!==undefined) e.innerHTML=html; return e; }
+function safe(v, d='N/A'){ return (v===undefined || v===null || (typeof v==='string' && v.trim()==='')) ? d : v; }
+function formatDur(sec){
+  if(!sec) return 'N/A';
+  const h = Math.floor(sec/3600), m = Math.floor((sec%3600)/60);
+  if(h && m) return `${h}h ${m}m`;
+  if(h) return `${h}h`;
+  return `${m}m`;
+}
+function isUrl(s){ return typeof s==='string' && (s.startsWith('http://') || s.startsWith('https://')); }
+function showError(msg){
+  document.getElementById('status').style.display='none';
+  const e = document.getElementById('bottomError');
+  e.style.display='block'; e.className='card'; e.innerHTML = `<strong>Error:</strong> ${msg}`;
+}
+
+/* ---------- API helpers ---------- */
+function buildApiUrl(type, id){ // type: course|learningProgram|certification|jobAid ; id numeric
+  return `https://cpcontents.adobe.com/public/guest/production/api/${API_UUID}/${ACCOUNT_ID}/${type}/${id}.json`;
+}
+
+async function fetchJsonByTypeId(type, id){
+  const url = buildApiUrl(type, id);
+  const res = await fetch(url);
+  if(!res.ok) throw new Error(`Fetch failed: ${res.status} ${res.statusText}`);
+  return await res.json();
+}
+
+/* ---------- Extract courseId param ---------- */
+const params = new URLSearchParams(window.location.search);
+const courseIdParam = params.get('courseId'); // format type:id e.g. course:3958497
+if(!courseIdParam){ showError('Missing courseId in URL. Use ?courseId=course:3958497'); throw new Error('missing courseId'); }
+const [rootType, rootId] = courseIdParam.split(':');
+
+/* ---------- Global included map to unify lookups ---------- */
+const globalIncluded = new Map(); // id -> item
+
+function addIncludedToMap(arr){
+  if(!arr) return;
+  arr.forEach(i => {
+    if(i && i.id) globalIncluded.set(i.id, i);
+  });
+}
+
+/* ---------- Collapsible helpers ---------- */
+function makeTogglable(container, titleEl, startExpanded = true){
+  // container: element to toggle; titleEl: element to click (should contain arrow)
+  const arrow = el('span','arrow','▾'); // down arrow
+  arrow.style.display='inline-block';
+  arrow.style.transform = startExpanded ? 'rotate(0deg)' : 'rotate(-90deg)';
+  titleEl.prepend(arrow);
+  container.style.display = startExpanded ? 'block' : 'none';
+  titleEl.style.cursor = 'pointer';
+  titleEl.onclick = ()=>{
+    const shown = container.style.display === 'block';
+    container.style.display = shown ? 'none' : 'block';
+    arrow.style.transform = shown ? 'rotate(-90deg)' : 'rotate(0deg)';
+  };
+  return { arrow, titleEl, container };
+}
+
+/* Expand / collapse all */
+function setAll(expand){
+  document.querySelectorAll('[data-collapsible="true"]').forEach(block=>{
+    const content = block.querySelector('.collapsible-content');
+    const arrow = block.querySelector('.arrow');
+    if(content){
+      content.style.display = expand ? 'block' : 'none';
+      if(arrow) arrow.style.transform = expand ? 'rotate(0deg)' : 'rotate(-90deg)';
+    }
+  });
+}
+
+/* ---------- Renderers ---------- */
+
+function renderOverview(mainData, includedMap){
+  const attrs = mainData.attributes || {};
+  const localized = attrs.localizedMetadata?.[0] || {};
+  const title = safe(localized.name || attrs.name || mainData.id);
+  const desc = safe(localized.description || localized.overview || attrs.description || attrs.overview || localized.richTextOverview || '');
+  const banner = attrs.bannerUrl || attrs.imageUrl || attrs.thumbnailUrl || '';
+  const authors = attrs.authorNames || [];
+  const duration = attrs.duration || 0;
+  const loTypeName = attrs.loType || rootType;
+  const loFormat = attrs.loFormat || '';
+  const state = attrs.state || '';
+  const tags = attrs.tags || [];
+  const rating = (attrs.rating && attrs.rating.averageRating) ? attrs.rating.averageRating : (attrs.effectivenessIndex || 0);
+  const enrollType = attrs.enrollmentType || '';
+
+  document.getElementById('status').style.display='none';
+  document.getElementById('controlsRow').style.display='flex';
+  document.getElementById('overview').style.display='grid';
+  document.getElementById('bannerImg').src = banner || 'https://cpcontents.adobe.com/public/images/default_courses/2.png';
+  document.getElementById('loTitle').textContent = title;
+  document.getElementById('pageTitle').textContent = title;
+
+  // meta grid
+  const mg = document.getElementById('metaGrid'); mg.innerHTML='';
+  mg.appendChild(el('div',null,`<strong>Type:</strong> ${loTypeName}`));
+  if(authors.length) mg.appendChild(el('div',null,`<strong>Author:</strong> ${authors.join(', ')}`));
+  mg.appendChild(el('div',null,`<strong>Format:</strong> ${loFormat}`));
+  mg.appendChild(el('div',null,`<strong>State:</strong> ${state}`));
+  mg.appendChild(el('div',null,`<strong>Duration:</strong> ${formatDur(duration)}`));
+  mg.appendChild(el('div',null,`<strong>Enrollment:</strong> ${safe(enrollType)}`));
+  mg.appendChild(el('div',null,`<strong>Rating:</strong> ${rating}`));
+  if(tags.length) mg.appendChild(el('div',null,tags.map(t=>`<span class="pill">${t}</span>`).join(' ')));
+
+  // description
+  document.getElementById('descArea').innerHTML = desc ? `<div class="muted">${desc}</div>` : `<div class="muted"><em>No description provided.</em></div>`;
+
+  // badge area - find any badge included
+  const badgeArea = document.getElementById('badgeArea'); badgeArea.innerHTML='';
+  const badgeInc = Array.from(globalIncluded.values()).find(i => i.type === 'badge');
+  if(badgeInc){
+    const bwrap = el('div','',`<img src="${badgeInc.attributes.imageUrl}" alt="${badgeInc.attributes.name}" class="badge" style="width:68px;height:68px;border-radius:10px;object-fit:cover;border:1px solid #eee;margin-right:10px;display:inline-block" /> <strong>${badgeInc.attributes.name}</strong> <div class="muted">${badgeInc.attributes.state}</div>`);
+    badgeArea.appendChild(bwrap);
+  }
+}
+
+function createResourceCard(resource){
+  const rAttr = resource.attributes || {};
+  const name = safe(rAttr.name);
+  const type = safe(rAttr.contentType || rAttr.resourceType || rAttr.reportingType);
+  const locale = safe(rAttr.locale);
+  const duration = rAttr.desiredDuration ? `${rAttr.desiredDuration}s` : (rAttr.authorDesiredDuration ? `${rAttr.authorDesiredDuration}s` : 'N/A');
+  const location = rAttr.location || '';
+  const zip = rAttr.contentZipUrl || '';
+
+  const rc = el('div','resource-card');
+  const info = el('div','resource-info');
+  info.innerHTML = `<p style="font-weight:700">${name}</p><p class="muted">${type} • locale: ${locale} • duration: ${duration}</p>`;
+  const actions = el('div','resource-actions');
+
+  if(isUrl(location)){
+    const a = el('a','btn'); a.href = location; a.target='_blank'; a.rel='noopener noreferrer'; a.innerText='Open';
+    actions.appendChild(a);
+  } else if(isUrl(zip)){
+    const a = el('a','btn'); a.href = zip; a.target='_blank'; a.rel='noopener noreferrer'; a.innerText='Download';
+    actions.appendChild(a);
+  } else {
+    const b = el('button','btn alt'); b.innerText='Details'; b.onclick = ()=> showResourceDetails(resource);
+    actions.appendChild(b);
+  }
+
+  // link to contentZip if exists
+  if(zip && !isUrl(location)){
+    const linkSmall = el('a','link-small', 'Content ZIP'); linkSmall.href = zip; linkSmall.target='_blank'; linkSmall.rel='noopener noreferrer';
+    actions.appendChild(linkSmall);
+  }
+  rc.appendChild(info); rc.appendChild(actions);
+  return rc;
+}
+
+function showResourceDetails(resource){
+  const a = resource.attributes || {};
+  const lines = [
+    `Name: ${a.name || ''}`,
+    `Content type: ${a.contentType || a.resourceType || ''}`,
+    `Locale: ${a.locale || ''}`,
+    `Location: ${a.location || 'N/A'}`,
+    `Content zip: ${a.contentZipUrl || 'N/A'}`,
+    `InternalResourceId: ${a.internalResourceId || 'N/A'}`,
+    `ReportingType: ${a.reportingType || 'N/A'}`,
+    `DesiredDuration: ${a.desiredDuration || a.authorDesiredDuration || 'N/A'}`
+  ];
+  const w = window.open('','_blank','width=700,height=520');
+  w.document.write(`<pre style="white-space:pre-wrap;font-family:monospace;padding:18px">${lines.join('\n')}</pre>`);
+  w.document.title = a.name || 'Resource details';
+}
+
+/* Render modules for a course-like object
+   courseData: the learningObject (data) object
+   included: array items from that JSON (already added to globalIncluded)
+*/
+function renderModulesForCourse(courseData, includedMap, containerIdPrefix){
+  const instanceRef = courseData.relationships?.instances?.data?.[0];
+  if(!instanceRef) return [];
+
+  const instance = globalIncluded.get(instanceRef.id) || includedMap.get(instanceRef.id) || null;
+  if(!instance) return [];
+
+  const loResources = instance.relationships?.loResources?.data || [];
+  const modulesEl = document.getElementById('modulesList');
+  modulesEl.innerHTML = ''; // top-level list used for direct course view; for nested courses we return structure instead
+
+  const results = []; // for nested usage (return list of module objects)
+  loResources.forEach((lrRef, idx)=>{
+    const loRes = globalIncluded.get(lrRef.id) || includedMap.get(lrRef.id);
+    if(!loRes) return;
+    const modName = loRes.attributes.localizedMetadata?.[0]?.name || `Module ${idx+1}`;
+    const modCard = el('div','card module-card');
+    // header with toggle
+    const header = el('div','toggle',`<strong>${modName}</strong>`);
+    header.style.marginBottom = '8px';
+    const content = el('div','collapsible-content');
+    // module meta
+    content.appendChild(el('div','muted',`Type: ${safe(loRes.attributes.resourceType)} • Version: ${safe(loRes.attributes.version)} ${loRes.attributes.multipleAttemptEnabled? '• multiple attempts' : ''}`));
+    // resources inside
+    const resRefs = loRes.relationships?.resources?.data || [];
+    if(resRefs.length){
+      const rList = el('div','resource-list');
+      resRefs.forEach(rr=>{
+        const rInc = globalIncluded.get(rr.id) || includedMap.get(rr.id);
+        if(rInc){
+          rList.appendChild(createResourceCard(rInc));
+        } else {
+          // resource not in included; attempt to fetch? skip for now but show placeholder
+          rList.appendChild(el('div', 'resource-card', `<div class="resource-info"><p style="font-weight:700">${rr.id}</p><p class="muted">Resource details not included</p></div><div class="resource-actions"><button class="btn alt" onclick="alert('Resource ${rr.id} needs explicit fetch')">Details</button></div>`));
+        }
+      });
+      content.appendChild(rList);
+    } else {
+      content.appendChild(el('div','muted','No resources found for this module.'));
+    }
+
+    modCard.appendChild(header);
+    modCard.appendChild(content);
+    // make togglable (start expanded)
+    const wrapper = el('div','', ''); wrapper.appendChild(modCard);
+    modCard.setAttribute('data-collapsible','true');
+    modCard.querySelector('.toggle') && makeTogglable(modCard.querySelector('.collapsible-content') || content, header, true);
+    // For top-level courses, append; for nested we'll return
+    modulesEl.appendChild(wrapper);
+
+    results.push({module: loRes, element: modCard});
+  });
+
+  if(loResources.length > 0){
+    document.getElementById('modulesContainer').style.display='block';
+  } else {
+    document.getElementById('modulesContainer').style.display='none';
+  }
+  return results;
+}
+
+/* Render a course card (used for subLo courses in LP/certification).
+   Returns a DOM element that contains course header + nested modules (expanded by default).
+*/
+async function renderCourseAsSubLo(courseRefOrObj, includedMap){
+  // courseRefOrObj may be: { id: "course:4748531", type: 'learningObject' } or actual included learningObject item
+  let courseItem = null;
+  if(typeof courseRefOrObj === 'string') courseRefOrObj = { id: courseRefOrObj, type: 'learningObject' };
+  if(courseRefOrObj.attributes) courseItem = courseRefOrObj; // already full object
+  else courseItem = globalIncluded.get(courseRefOrObj.id) || includedMap.get(courseRefOrObj.id);
+
+  // if not present, fetch the course JSON and add to globalIncluded
+  if(!courseItem){
+    // courseRefOrObj.id could be "course:1234" or "course:1234"
+    const [t, id] = (courseRefOrObj.id || '').split(':');
+    if(!t || !id) return el('div',null,'Unable to resolve sub-course id: '+courseRefOrObj.id);
+    try{
+      const fetched = await fetchJsonByTypeId(t, id);
+      addIncludedToMap(fetched.included || []);
+      // also add the top-level learningObject
+      if(fetched.data && fetched.data.id) globalIncluded.set(fetched.data.id, fetched.data);
+      courseItem = fetched.data;
+    } catch(err){
+      console.warn('Failed to fetch sub course', courseRefOrObj.id, err);
+      return el('div', 'card', `Failed to load sub course: ${courseRefOrObj.id}`);
+    }
+  }
+
+  // Build course card
+  const courseCard = el('div','card');
+  const title = safe(courseItem.attributes?.localizedMetadata?.[0]?.name || courseItem.attributes?.name || courseItem.id);
+  courseCard.appendChild(el('h3',null,title));
+  courseCard.appendChild(el('div','muted',`Type: ${courseItem.attributes?.loType || 'course'} • Format: ${courseItem.attributes?.loFormat || ''} • Duration: ${formatDur(courseItem.attributes?.duration)}`));
+
+  // Modules area inside the course card
+  const modulesWrapper = el('div','collapsible-content');
+  modulesWrapper.style.marginTop = '12px';
+
+  // Find instance and loResources similarly
+  const instanceRef = courseItem.relationships?.instances?.data?.[0];
+  if(instanceRef){
+    const instance = globalIncluded.get(instanceRef.id);
+    if(instance){
+      const loResources = instance.relationships?.loResources?.data || [];
+      if(loResources.length){
+        loResources.forEach((lrRef, idx)=>{
+          const loRes = globalIncluded.get(lrRef.id);
+          const modName = loRes?.attributes?.localizedMetadata?.[0]?.name || `Module ${idx+1}`;
+          const modCard = el('div','module-card');
+          modCard.appendChild(el('h4',null,modName));
+          modCard.appendChild(el('div','muted',`Type: ${safe(loRes.attributes?.resourceType)} • Version: ${safe(loRes.attributes?.version)}`));
+          // resources list
+          const resRefs = loRes.relationships?.resources?.data || [];
+          if(resRefs.length){
+            const rl = el('div','resource-list');
+            resRefs.forEach(rr=>{
+              const rInc = globalIncluded.get(rr.id);
+              if(rInc) rl.appendChild(createResourceCard(rInc));
+              else rl.appendChild(el('div','muted',`Resource ${rr.id} not included`));
+            });
+            modCard.appendChild(rl);
+          } else {
+            modCard.appendChild(el('div','muted','No resources for this module.'));
+          }
+          modulesWrapper.appendChild(modCard);
+        });
+      } else {
+        modulesWrapper.appendChild(el('div','muted','This course has no modules.'));
       }
+    } else {
+      modulesWrapper.appendChild(el('div','muted','Course instance not present to list modules.'));
+    }
+  } else {
+    modulesWrapper.appendChild(el('div','muted','No instance information for this course.'));
+  }
 
-      try {
-        const url = `https://cpcontents.adobe.com/public/guest/production/api/9b1e6b7f-20f3-4c49-a9c8-f5f4131096f8/108079/${courseId.replace(':', '/')}.json`;
-        const res = await fetch(url);
-        if (!res.ok) throw new Error("Error fetching data");
-        const data = await res.json();
+  // make collapsible (start expanded)
+  const header = el('div','toggle'); header.innerHTML = `<strong>Modules</strong>`;
+  const content = modulesWrapper;
+  const outer = el('div','', ''); // wrapper that will carry data-collapsible attribute for expand all/collapse all
+  outer.appendChild(header);
+  outer.appendChild(content);
+  outer.setAttribute('data-collapsible','true');
+  makeTogglable(content, header, true);
 
-        renderDetails(data);
-      } catch (err) {
-        content.innerHTML = `<p style="color:red;">Error loading data</p>`;
-        console.error(err);
+  courseCard.appendChild(outer);
+  return courseCard;
+}
+
+/* ---------- Main render flow ---------- */
+async function mainRender(){
+  try{
+    // Fetch root LO JSON
+    const rootJson = await fetchJsonByTypeId(rootType, rootId);
+    // Add included to global map
+    addIncludedToMap(rootJson.included || []);
+    // Also add top-level data node (learningObject) into globalIncluded
+    if(rootJson.data && rootJson.data.id) globalIncluded.set(rootJson.data.id, rootJson.data);
+
+    // For all included arrays across this root, add to map
+    addIncludedToMap(rootJson.included || []);
+    // create a small includedMap to pass to functions if needed
+    const localIncludedMap = new Map();
+    (rootJson.included || []).forEach(i => localIncludedMap.set(i.id, i));
+
+    // Render overview
+    renderOverview(rootJson.data, localIncludedMap);
+
+    // Skills and badges area
+    const relSkills = rootJson.data.relationships?.skills?.data || [];
+    if(relSkills.length){
+      document.getElementById('skillsContainer').style.display='block';
+      const skillsList = document.getElementById('skillsList'); skillsList.innerHTML='';
+      for(const sr of relSkills){
+        const item = globalIncluded.get(sr.id) || localIncludedMap.get(sr.id);
+        if(item && item.type === 'learningObjectSkill'){
+          // learningObjectSkill -> has relationship to skillLevel
+          const lvlRef = item.relationships?.skillLevel?.data;
+          const lvl = lvlRef ? (globalIncluded.get(lvlRef.id) || localIncludedMap.get(lvlRef.id)) : null;
+          const skillRef = lvl?.relationships?.skill?.data;
+          let skillItem = null;
+          if(skillRef) skillItem = globalIncluded.get(skillRef.id) || localIncludedMap.get(skillRef.id);
+          else skillItem = globalIncluded.get(sr.id) || localIncludedMap.get(sr.id);
+          const skillName = skillItem?.attributes?.name || skillItem?.attributes?.localizedMetadata?.[0]?.name || 'Skill';
+          const lvlName = lvl?.attributes?.name || lvl?.attributes?.level || '';
+          const credits = item.attributes?.credits || '';
+          skillsList.appendChild(el('div',null,`<strong>${skillName}</strong> ${lvlName? '• '+lvlName : ''} ${credits? '• '+credits+' credits':''}`));
+        } else if(item && item.type === 'skill'){
+          skillsList.appendChild(el('div',null,`<strong>${item.attributes.name}</strong> • ${item.attributes.description || ''}`));
+        } else {
+          skillsList.appendChild(el('div','muted',`Skill reference: ${sr.id}`));
+        }
       }
     }
 
-    function renderDetails(data) {
-      const content = document.getElementById("content");
-      const lo = data.data;
-      const attrs = lo.attributes;
-      const name = attrs.localizedMetadata?.[0]?.name || "Untitled";
-      const desc = attrs.localizedMetadata?.[0]?.description || "No description available";
-      const loType = attrs.loType || "Learning Object";
-      const duration = attrs.duration ? (attrs.duration / 60) + " mins" : "N/A";
-      const state = attrs.state || "N/A";
-      const enrollType = attrs.enrollmentType || "N/A";
-      const badge = data.included?.find(i => i.type === "badge");
-      const subLOs = data.included?.filter(i => i.type === "learningObject" && i.id !== lo.id) || [];
-      const loResources = data.included?.filter(i => i.type === "learningObjectResource") || [];
-      const resources = data.included?.filter(i => i.type === "resource") || [];
-
-      let html = `
-        <div class="card">
-          <h2>${name}</h2>
-          <p class="info-line"><strong>Type:</strong> ${loType}</p>
-          <p class="info-line"><strong>Duration:</strong> ${duration}</p>
-          <p class="info-line"><strong>State:</strong> ${state}</p>
-          <p class="info-line"><strong>Enrollment:</strong> ${enrollType}</p>
-          <p class="info-line"><strong>Description:</strong> ${desc}</p>
-          ${badge ? `<img class="badge" src="${badge.attributes.imageUrl}" alt="Badge" />` : ""}
-          <br><br>
-          <a href="https://learningmanager.adobe.com/accountiplogin?ipId=18979&accesskey=bsni4medbhhps" target="_blank" class="register-btn">Register</a>
-        </div>
-      `;
-
-      if (subLOs.length > 0) {
-        html += `<div class="section-title">Modules</div>`;
-        subLOs.forEach(mod => {
-          const mName = mod.attributes.localizedMetadata?.[0]?.name || "Unnamed Module";
-          const mType = mod.attributes.loType || "Module";
-          const mFormat = mod.attributes.loFormat || "N/A";
-          const mDuration = mod.attributes.duration ? (mod.attributes.duration / 60) + " mins" : "N/A";
-          html += `
-            <div class="card">
-              <h3>${mName}</h3>
-              <p class="info-line"><strong>Type:</strong> ${mType}</p>
-              <p class="info-line"><strong>Format:</strong> ${mFormat}</p>
-              <p class="info-line"><strong>Duration:</strong> ${mDuration}</p>
-            </div>
-          `;
-        });
+    // Different handling by type
+    if(rootType === 'course' || rootJson.data.attributes?.loType === 'course'){
+      // Direct course: render modules and formats
+      renderModulesForCourse(rootJson.data, localIncludedMap);
+    } else if(rootType === 'learningProgram' || rootJson.data.attributes?.loType === 'learningProgram'){
+      // Learning Program: show subLoS (courses) and for each course show modules->formats
+      const subLos = rootJson.data.relationships?.subLOs?.data || [];
+      if(subLos.length){
+        document.getElementById('subLoContainer').style.display='block';
+        const subLoList = document.getElementById('subLoList'); subLoList.innerHTML='';
+        for(const s of subLos){
+          // render course card (may need to fetch if not included)
+          const courseEl = await renderCourseAsSubLo(s, localIncludedMap);
+          subLoList.appendChild(courseEl);
+        }
+      } else {
+        // sometimes LPs include subLOs in included as 'learningObject' items - fall back to searching included
+        const includedCourses = Array.from(localIncludedMap.values()).filter(i => i.type==='learningObject');
+        if(includedCourses.length){
+          document.getElementById('subLoContainer').style.display='block';
+          const subLoList = document.getElementById('subLoList'); subLoList.innerHTML='';
+          for(const c of includedCourses){
+            const courseEl = await renderCourseAsSubLo(c, localIncludedMap);
+            subLoList.appendChild(courseEl);
+          }
+        }
       }
-
-      if (loResources.length > 0) {
-        html += `<div class="section-title">Module Resources</div>`;
-        loResources.forEach(r => {
-          const rName = r.attributes.localizedMetadata?.[0]?.name || "Unnamed Resource";
-          const rType = r.attributes.resourceType || "Unknown";
-          html += `
-            <div class="card">
-              <h3>${rName}</h3>
-              <p class="info-line"><strong>Type:</strong> ${rType}</p>
-            </div>
-          `;
-        });
+    } else if(rootType === 'certification' || rootJson.data.attributes?.loType === 'certification'){
+      // Certification: similar to learningProgram: subLOs -> courses
+      const subLos = rootJson.data.relationships?.subLOs?.data || [];
+      if(subLos.length){
+        document.getElementById('subLoContainer').style.display='block';
+        const subLoList = document.getElementById('subLoList'); subLoList.innerHTML='';
+        for(const s of subLos){
+          const courseEl = await renderCourseAsSubLo(s, localIncludedMap);
+          subLoList.appendChild(courseEl);
+        }
       }
-
-      if (resources.length > 0) {
-        html += `<div class="section-title">Content Formats</div>`;
-        resources.forEach(res => {
-          const resName = res.attributes.name || "Unnamed Content";
-          const resType = res.attributes.contentType || "Unknown";
-          const resLocation = res.attributes.location ? `<a href="${res.attributes.location}" target="_blank">Open Content</a>` : "N/A";
-          html += `
-            <div class="card">
-              <h3>${resName}</h3>
-              <p class="info-line"><strong>Format:</strong> ${resType}</p>
-              <p class="info-line"><strong>Launch:</strong> ${resLocation}</p>
-            </div>
-          `;
-        });
+    } else if(rootType === 'jobAid' || rootJson.data.attributes?.loType === 'jobAid'){
+      // JobAid: show resources directly if present
+      const jobResources = rootJson.included?.filter(i=>i.type==='resource') || [];
+      if(jobResources.length){
+        document.getElementById('modulesContainer').style.display='block';
+        const ml = document.getElementById('modulesList'); ml.innerHTML = '';
+        jobResources.forEach(r => ml.appendChild(createResourceCard(r)));
       }
-
-      content.innerHTML = html;
     }
 
-    fetchDetails();
-  </script>
+    // Wire expand/collapse all buttons
+    document.getElementById('expandAll').onclick = ()=> setAll(true);
+    document.getElementById('collapseAll').onclick = ()=> setAll(false);
+
+    // Set register link
+    document.getElementById('registerBtn').href = REGISTER_URL;
+
+  } catch(err){
+    console.error(err);
+    showError('Failed to load JSON: ' + err.message + '. Check network/CORS or that the API URL is correct.');
+  }
+}
+
+/* ---------- Start ---------- */
+mainRender();
+
+</script>
 </body>
 </html>
