@@ -1,230 +1,240 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Learning Object Details</title>
-<style>
-  body {
-    font-family: "SF Pro Display", Arial, sans-serif;
-    margin: 0;
-    background-color: #f8f9fa;
-    color: #333;
-  }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Course Details | Adobe Learning Manager</title>
 
-  /* Header Banner */
-  header {
-    background: linear-gradient(90deg, #0a3d62, #1e5a9b);
-    color: white;
-    text-align: center;
-    padding: 40px 20px;
-  }
+  <style>
+    /* 🌈 Apple-inspired design */
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: linear-gradient(to bottom, #f7faff, #eef3f9);
+      margin: 0;
+      color: #1c1c1e;
+    }
 
-  header h1 {
-    margin: 0;
-    font-size: 2rem;
-    font-weight: 600;
-  }
+    header {
+      background: linear-gradient(to right, #007aff, #00c6ff);
+      color: white;
+      text-align: center;
+      padding: 20px 0;
+      font-size: 1.6rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+    }
 
-  .cta-btn {
-    background-color: #fff;
-    color: #0a3d62;
-    border: none;
-    padding: 10px 20px;
-    margin-top: 15px;
-    border-radius: 25px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: 0.3s;
-  }
-  .cta-btn:hover {
-    background-color: #0a3d62;
-    color: #fff;
-    border: 1px solid #fff;
-  }
+    main {
+      max-width: 1100px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
 
-  /* Main content layout */
-  .container {
-    display: flex;
-    justify-content: center;
-    padding: 40px 20px;
-  }
+    .section-title {
+      font-size: 1.4rem;
+      margin: 30px 0 15px;
+      color: #007aff;
+      border-left: 4px solid #007aff;
+      padding-left: 10px;
+      font-weight: 600;
+    }
 
-  .details-card {
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.1);
-    max-width: 900px;
-    width: 100%;
-    overflow: hidden;
-  }
+    /* 💎 Card styles */
+    .overview-card, .module-card {
+      background: white;
+      border-radius: 18px;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+      border-top: 4px solid #007aff;
+      border-bottom: 4px solid #007aff;
+      margin: 20px 0;
+      padding: 25px 30px;
+      transition: all 0.3s ease;
+    }
 
-  .details-card img {
-    width: 100%;
-    height: 300px;
-    object-fit: cover;
-    border-bottom: 1px solid #ddd;
-  }
+    .overview-card:hover, .module-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+    }
 
-  .details-body {
-    padding: 25px;
-  }
+    .module-card h3 {
+      color: #007aff;
+      margin-top: 0;
+    }
 
-  .details-body h2 {
-    font-size: 1.8rem;
-    color: #0a3d62;
-    margin-bottom: 10px;
-  }
+    .info-line {
+      margin: 6px 0;
+      color: #444;
+    }
 
-  .meta {
-    color: #555;
-    font-size: 0.95rem;
-    margin-bottom: 15px;
-  }
+    .tag {
+      display: inline-block;
+      background: #eaf3ff;
+      color: #007aff;
+      border-radius: 12px;
+      padding: 3px 10px;
+      font-size: 0.8rem;
+      margin: 3px;
+    }
 
-  .badge {
-    display: inline-block;
-    background-color: #1e5a9b;
-    color: #fff;
-    padding: 5px 12px;
-    border-radius: 20px;
-    font-size: 0.85rem;
-    margin-right: 8px;
-  }
+    /* 🎬 Resource inner cards */
+    .resource-card {
+      background: #f8faff;
+      border-left: 4px solid #007aff;
+      border-radius: 12px;
+      padding: 12px 16px;
+      margin: 10px 0;
+    }
 
-  .section {
-    margin-top: 20px;
-  }
+    .open-btn {
+      display: inline-block;
+      background: linear-gradient(to right, #007aff, #00c6ff);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 8px 14px;
+      font-size: 0.9rem;
+      text-decoration: none;
+      margin-top: 8px;
+      transition: 0.3s;
+    }
 
-  .section h3 {
-    font-size: 1.2rem;
-    color: #0a3d62;
-    border-bottom: 2px solid #1e5a9b;
-    padding-bottom: 5px;
-    margin-bottom: 10px;
-  }
+    .open-btn:hover {
+      background: linear-gradient(to right, #005ecb, #00a0e0);
+    }
 
-  .enroll-btn {
-    display: inline-block;
-    margin-top: 20px;
-    background: linear-gradient(90deg, #0a3d62, #1e5a9b);
-    color: #fff;
-    border: none;
-    padding: 12px 30px;
-    border-radius: 25px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: 0.3s;
-  }
-  .enroll-btn:hover {
-    opacity: 0.9;
-  }
+    footer {
+      text-align: center;
+      padding: 20px;
+      background: linear-gradient(to right, #007aff, #00c6ff);
+      color: white;
+      font-size: 0.9rem;
+      margin-top: 40px;
+    }
 
-  footer {
-    text-align: center;
-    padding: 20px;
-    color: #777;
-    background-color: #f0f0f0;
-    font-size: 0.9rem;
-  }
-</style>
+    /* 🔄 Loading animation */
+    .loader {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 150px;
+    }
+
+    .spinner {
+      border: 4px solid #e0e0e0;
+      border-top: 4px solid #007aff;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      100% { transform: rotate(360deg); }
+    }
+
+    @media (max-width: 600px) {
+      main { padding: 0 10px; }
+      .overview-card, .module-card { padding: 18px; }
+    }
+  </style>
 </head>
+
 <body>
+  <header>📘 Course Details</header>
 
-<header>
-  <h1>Learning Object Details</h1>
-  <button class="cta-btn" onclick="window.location.href='index.html'">Back to Catalog</button>
-</header>
+  <main>
+    <div id="loader" class="loader"><div class="spinner"></div></div>
 
-<div class="container">
-  <div class="details-card" id="detailsCard">
-    <img id="loImage" src="https://cpcontents.adobe.com/public/images/default_courses/2.png" alt="Learning Object Image">
-    <div class="details-body" id="detailsBody">
-      <h2 id="loTitle">Loading...</h2>
-      <p class="meta" id="loMeta"></p>
+    <section id="courseOverview"></section>
 
-      <div class="section" id="loDescription"></div>
-      <div class="section" id="loSkills"></div>
-      <div class="section" id="loBadges"></div>
-      <div class="section" id="loAdditional"></div>
+    <h2 class="section-title">Modules</h2>
+    <section id="modules"></section>
+  </main>
 
-      <button class="enroll-btn" id="enrollButton">Enroll Now</button>
-    </div>
-  </div>
-</div>
+  <footer>© 2025 Adobe Learning Manager | Built with ❤️</footer>
 
-<footer>
-  © 2025 Adobe Learning Manager Integration — Built with ❤️ by Blockchainism
-</footer>
+  <script>
+    // Extract courseId from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const courseId = urlParams.get("courseId");
 
-<script>
-  const accountId = "108079";
-  const apiKey = "9b1e6b7f-20f3-4c49-a9c8-f5f4131096f8";
-
-  const urlParams = new URLSearchParams(window.location.search);
-  const courseIdParam = urlParams.get("courseId");
-
-  if (!courseIdParam) {
-    document.getElementById("detailsBody").innerHTML = "<p>Invalid or missing courseId parameter.</p>";
-  } else {
-    const [loType, loId] = courseIdParam.split(":");
-    const apiUrl = `https://cpcontents.adobe.com/public/guest/production/api/${apiKey}/${accountId}/${loType}/${loId}.json`;
-
-    async function loadDetails() {
+    async function fetchCourseDetails() {
       try {
-        const res = await fetch(apiUrl);
-        const data = await res.json();
-        const attr = data.data.attributes;
-
-        // Populate basic info
-        document.getElementById("loTitle").textContent = attr.name || "Untitled";
-        document.getElementById("loMeta").textContent =
-          `${attr.loType || loType} | Delivery: ${attr.deliveryType || "N/A"} | Duration: ${attr.duration || "N/A"} mins`;
-
-        // Image
-        if (attr.imageUrl) {
-          document.getElementById("loImage").src = attr.imageUrl;
-        }
-
-        // Description
-        document.getElementById("loDescription").innerHTML =
-          `<h3>Description</h3><p>${attr.description || "No description available."}</p>`;
-
-        // Skills
-        if (attr.loSkillNames?.length) {
-          document.getElementById("loSkills").innerHTML =
-            `<h3>Skills Covered</h3>${attr.loSkillNames.map(s => `<span class="badge">${s}</span>`).join(" ")}`;
-        }
-
-        // Badges
-        if (attr.badges?.length) {
-          document.getElementById("loBadges").innerHTML =
-            `<h3>Badges</h3>${attr.badges.map(b => `<span class="badge">${b.name}</span>`).join(" ")}`;
-        }
-
-        // Additional Info
-        document.getElementById("loAdditional").innerHTML = `
-          <h3>Additional Info</h3>
-          <p><strong>Rating:</strong> ${attr.averageRating || 0}★ (${attr.ratingsCount || 0})</p>
-          <p><strong>Enrollment Count:</strong> ${attr.enrollmentCount || "N/A"}</p>
-          <p><strong>Availability:</strong> ${attr.availability || "N/A"}</p>
-        `;
-
-        // Enroll Button
-        const enrollButton = document.getElementById("enrollButton");
-        enrollButton.addEventListener("click", () => {
-          alert("Enrollment feature can be connected to your ALM enrollment API.");
-        });
-
-      } catch (err) {
-        console.error(err);
-        document.getElementById("detailsBody").innerHTML =
-          "<p>Error loading details. Please check the courseId or API response.</p>";
+        const response = await fetch(`https://your-api-endpoint/learningObjects/${courseId}`);
+        const data = await response.json();
+        document.getElementById("loader").style.display = "none";
+        renderCourseDetails(data);
+      } catch (error) {
+        document.getElementById("loader").innerHTML = "<p>Error loading data</p>";
       }
     }
 
-    loadDetails();
-  }
-</script>
+    function formatDuration(seconds) {
+      if (!seconds) return "N/A";
+      const h = Math.floor(seconds / 3600);
+      const m = Math.floor((seconds % 3600) / 60);
+      return `${h}h ${m}m`;
+    }
+
+    function renderCourseDetails(data) {
+      const course = data.data;
+      const included = data.included;
+      const attr = course.attributes;
+
+      const name = attr.localizedMetadata?.[0]?.name || "Untitled";
+      const author = attr.authorNames?.join(", ") || "Unknown";
+      const duration = formatDuration(attr.duration);
+      const tags = attr.tags?.map(t => `<span class="tag">${t}</span>`).join(" ") || "None";
+      const rating = attr.rating?.averageRating || 0;
+
+      document.getElementById("courseOverview").innerHTML = `
+        <div class="overview-card">
+          <h2>${name}</h2>
+          <p class="info-line"><b>Author:</b> ${author}</p>
+          <p class="info-line"><b>Duration:</b> ${duration}</p>
+          <p class="info-line"><b>Enrollment Type:</b> ${attr.enrollmentType}</p>
+          <p class="info-line"><b>Format:</b> ${attr.loFormat}</p>
+          <p class="info-line"><b>State:</b> ${attr.state}</p>
+          <p class="info-line"><b>Tags:</b> ${tags}</p>
+          <p class="info-line"><b>Rating:</b> ⭐ ${rating}</p>
+        </div>
+      `;
+
+      const instanceId = course.relationships.instances.data[0].id;
+      const instance = included.find(i => i.id === instanceId);
+      const modules = instance.relationships.loResources.data;
+      renderModules(modules, included);
+    }
+
+    function renderModules(modules, included) {
+      const container = document.getElementById("modules");
+      container.innerHTML = "";
+
+      modules.forEach(mod => {
+        const moduleObj = included.find(i => i.id === mod.id);
+        const modName = moduleObj.attributes.localizedMetadata?.[0]?.name || "Unnamed Module";
+        const resources = moduleObj.relationships.resources.data.map(r => included.find(i => i.id === r.id));
+
+        const resourceCards = resources.map(r => `
+          <div class="resource-card">
+            <p><b>Content:</b> ${r.attributes.name}</p>
+            <p><b>Type:</b> ${r.attributes.contentType}</p>
+            <p><b>Locale:</b> ${r.attributes.locale}</p>
+            <a href="${r.attributes.location}" target="_blank" class="open-btn">Open</a>
+          </div>
+        `).join("");
+
+        container.innerHTML += `
+          <div class="module-card">
+            <h3>${modName}</h3>
+            ${resourceCards}
+          </div>
+        `;
+      });
+    }
+
+    fetchCourseDetails();
+  </script>
 </body>
 </html>
