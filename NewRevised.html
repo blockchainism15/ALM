@@ -216,7 +216,7 @@ async function fetchResults(filters = {}, page = 0) {
     paginationDiv.innerHTML = "";
     loadingDiv.style.display = "block";
 
-    const apiUrl = `https://primeapps.adobe.com/almsearch/api/v1/eu/production/${accountId}/${apiKey}/search?size=${pageSize}&from=${page * pageSize}`;
+    const apiUrl = `https://primeapps.adobe.com/almsearch/api/v1/eu/${apiKey}/search?size=${pageSize}&from=${page * pageSize}`;
 
     let filterTerms = {};
     if (filters.loType?.length) filterTerms.loType = filters.loType; // ✅ fixed singular
@@ -271,7 +271,7 @@ async function fetchResults(filters = {}, page = 0) {
             container.appendChild(card);
 
             const numericId = lo.loId.split(":")[1];
-            fetch(`https://cpcontents.adobe.com/public/guest/production/api/${apiKey}/${accountId}/course/${numericId}.json`)
+            fetch(`https://cpcontents.adobe.com/eu/public/guest/eu/api/${apiKey}/${accountId}/course/${numericId}.json`)
                 .then(res => res.json())
                 .then(detail => {
                     if (detail?.data?.attributes?.imageUrl) {
