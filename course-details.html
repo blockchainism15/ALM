@@ -4,104 +4,129 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Course Details</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <!-- Use Inter for Apple-like clean font -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
   <style>
     body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background-color: #f7f8fa;
-      color: #1c1c1e;
+      font-family: 'Inter', sans-serif;
+      background-color: #f9fafb;
       margin: 0;
       padding: 0;
+      color: #222;
     }
 
     header {
-      background: linear-gradient(to right, #003366, #0055cc);
+      background: linear-gradient(90deg, #003366, #0055cc);
       color: white;
-      padding: 1.5rem 2rem;
       text-align: center;
-      font-size: 1.6rem;
+      padding: 1.5rem 1rem;
+      font-size: 1.8rem;
       font-weight: 600;
+      letter-spacing: 0.5px;
     }
 
     .container {
-      max-width: 1100px;
+      max-width: 1200px;
       margin: 2rem auto;
       padding: 1rem;
     }
 
     .card {
-      background: white;
+      background: #fff;
       border-radius: 18px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.07);
-      padding: 1.5rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
       margin-bottom: 1.5rem;
-      border-left: 5px solid #0055cc;
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      overflow: hidden;
+      transition: transform 0.2s ease;
     }
 
     .card:hover {
       transform: translateY(-2px);
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
     }
 
-    .title {
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      background: linear-gradient(90deg, #f0f4ff, #e9f0ff);
+      padding: 1rem 1.5rem;
+      border-bottom: 1px solid #dbe2ef;
+    }
+
+    .card-header img {
+      width: 80px;
+      height: 80px;
+      border-radius: 10px;
+      object-fit: cover;
+    }
+
+    .card-header h2 {
+      margin: 0;
       font-size: 1.4rem;
-      font-weight: 600;
-      margin-bottom: 0.4rem;
+      color: #003366;
     }
 
-    .subtitle {
-      font-size: 1rem;
-      color: #555;
-      margin-bottom: 0.8rem;
-    }
-
-    .section {
-      margin-top: 1rem;
-    }
-
-    .section-title {
-      font-weight: 600;
-      margin-bottom: 0.5rem;
-      color: #0055cc;
+    .card-content {
+      padding: 1.2rem 1.5rem;
+      font-size: 0.95rem;
+      line-height: 1.6;
     }
 
     .module-card {
-      background: #f9fbff;
-      border-radius: 14px;
-      border: 1px solid #dce6ff;
-      margin-top: 0.8rem;
-      padding: 1rem 1.2rem;
+      border: 1px solid #e0e6ef;
+      border-radius: 12px;
+      margin: 1rem 0;
+      background-color: #fdfdfd;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.04);
     }
 
-    .chapter {
+    .module-header {
+      background: #f7f9ff;
+      padding: 0.8rem 1rem;
+      border-bottom: 1px solid #e0e6ef;
+      font-weight: 600;
       display: flex;
       align-items: center;
-      gap: 0.5rem;
-      font-size: 0.95rem;
-      margin: 0.3rem 0;
-    }
-
-    .chapter-icon {
-      font-size: 1.2rem;
-    }
-
-    details {
-      margin-top: 0.5rem;
-      border-top: 1px solid #eee;
-      padding-top: 0.6rem;
-    }
-
-    summary {
-      font-weight: 500;
+      justify-content: space-between;
       cursor: pointer;
-      color: #333;
-      outline: none;
-      list-style: none;
     }
 
-    summary::-webkit-details-marker {
-      display: none;
+    .module-header i {
+      color: #0055cc;
+    }
+
+    .chapter-list {
+      padding: 0.8rem 1rem;
+      display: block;
+    }
+
+    .chapter-item {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid #f0f2f7;
+    }
+
+    .chapter-item:last-child {
+      border-bottom: none;
+    }
+
+    .chapter-item i {
+      color: #0055cc;
+      font-size: 1rem;
+      width: 18px;
+      text-align: center;
+    }
+
+    .chapter-item span {
+      flex: 1;
+      font-size: 0.95rem;
     }
 
     .register-btn {
@@ -109,152 +134,171 @@
       background: #0055cc;
       color: white;
       text-decoration: none;
-      padding: 0.6rem 1.2rem;
-      border-radius: 10px;
+      font-weight: 600;
+      padding: 0.7rem 1.4rem;
+      border-radius: 8px;
       margin-top: 1rem;
-      font-weight: 500;
       transition: background 0.2s ease;
     }
 
     .register-btn:hover {
-      background: #003c99;
+      background: #003f99;
     }
 
     @media (max-width: 768px) {
-      .card {
-        padding: 1rem;
+      .card-header {
+        flex-direction: column;
+        align-items: flex-start;
       }
-      header {
-        font-size: 1.4rem;
+      .card-header img {
+        width: 100%;
+        height: 180px;
       }
     }
   </style>
 </head>
+
 <body>
   <header>Course Details</header>
-  <div class="container" id="courseContainer">Loading...</div>
+
+  <div class="container" id="content">
+    <p>Loading details...</p>
+  </div>
 
   <script>
-    async function fetchCourseDetails() {
+    async function fetchDetails() {
+      const content = document.getElementById('content');
       const params = new URLSearchParams(window.location.search);
-      const courseId = params.get("courseId");
-      const container = document.getElementById("courseContainer");
-
+      const courseId = params.get('courseId');
       if (!courseId) {
-        container.innerHTML = "<p>No course ID provided.</p>";
+        content.innerHTML = "<p>Invalid course ID.</p>";
         return;
       }
 
-      const [loType, id] = courseId.split(":");
-      const apiUrl = `https://cpcontents.adobe.com/public/guest/production/api/9b1e6b7f-20f3-4c49-a9c8-f5f4131096f8/108079/${loType}/${id}.json`;
+      const [type, id] = courseId.split(':');
+      const apiUrl = `https://cpcontents.adobe.com/public/guest/production/api/9b1e6b7f-20f3-4c49-a9c8-f5f4131096f8/108079/${type}/${id}.json`;
 
       try {
-        const res = await fetch(apiUrl);
-        if (!res.ok) throw new Error("Network response was not ok");
-        const data = await res.json();
-        renderCourseDetails(data, loType);
-      } catch (err) {
-        console.error("Error loading course data:", err);
-        container.innerHTML = "<p>Error loading details.</p>";
+        const response = await fetch(apiUrl);
+        if (!response.ok) throw new Error('Network error');
+        const data = await response.json();
+
+        renderDetails(data, type);
+      } catch (error) {
+        console.error(error);
+        content.innerHTML = "<p>Error loading details.</p>";
       }
     }
 
-    function renderCourseDetails(data, loType) {
-      const container = document.getElementById("courseContainer");
-      const lo = data.data;
-      const included = data.included || [];
-
-      if (!lo) {
-        container.innerHTML = "<p>No data found.</p>";
-        return;
-      }
+    function renderDetails(data, type) {
+      const content = document.getElementById('content');
+      const attributes = data.data.attributes || {};
+      const title = attributes.localizedMetadata?.[0]?.name || "Untitled";
+      const description = attributes.localizedMetadata?.[0]?.description || "No description available.";
+      const image = attributes.imageUrl || "https://via.placeholder.com/150x100?text=No+Image";
 
       let html = `
         <div class="card">
-          <div class="title">${lo.attributes.localizedMetadata?.[0]?.name || "Untitled"}</div>
-          <div class="subtitle">${lo.attributes.localizedMetadata?.[0]?.description || "No description"}</div>
-          <div><strong>Type:</strong> ${lo.attributes.loType}</div>
-          <div><strong>Format:</strong> ${lo.attributes.loFormat}</div>
-          <div><strong>Duration:</strong> ${Math.round(lo.attributes.duration / 60)} mins</div>
-          <a class="register-btn" href="https://learningmanager.adobe.com/accountiplogin?ipId=18979&accesskey=bsni4medbhhps" target="_blank">Register</a>
-        </div>
+          <div class="card-header">
+            <img src="${image}" alt="Course Image">
+            <div>
+              <h2>${title}</h2>
+              <p>${description}</p>
+              <a href="https://learningmanager.adobe.com/accountiplogin?ipId=18979&accesskey=bsni4medbhhps" class="register-btn">Register</a>
+            </div>
+          </div>
+          <div class="card-content">
       `;
 
-      if (loType === "course") {
-        const modules = included.filter(i => i.type === "learningObjectResource");
-        html += buildModules(modules, included);
-      } else if (loType === "learningProgram" || loType === "certification") {
-        const subCourses = (lo.relationships.subLOs?.data || [])
-          .map(sub => included.find(i => i.id === sub.id));
-        html += subCourses.map(c => buildCourseBlock(c, included)).join("");
+      if (type === "course") {
+        html += renderModules(data);
+      } else if (type === "learningProgram" || type === "certification") {
+        html += renderSubLOs(data);
+      } else {
+        html += "<p>Unsupported content type.</p>";
       }
 
-      container.innerHTML = html;
+      html += "</div></div>";
+      content.innerHTML = html;
     }
 
-    function buildCourseBlock(course, included) {
-      if (!course) return "";
-      const modules = included.filter(m => 
-        m.type === "learningObjectResource" && 
-        m.relationships.learningObject.data.id === course.id
-      );
-
-      return `
-        <div class="card">
-          <div class="title">${course.attributes.localizedMetadata?.[0]?.name || "Untitled Course"}</div>
-          <div class="subtitle">${course.attributes.localizedMetadata?.[0]?.description || ""}</div>
-          <div><strong>Type:</strong> ${course.attributes.loType}</div>
-          <div class="section">
-            <div class="section-title">Modules</div>
-            ${buildModules(modules, included)}
-          </div>
-        </div>
-      `;
-    }
-
-    function buildModules(modules, included) {
+    function renderModules(data) {
+      const modules = data.linked?.learningObjectResource || [];
       if (!modules.length) return "<p>No modules available.</p>";
 
       return modules.map(module => {
-        const moduleName = module.attributes.localizedMetadata?.[0]?.name || "Unnamed Module";
-        const resources = (module.relationships.resources?.data || [])
-          .map(r => included.find(i => i.id === r.id))
-          .filter(Boolean);
+        const modAttr = module.attributes;
+        const moduleName = modAttr.localizedMetadata?.[0]?.name || "Untitled Module";
+        const resources = module.relationships?.resources?.data || [];
+
+        let moduleHTML = `
+          <div class="module-card">
+            <div class="module-header">${moduleName}</div>
+            <div class="chapter-list">
+        `;
+
+        const allResources = data.linked?.resources || [];
+        const relatedResources = allResources.filter(r => resources.some(x => x.id === r.id));
+
+        relatedResources.forEach(res => {
+          const resAttr = res.attributes;
+          const resName = resAttr.localizedMetadata?.[0]?.name || "Unnamed Chapter";
+          const format = resAttr.format || "";
+          let iconClass = "fa-file";
+          let typeLabel = format;
+
+          if (["SCORM12", "SCORM2004", "xAPI", "CP"].includes(format)) {
+            typeLabel = "Interactive";
+            iconClass = "fa-gamepad";
+          } else if (["pdf", "doc", "docx", "ppt", "pptx"].includes(format.toLowerCase())) {
+            iconClass = "fa-file-lines";
+          } else if (["video"].includes(format.toLowerCase())) {
+            iconClass = "fa-video";
+          } else if (["VC"].includes(format.toUpperCase())) {
+            iconClass = "fa-video";
+          } else if (["CR"].includes(format.toUpperCase())) {
+            iconClass = "fa-chalkboard-user";
+          }
+
+          moduleHTML += `
+            <div class="chapter-item">
+              <i class="fa-solid ${iconClass}"></i>
+              <span>${resName}</span>
+              <small style="color:#666;">(${typeLabel})</small>
+            </div>
+          `;
+        });
+
+        moduleHTML += "</div></div>";
+        return moduleHTML;
+      }).join('');
+    }
+
+    function renderSubLOs(data) {
+      const subLOs = data.linked?.subLOs || [];
+      if (!subLOs.length) return "<p>No related courses available.</p>";
+
+      return subLOs.map(sub => {
+        const subAttr = sub.attributes;
+        const subName = subAttr.localizedMetadata?.[0]?.name || "Untitled Course";
+        const subDesc = subAttr.localizedMetadata?.[0]?.description || "";
+        const subImage = subAttr.imageUrl || "https://via.placeholder.com/100x80?text=No+Image";
 
         return `
           <div class="module-card">
-            <details open>
-              <summary>${moduleName}</summary>
-              ${resources.map(buildChapter).join("")}
-            </details>
+            <div class="module-header">
+              <img src="${subImage}" style="width:60px;height:60px;border-radius:8px;object-fit:cover;">
+              ${subName}
+            </div>
+            <div class="chapter-list">
+              ${renderModules({ linked: sub.linked || data.linked })}
+            </div>
           </div>
         `;
-      }).join("");
+      }).join('');
     }
 
-    function buildChapter(resource) {
-      if (!resource) return "";
-
-      const type = detectResourceType(resource.attributes.contentType || resource.attributes.resourceType || "");
-      return `
-        <div class="chapter">
-          <span class="chapter-icon">${type.icon}</span>
-          <span>${type.label}</span>
-        </div>
-      `;
-    }
-
-    function detectResourceType(format) {
-      const f = format.toLowerCase();
-      if (["scorm12", "scorm2004", "xapi", "cp"].some(t => f.includes(t))) return { label: "Interactive", icon: "🖱️" };
-      if (["pdf", "ppt", "pptx", "doc", "docx"].some(t => f.includes(t))) return { label: "Document", icon: "📘" };
-      if (["video", "mp4", "mov"].some(t => f.includes(t))) return { label: "Video", icon: "🎞️" };
-      if (["vc", "virtual", "session"].some(t => f.includes(t))) return { label: "Virtual Session", icon: "🧑‍🏫" };
-      if (["cr", "classroom"].some(t => f.includes(t))) return { label: "Classroom", icon: "🏫" };
-      return { label: "Other", icon: "📁" };
-    }
-
-    fetchCourseDetails();
+    fetchDetails();
   </script>
 </body>
 </html>
