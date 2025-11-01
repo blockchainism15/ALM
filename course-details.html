@@ -4,316 +4,256 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Course Details</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
   <style>
     body {
-      font-family: 'Inter', sans-serif;
-      background-color: #f9fafb;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+        Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+      background-color: #f9f9f9;
       margin: 0;
       padding: 0;
-      color: #222;
+      color: #333;
     }
 
     header {
-      background: linear-gradient(90deg, #003366, #0055cc);
-      color: white;
       text-align: center;
-      padding: 1.5rem 1rem;
-      font-size: 1.8rem;
-      font-weight: 600;
-      letter-spacing: 0.5px;
-    }
-
-    .container {
-      max-width: 1200px;
-      margin: 2rem auto;
-      padding: 1rem;
-    }
-
-    .card {
-      background: rgba(255, 255, 255, 0.7);
-      border-radius: 18px;
-      border-top: 3px solid #4da3ff;
-      border-bottom: 3px solid #4da3ff;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-      margin-bottom: 1.5rem;
+      background-color: #fff;
+      padding: 40px 20px;
+      position: relative;
       overflow: hidden;
-      transition: transform 0.2s ease;
-    }
-
-    .card:hover {
-      transform: translateY(-2px);
     }
 
     .card-header {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      background: rgba(255, 255, 255, 0.5);
-      padding: 1rem 1.5rem;
-      border-bottom: 1px solid #dbe2ef;
+      position: relative;
+      z-index: 1;
     }
 
-    .card-header img {
-      width: 100px;
-      height: 100px;
-      border-radius: 12px;
-      object-fit: cover;
+    .card-header::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-size: cover;
+      background-position: center;
+      opacity: 0.25;
+      z-index: 0;
     }
 
-    .card-header h2 {
-      margin: 0;
-      font-size: 1.5rem;
-      color: #003366;
+    .container {
+      max-width: 900px;
+      margin: 30px auto;
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      padding: 20px;
     }
 
-    .card-content {
-      padding: 1.2rem 1.5rem;
-      font-size: 0.95rem;
+    .card {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+      margin-bottom: 25px;
+      padding: 20px;
+    }
+
+    .card-content h3 {
+      color: #222;
+      font-size: 1.3em;
+      margin-bottom: 10px;
+    }
+
+    .card-content p {
+      margin: 6px 0;
       line-height: 1.6;
     }
 
-    .module-card {
-      border: 1px solid #e0e6ef;
+    .sub-card {
+      background: #f5f7fa;
       border-radius: 12px;
-      margin: 1rem 0;
-      background-color: rgba(255,255,255,0.6);
-      box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+      padding: 12px 15px;
+      margin-top: 10px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
     }
 
-    .module-header {
-      background: rgba(230,240,255,0.8);
-      padding: 0.8rem 1rem;
-      border-bottom: 1px solid #e0e6ef;
+    .thumbnail {
+      width: 140px;
+      height: auto;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+      margin-bottom: 10px;
+    }
+
+    .gradient-border-btn {
+      background: transparent;
+      border: 2px solid;
+      border-image-slice: 1;
+      border-image-source: linear-gradient(to right, #4b6cb7, #182848);
+      color: #4b6cb7;
       font-weight: 600;
-      display: flex;
-      align-items: center;
-      gap: 0.8rem;
-      justify-content: space-between;
+      padding: 10px 22px;
+      border-radius: 30px;
+      cursor: pointer;
+      transition: all 0.3s ease;
     }
-
-    .chapter-list {
-      padding: 0.8rem 1rem;
-      display: block;
-    }
-
-    .chapter-item {
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-      padding: 0.5rem 0;
-      border-bottom: 1px solid #f0f2f7;
-    }
-
-    .chapter-item:last-child {
-      border-bottom: none;
-    }
-
-    .chapter-item i {
-      color: #0055cc;
-      font-size: 1rem;
-      width: 18px;
-      text-align: center;
-    }
-
-    .register-btn {
-      display: inline-block;
-      background: #0055cc;
+    .gradient-border-btn:hover {
       color: white;
-      text-decoration: none;
-      font-weight: 600;
-      padding: 0.7rem 1.4rem;
-      border-radius: 8px;
-      margin-top: 1rem;
-      transition: background 0.2s ease;
+      background: linear-gradient(to right, #4b6cb7, #182848);
     }
 
-    .register-btn:hover {
-      background: #003f99;
-    }
-
-    @media (max-width: 768px) {
-      .card-header {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-      .card-header img {
-        width: 100%;
-        height: 200px;
-      }
+    footer {
+      text-align: center;
+      padding: 20px;
+      font-size: 0.9em;
+      color: #777;
+      background-color: #fff;
+      margin-top: 30px;
+      border-top: 1px solid #eee;
     }
   </style>
 </head>
-
 <body>
-  <header>Course Details</header>
+  <header class="card-header">
+    <h1>Course Details</h1>
+  </header>
 
-  <div class="container" id="content">
-    <p>Loading details...</p>
-  </div>
+  <main class="container" id="content">
+    <p>Loading course details...</p>
+  </main>
+
+  <footer>
+    <p>© 2025 Your Learning Portal. All Rights Reserved.</p>
+  </footer>
 
   <script>
-  async function fetchDetails() {
-    const content = document.getElementById('content');
+  document.addEventListener('DOMContentLoaded', async () => {
     const params = new URLSearchParams(window.location.search);
     const courseId = params.get('courseId');
+
     if (!courseId) {
-      content.innerHTML = "<p>Invalid course ID.</p>";
+      document.getElementById('content').innerHTML = '<p>No course ID found.</p>';
       return;
     }
 
-    const [type, id] = courseId.split(':');
-    const apiUrl = `https://cpcontents.adobe.com/eu/public/guest/eu/api/5fc01dd5-de45-408d-9b07-b267d40ebef9/9759/${type}/${id}.json`;
+    const apiUrl = `https://cpcontents.adobe.com/public/guest/production/api/learningObject/${courseId}`;
+    const contentDiv = document.getElementById('content');
+    const headerDiv = document.querySelector('.card-header');
 
     try {
       const response = await fetch(apiUrl);
-      if (!response.ok) throw new Error('Network error');
       const data = await response.json();
-      renderDetails(data, type);
-    } catch (error) {
-      console.error(error);
-      content.innerHTML = "<p>Error loading details.</p>";
-    }
-  }
 
-  function convertMinutesToDaysMins(minutes) {
-    if (!minutes || isNaN(minutes)) return "N/A";
-    const days = Math.floor(minutes / 1440);
-    const mins = minutes % 1440;
-    if (days > 0) {
-      return `${days} day${days > 1 ? 's' : ''} ${mins} min${mins !== 1 ? 's' : ''}`;
-    } else {
-      return `${mins} min${mins !== 1 ? 's' : ''}`;
-    }
-  }
+      const lo = data.data;
+      const attributes = lo.attributes || {};
+      const relationships = lo.relationships || {};
+      const bannerUrl = attributes.bannerUrl || '';
+      const type = lo.type || 'learningObject';
 
-  function renderDetails(data, type) {
-    const content = document.getElementById('content');
-    const attributes = data.data?.attributes || {};
-    const localized = attributes.localizedMetadata?.[0] || {};
-    const title = localized.name || attributes.name || "Untitled";
-    const description = localized.overview || localized.description || attributes.description || "No description available.";
-    const image = attributes.imageUrl || "https://via.placeholder.com/150x100?text=No+Image";
-    const duration = attributes.duration ? convertMinutesToDaysMins(attributes.duration) : "N/A";
-    const skillData = extractSkillInfo(data);
+      // Set header background image (semi-opaque)
+      headerDiv.style.backgroundImage = `url(${bannerUrl})`;
+      headerDiv.style.backgroundSize = 'cover';
+      headerDiv.style.backgroundPosition = 'center';
+      headerDiv.style.backgroundRepeat = 'no-repeat';
+      headerDiv.style.opacity = '0.9';
+      headerDiv.querySelector('h1').style.position = 'relative';
+      headerDiv.querySelector('h1').style.zIndex = '2';
 
-    let html = `
-      <div class="card">
-        <div class="card-header">
-          <img src="${image}" alt="Course Image">
-          <div>
-            <h2>${title}</h2>
-            <p>${description}</p>
-            <p><strong>Duration:</strong> ${duration}</p>
-            ${skillData ? `<p><strong>Skill:</strong> ${skillData.name} (Level ${skillData.level}, Credits: ${skillData.maxCredits})</p>` : ""}
-            <a href="https://learningmanager.adobe.com/accountiplogin?ipId=18979&accesskey=bsni4medbhhps" class="register-btn">Register</a>
-          </div>
-        </div>
-        <div class="card-content">
-          <h3>Your Learning Journey for this ${type}</h3>
-    `;
+      const title = attributes.title || 'Untitled';
+      const desc = attributes.description || 'No description available';
+      const duration = attributes.duration || 'N/A';
+      const skills = (attributes.skills || [])
+        .filter(s => s.name && s.name.toLowerCase() !== 'unnamed skill')
+        .map(s => s.name)
+        .join(', ') || 'N/A';
+      const skillLevel = attributes.skillLevel || 'N/A';
+      const skillCredits = attributes.maxCredits || 'N/A';
 
-    if (type === "course") {
-      html += renderModules(data);
-    } else if (type === "learningProgram" || type === "certification") {
-      html += renderSubLOs(data);
-    } else {
-      html += "<p>Unsupported content type.</p>";
-    }
-
-    html += "</div></div>";
-    content.innerHTML = html;
-  }
-
-  function extractSkillInfo(data) {
-    const included = data.included || [];
-    const skill = included.find(i => i.type === "skill");
-    const skillLevel = included.find(i => i.type === "skillLevel");
-    if (!skill || !skillLevel) return null;
-    return {
-      name: skill.attributes?.name || "Skill",
-      level: skillLevel.attributes?.level || "N/A",
-      maxCredits: skillLevel.attributes?.maxCredits || "N/A"
-    };
-  }
-
-  function renderModules(data) {
-    const included = data.included || [];
-    const loInstances = included.filter(i => i.type === "learningObjectInstance");
-    const loResources = included.filter(i => i.type === "learningObjectResource");
-    const resources = included.filter(i => i.type === "resource");
-
-    if (!loInstances.length) return "<p>No modules available.</p>";
-
-    return loInstances.map(instance => {
-      const loResRefs = instance.relationships?.loResources?.data || [];
-      const matchedResources = loResources.filter(lr => loResRefs.some(ref => ref.id === lr.id));
-
-      let moduleHTML = "";
-      matchedResources.forEach(lr => {
-        const meta = lr.attributes?.localizedMetadata?.[0];
-        const name = meta?.name || "Module";
-        const resRefs = lr.relationships?.resources?.data || [];
-        const relatedRes = resources.filter(r => resRefs.some(ref => ref.id === r.id));
-
-        moduleHTML += `
-          <div class="module-card">
-            <div class="module-header">
-              <span>${name}</span>
-            </div>
-            <div class="chapter-list">
-              ${relatedRes.map(r => `
-                <div class="chapter-item">
-                  <i class="fa-solid fa-circle-play"></i>
-                  <span>${r.attributes?.name}</span>
-                  <small style="color:#666;">(${convertMinutesToDaysMins(r.attributes?.desiredDuration)})</small>
-                </div>
-              `).join('')}
-            </div>
-          </div>
-        `;
-      });
-
-      return moduleHTML;
-    }).join('');
-  }
-
-  function renderSubLOs(data) {
-    const included = data.included || [];
-    const subCourses = included.filter(i => i.type === "learningObject" && i.attributes?.loType === "course");
-
-    if (!subCourses.length) return "<p>No related courses available.</p>";
-
-    return subCourses.map(sub => {
-      const subAttr = sub.attributes || {};
-      const subMeta = subAttr.localizedMetadata?.[0] || {};
-      const subName = subMeta.name || subAttr.name || "Untitled Course";
-      const subDesc = subMeta.overview || subAttr.description || "";
-      const subImage = subAttr.imageUrl || "https://via.placeholder.com/100x80?text=No+Image";
-      const subDuration = subAttr.duration ? convertMinutesToDaysMins(subAttr.duration) : "N/A";
-
-      return `
-        <div class="module-card">
-          <div class="module-header">
-            <div style="display:flex;align-items:center;gap:0.8rem;">
-              <img src="${subImage}" style="width:60px;height:60px;border-radius:8px;object-fit:cover;">
-              <span>${subName}</span>
-            </div>
-            <small>${subDuration}</small>
-          </div>
-          <div class="chapter-list">
-            <p>${subDesc || "No description available."}</p>
+      let html = `
+        <div class="card">
+          <div class="card-content">
+            <h3>Your Learning Journey for this ${type}</h3>
+            <p><b>Title:</b> ${title}</p>
+            <p><b>Description:</b> ${desc}</p>
+            <p><b>Duration:</b> ${duration} mins</p>
+            <p><b>Skills:</b> ${skills}</p>
+            <p><b>Skill Level:</b> ${skillLevel}</p>
+            <p><b>Skill Credits:</b> ${skillCredits}</p>
           </div>
         </div>
       `;
-    }).join('');
-  }
 
-  fetchDetails();
+      // Sub Learning Objects (for LPs and Certifications)
+      const subLOs = relationships.subLOs?.data || [];
+      if (subLOs.length > 0) {
+        html += `<div class="card"><div class="card-content"><h3>Sub Learning Objects</h3>`;
+        for (const sub of subLOs) {
+          const subId = sub.id;
+          const subRes = await fetch(`https://cpcontents.adobe.com/public/guest/production/api/learningObject/${subId}`);
+          const subData = await subRes.json();
+          const subAttr = subData.data.attributes || {};
+          const subType = subData.data.type || 'learningObject';
+          const subBanner = subAttr.bannerUrl ? `<img src="${subAttr.bannerUrl}" alt="thumbnail" class="thumbnail">` : '';
+          const subDuration = subAttr.duration ? `${subAttr.duration} mins` : 'N/A';
+          const subTitle = subAttr.title || 'Untitled';
+          const subDesc = subAttr.description || 'No description';
+          const subSkill = (subAttr.skills || []).map(s => s.name).join(', ') || 'N/A';
+          const subLevel = subAttr.skillLevel || 'N/A';
+          const subCredits = subAttr.maxCredits || 'N/A';
+          const loType = subType === 'learningProgram' || subType === 'certification' ? subType : 'course';
+
+          html += `
+            <div class="sub-card">
+              ${subBanner}
+              <p><b>Type:</b> ${loType}</p>
+              <p><b>Title:</b> ${subTitle}</p>
+              <p><b>Description:</b> ${subDesc}</p>
+              <p><b>Duration:</b> ${subDuration}</p>
+              <p><b>Skills:</b> ${subSkill}</p>
+              <p><b>Skill Level:</b> ${subLevel}</p>
+              <p><b>Skill Credits:</b> ${subCredits}</p>
+            </div>
+          `;
+        }
+        html += `</div></div>`;
+      }
+
+      // Modules (resources) for courses
+      const resources = relationships.resources?.data || [];
+      if (resources.length > 0) {
+        html += `<div class="card"><div class="card-content"><h3>Modules</h3>`;
+        for (const res of resources) {
+          const resId = res.id;
+          const resResp = await fetch(`https://cpcontents.adobe.com/public/guest/production/api/resource/${resId}`);
+          const resData = await resResp.json();
+          const resAttr = resData.data.attributes || {};
+          const resTitle = resAttr.title || 'Unnamed Module';
+          const resDuration = resAttr.duration || 'N/A';
+          const resType = resAttr.resourceType || 'N/A';
+          html += `
+            <div class="sub-card">
+              <p><b>Module:</b> ${resTitle}</p>
+              <p><b>Duration:</b> ${resDuration} mins</p>
+              <p><b>Resource Type:</b> ${resType}</p>
+            </div>
+          `;
+        }
+        html += `</div></div>`;
+      }
+
+      // Register Button
+      html += `
+        <div style="text-align:center;margin-top:20px;">
+          <button class="gradient-border-btn">Register</button>
+        </div>
+      `;
+
+      contentDiv.innerHTML = html;
+
+    } catch (error) {
+      console.error(error);
+      contentDiv.innerHTML = '<p>Failed to load course details.</p>';
+    }
+  });
   </script>
 </body>
 </html>
