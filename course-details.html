@@ -138,7 +138,7 @@ function renderDetails(data, type) {
         <h2>${title}</h2>
         <p>${desc}</p>
         ${extraDetails}
-        <p><strong>Duration:</strong> ${duration}</p>
+        ${type !== "certification" ? `<p><strong>Duration:</strong> ${duration}</p>` : ""}
         ${skill ? `<p><strong>Skill:</strong> ${skill.name} (Level ${skill.level}, Credits: ${skill.maxCredits})</p>` : ""}
         <a href="#" class="register-btn">Register</a>
       </div>
@@ -162,24 +162,22 @@ function renderCertificationDetails(data) {
 
   if (!instanceObj) return "";
   const a = instanceObj.attributes || {};
-  let validity = a.validity || "";
-  const state = a.state || "N/A";
-
-  // ✅ Enhanced Validity Conversion (e.g., 12m → 1 year, 15m → 1 year 3 months)
-  if (validity && validity.endsWith("m")) {
-    const totalMonths = parseInt(validity.replace("m", ""), 10);
-    const years = Math.floor(totalMonths / 12);
-    const months = totalMonths % 12;
-    if (years > 0 && months > 0) {
-      validity = `${years} year${years > 1 ? "s" : ""} ${months} month${months > 1 ? "s" : ""}`;
-    } else if (years > 0) {
-      validity = `${years} year${years > 1 ? "s" : ""}`;
-    } else {
-      validity = `${months} month${months > 1 ? "s" : ""}`;
+  
+  // Format validity intelligently (convert "12m" to "1 year", etc.)
+  let validity = "N/A";
+  if (a.validity) {
+    const val = a.validity.trim().replace(/m$/, "");
+    const months = parseInt(val, 10);
+    if (!isNaN(months)) {
+      const years = Math.floor(months / 12);
+      const remMonths = months % 12;
+      validity = years > 0 
+        ? `${years} year${years > 1 ? 's' : ''}${remMonths > 0 ? ` ${remMonths} month${remMonths > 1 ? 's' : ''}` : ''}`
+        : `${months} month${months > 1 ? 's' : ''}`;
     }
-  } else if (!validity) {
-    validity = "N/A";
   }
+
+  const state = a.state || "N/A";
 
   let deadline = "N/A";
   if (a.completionDeadline) {
@@ -284,29 +282,6 @@ function renderSubLOs(data) {
     const img = a.imageUrl || "https://via.placeholder.com/100x80?text=No+Image";
     const dur = a.duration ? formatDuration(a.duration) : "N/A";
 
-    const subInc = inc.filter(i => i.relationships?.learningObject?.data?.id === sub.id || i.id === sub.id);
-    const loInst = subInc.filter(i => i.type === "learningObjectInstance");
-    const loRes = subInc.filter(i => i.type === "learningObjectResource");
-    const res = subInc.filter(i => i.type === "resource");
-
-    let resourceHTML = "";
-    loInst.forEach(inst => {
-      const refs = inst.relationships?.loResources?.data || [];
-      const matched = loRes.filter(lr => refs.some(r => r.id === lr.id));
-      matched.forEach(lr => {
-        const meta = lr.attributes?.localizedMetadata?.[0];
-        const moduleName = meta?.name || "Module";
-        const resourceType = lr.attributes?.resourceType || "N/A";
-        resourceHTML += `
-        <div class="module-card">
-          <div class="module-header">
-            <span>${moduleName}</span>
-            <span style="font-size:0.9em; color:#6a5acd;">${resourceType}</span>
-          </div>
-        </div>`;
-      });
-    });
-
     return `
     <div class="sublo-card">
       <div class="sublo-header">
@@ -318,7 +293,6 @@ function renderSubLOs(data) {
       </div>
       <div class="chapter-list">
         <p>${desc || "No description available."}</p>
-        ${resourceHTML || "<p>No resources available.</p>"}
       </div>
     </div>`;
   }).join('');
