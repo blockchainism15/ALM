@@ -111,7 +111,6 @@
   .format-PDF { color: #9333ea; font-weight: 600; }
   .format-DOC { color: #dc2626; font-weight: 600; }
   .format-default { color: #334155; }
-
 </style>
 </head>
 <body>
@@ -163,9 +162,42 @@ async function fetchDetails() {
     html += `<p><strong>Skill Level:</strong> ${lo.skillLevel || "N/A"}</p>`;
     html += `<p><strong>Skill Credits:</strong> ${lo.maxCredits || "N/A"}</p>`;
 
-    // Sub Learning Objects (modules, courses, etc.)
+    // Handle sub learning objects
     const subLOs = data.included?.filter(i => i.type.includes("learningObject")) || [];
-    if (subLOs.length) {
+
+    // For course details, show its resources
+    if (type === "course") {
+      const loResources = data.included?.filter(r => r.type === "learningObjectResource") || [];
+      html += `<h4>Modules / Resources:</h4>`;
+      for (const lr of loResources) {
+        const lrAttr = lr.attributes || {};
+        html += `<div class="module-card"><strong>${lrAttr.localizedMetadata?.[0]?.name || "Unnamed Module"}</strong><br>`;
+
+        // Fetch associated resources
+        const resources = data.included?.filter(r => r.type === "resource" && r.relationships?.learningObjectResource?.data?.id === lr.id) || [];
+        if (resources.length) {
+          html += `<div style="margin-left:15px;">`;
+          for (const res of resources) {
+            const rAttr = res.attributes || {};
+            const formatType = (() => {
+              const ct = rAttr.contentType?.toUpperCase() || "N/A";
+              if (["CP", "SCORM12", "SCORM2004"].includes(ct)) return "Interactive";
+              return ct;
+            })();
+            const colorClass = ["Interactive", "VIDEO", "PDF", "DOC"].includes(formatType)
+              ? `format-${formatType}` : "format-default";
+            html += `<div>- ${rAttr.name || "Unnamed Resource"} 
+              <span class="format-label ${colorClass}">${formatType}</span>
+              <span style="color:green;"> (${rAttr.duration || "N/A"} mins)</span>
+            </div>`;
+          }
+          html += `</div>`;
+        }
+        html += `</div>`;
+      }
+    } 
+    // For Learning Programs & Certifications: nested courses & resources
+    else if (subLOs.length) {
       html += `<h4>Modules / Courses:</h4>`;
       for (const sub of subLOs) {
         const sAttr = sub.attributes || {};
@@ -174,24 +206,29 @@ async function fetchDetails() {
           Duration: ${sAttr.duration || "N/A"} mins
         `;
 
-        // Learning Object Resources
-        const resources = data.included?.filter(r => r.type === "resource" && r.relationships?.learningObject?.data?.id === sub.id) || [];
-        if (resources.length) {
+        // Course resources
+        const loResources = data.included?.filter(r => r.type === "learningObjectResource" && r.relationships?.learningObject?.data?.id === sub.id) || [];
+        if (loResources.length) {
           html += `<div style="margin-left:15px;">`;
-          for (const res of resources) {
-            const rAttr = res.attributes || {};
-            const formatType = (()=>{
-              const ct = rAttr.contentType?.toUpperCase() || "N/A";
-              if (["CP","SCORM12","SCORM2004"].includes(ct)) return "Interactive";
-              return ct;
-            })();
-            const colorClass = ["Interactive","VIDEO","PDF","DOC"].includes(formatType)
-              ? `format-${formatType}` : "format-default";
-
-            html += `<div>- ${rAttr.name || "Unnamed Resource"}
-              <span class="format-label ${colorClass}">${formatType}</span>
-              <span style="color:green;"> (${rAttr.duration || "N/A"} mins)</span>
-            </div>`;
+          for (const lr of loResources) {
+            const lrAttr = lr.attributes || {};
+            const resLinked = data.included?.filter(r => r.type === "resource" && r.relationships?.learningObjectResource?.data?.id === lr.id) || [];
+            if (resLinked.length) {
+              for (const res of resLinked) {
+                const rAttr = res.attributes || {};
+                const formatType = (() => {
+                  const ct = rAttr.contentType?.toUpperCase() || "N/A";
+                  if (["CP", "SCORM12", "SCORM2004"].includes(ct)) return "Interactive";
+                  return ct;
+                })();
+                const colorClass = ["Interactive", "VIDEO", "PDF", "DOC"].includes(formatType)
+                  ? `format-${formatType}` : "format-default";
+                html += `<div>- ${rAttr.name || "Unnamed Resource"} 
+                  <span class="format-label ${colorClass}">${formatType}</span>
+                  <span style="color:green;"> (${rAttr.duration || "N/A"} mins)</span>
+                </div>`;
+              }
+            }
           }
           html += `</div>`;
         }
