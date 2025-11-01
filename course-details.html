@@ -205,6 +205,7 @@ function getFormatColor(type) {
   return map[type?.toUpperCase()] || '#2e7d32';
 }
 
+/* UPDATED renderModules() BELOW */
 function renderModules(data) {
   const inc = data.included || [];
   const loInst = inc.filter(i => i.type === "learningObjectInstance");
@@ -216,39 +217,35 @@ function renderModules(data) {
     const refs = inst.relationships?.loResources?.data || [];
     const matched = loRes.filter(lr => refs.some(r => r.id === lr.id));
     let html = "";
+
     matched.forEach(lr => {
       const m = lr.attributes?.localizedMetadata?.[0];
       const name = m?.name || "Module";
-      const resourceType = lr.attributes?.resourceType || "N/A"; // ✅ added
       const resRefs = lr.relationships?.resources?.data || [];
-      const related = res.filter(r => resRefs.some(rr => rr.id === r.id));
+      const relatedResources = res.filter(r => resRefs.some(rr => rr.id === r.id));
 
       html += `
       <div class="module-card">
-        <div class="module-header">
-          <span>${name}</span>
-          <span style="font-size:0.9em; color:#6a5acd;">${resourceType}</span> <!-- ✅ added -->
-        </div>
+        <div class="module-header"><span>${name}</span></div>
         <div class="chapter-list">
-          ${related.map(r => {
+          ${relatedResources.length ? relatedResources.map(r => {
             const a = r.attributes || {};
-            const t = a.contentType;
-            const display = ["CP","SCORM12","SCORM2004"].includes(t) ? "Interactive" : (t || a.resourceType || "N/A");
-            const color = getFormatColor(display);
+            const duration = a.desiredDuration || a.authorDesiredDuration || "N/A";
+            const type = a.contentType || "Unknown";
+            const color = getFormatColor(type);
             return `
-            <div class="resource-card">
               <div class="chapter-item">
                 <i class="fa-solid fa-circle-play"></i>
-                <span>${a.name}</span>
+                <span>${a.name || "Unnamed Resource"}</span>
                 <small class="format-label" style="color:${color};">
-                  (${a.desiredDuration || 0} mins - ${display})
+                  (${duration} mins - ${type})
                 </small>
-              </div>
-            </div>`;
-          }).join('')}
+              </div>`;
+          }).join('') : `<p>No resources found for this module.</p>`}
         </div>
       </div>`;
     });
+
     return html;
   }).join('');
 }
@@ -257,7 +254,6 @@ function renderSubLOs(data) {
   const inc = data.included || [];
   const subCourses = inc.filter(i => i.type === "learningObject" && i.attributes?.loType === "course");
   if (!subCourses.length) return "<p>No related courses available.</p>";
-
   return subCourses.map(sub => {
     const a = sub.attributes || {};
     const m = a.localizedMetadata?.[0] || {};
@@ -265,33 +261,6 @@ function renderSubLOs(data) {
     const desc = m.overview || a.description || "";
     const img = a.imageUrl || "https://via.placeholder.com/100x80?text=No+Image";
     const dur = a.duration ? formatDuration(a.duration) : "N/A";
-
-    // extract nested resources for this sub-course
-    const subInc = inc.filter(i => i.relationships?.learningObject?.data?.id === sub.id || i.id === sub.id);
-    const loInst = subInc.filter(i => i.type === "learningObjectInstance");
-    const loRes = subInc.filter(i => i.type === "learningObjectResource");
-    const res = subInc.filter(i => i.type === "resource");
-
-    let resourceHTML = "";
-    loInst.forEach(inst => {
-      const refs = inst.relationships?.loResources?.data || [];
-      const matched = loRes.filter(lr => refs.some(r => r.id === lr.id));
-      matched.forEach(lr => {
-        const meta = lr.attributes?.localizedMetadata?.[0];
-        const moduleName = meta?.name || "Module";
-        const resourceType = lr.attributes?.resourceType || "N/A"; // ✅ added
-        const resRefs = lr.relationships?.resources?.data || [];
-        const related = res.filter(r => resRefs.some(rr => rr.id === r.id));
-        resourceHTML += `
-        <div class="module-card">
-          <div class="module-header">
-            <span>${moduleName}</span>
-            <span style="font-size:0.9em; color:#6a5acd;">${resourceType}</span> <!-- ✅ added -->
-          </div>
-        </div>`;
-      });
-    });
-
     return `
     <div class="sublo-card">
       <div class="sublo-header">
@@ -301,10 +270,7 @@ function renderSubLOs(data) {
         </div>
         <small>${dur}</small>
       </div>
-      <div class="chapter-list">
-        <p>${desc || "No description available."}</p>
-        ${resourceHTML || "<p>No resources available.</p>"}
-      </div>
+      <div class="chapter-list"><p>${desc || "No description available."}</p></div>
     </div>`;
   }).join('');
 }
