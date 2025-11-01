@@ -8,7 +8,6 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
   <style>
     body {
       font-family: 'Inter', sans-serif;
@@ -17,7 +16,6 @@
       padding: 0;
       color: #222;
     }
-
     header {
       background: linear-gradient(90deg, #003366, #0055cc);
       color: white;
@@ -27,13 +25,11 @@
       font-weight: 600;
       letter-spacing: 0.5px;
     }
-
     .container {
       max-width: 1200px;
       margin: 2rem auto;
       padding: 1rem;
     }
-
     .card {
       background: rgba(255, 255, 255, 0.7);
       border-radius: 18px;
@@ -44,12 +40,10 @@
       overflow: hidden;
       transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
-
     .card:hover {
       transform: translateY(-4px);
       box-shadow: 0 6px 16px rgba(0,0,0,0.1);
     }
-
     .card-header {
       display: flex;
       align-items: center;
@@ -58,26 +52,22 @@
       padding: 1rem 1.5rem;
       border-bottom: 1px solid #dbe2ef;
     }
-
     .card-header img {
       width: 130px;
       height: 130px;
       border-radius: 14px;
       object-fit: cover;
     }
-
     .card-header h2 {
       margin: 0;
       font-size: 1.5rem;
       color: #003366;
     }
-
     .card-content {
       padding: 1.2rem 1.5rem;
       font-size: 0.95rem;
       line-height: 1.6;
     }
-
     .module-card, .resource-card, .sublo-card {
       border: 1px solid #e0e6ef;
       border-radius: 12px;
@@ -86,12 +76,10 @@
       box-shadow: 0 2px 6px rgba(0,0,0,0.05);
       transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
-
     .module-card:hover, .resource-card:hover, .sublo-card:hover {
       transform: translateY(-3px);
       box-shadow: 0 4px 10px rgba(0,0,0,0.08);
     }
-
     .module-header, .sublo-header {
       background: rgba(230,240,255,0.8);
       padding: 0.8rem 1rem;
@@ -101,11 +89,7 @@
       align-items: center;
       justify-content: space-between;
     }
-
-    .chapter-list {
-      padding: 0.8rem 1rem;
-    }
-
+    .chapter-list { padding: 0.8rem 1rem; }
     .chapter-item {
       display: flex;
       align-items: center;
@@ -113,22 +97,9 @@
       padding: 0.5rem 0;
       border-bottom: 1px solid #f0f2f7;
     }
-
-    .chapter-item:last-child {
-      border-bottom: none;
-    }
-
-    .chapter-item i {
-      color: #0055cc;
-      font-size: 1rem;
-      width: 18px;
-      text-align: center;
-    }
-
-    .format-label {
-      font-weight: 600;
-    }
-
+    .chapter-item:last-child { border-bottom: none; }
+    .chapter-item i { color: #0055cc; font-size: 1rem; width: 18px; text-align: center; }
+    .format-label { font-weight: 600; }
     .register-btn {
       display: inline-block;
       background: transparent;
@@ -142,212 +113,218 @@
       margin-top: 1rem;
       transition: all 0.3s ease;
     }
-
     .register-btn:hover {
       background: linear-gradient(45deg, #4da3ff, #a259ff);
       color: white;
       border-image: none;
     }
-
     @media (max-width: 768px) {
-      .card-header {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-      .card-header img {
-        width: 100%;
-        height: 220px;
-      }
+      .card-header { flex-direction: column; align-items: flex-start; }
+      .card-header img { width: 100%; height: 220px; }
     }
   </style>
 </head>
 
 <body>
-  <header>Course Details</header>
+<header>Course Details</header>
+<div class="container" id="content"><p>Loading details...</p></div>
 
-  <div class="container" id="content">
-    <p>Loading details...</p>
-  </div>
+<script>
+async function fetchDetails() {
+  const content = document.getElementById('content');
+  const params = new URLSearchParams(window.location.search);
+  const courseId = params.get('courseId');
+  if (!courseId) { content.innerHTML = "<p>Invalid course ID.</p>"; return; }
 
-  <script>
-  async function fetchDetails() {
-    const content = document.getElementById('content');
-    const params = new URLSearchParams(window.location.search);
-    const courseId = params.get('courseId');
-    if (!courseId) {
-      content.innerHTML = "<p>Invalid course ID.</p>";
-      return;
-    }
+  const [type, id] = courseId.split(':');
+  const apiUrl = `https://cpcontents.adobe.com/eu/public/guest/eu/api/5fc01dd5-de45-408d-9b07-b267d40ebef9/9759/${type}/${id}.json`;
 
-    const [type, id] = courseId.split(':');
-    const apiUrl = `https://cpcontents.adobe.com/eu/public/guest/eu/api/5fc01dd5-de45-408d-9b07-b267d40ebef9/9759/${type}/${id}.json`;
-
-    try {
-      const response = await fetch(apiUrl);
-      if (!response.ok) throw new Error('Network error');
-      const data = await response.json();
-      renderDetails(data, type);
-    } catch (error) {
-      console.error(error);
-      content.innerHTML = "<p>Failed to load course details.</p>";
-    }
+  try {
+    const response = await fetch(apiUrl);
+    if (!response.ok) throw new Error('Network error');
+    const data = await response.json();
+    renderDetails(data, type);
+  } catch (e) {
+    console.error(e);
+    content.innerHTML = "<p>Failed to load course details.</p>";
   }
+}
 
-  function renderDetails(data, type) {
-    const content = document.getElementById('content');
-    const attributes = data.data?.attributes || {};
-    const localized = attributes.localizedMetadata?.[0] || {};
-    const title = localized.name || attributes.name || "Untitled";
-    const description = localized.overview || localized.description || attributes.description || "No description available.";
-    const image = attributes.imageUrl || "https://via.placeholder.com/150x100?text=No+Image";
-    const duration = attributes.duration ? formatDuration(attributes.duration) : "N/A";
-    const skillData = extractSkillInfo(data);
+function renderDetails(data, type) {
+  const content = document.getElementById('content');
+  const attr = data.data?.attributes || {};
+  const meta = attr.localizedMetadata?.[0] || {};
+  const title = meta.name || attr.name || "Untitled";
+  const desc = meta.overview || meta.description || attr.description || "No description available.";
+  const image = attr.imageUrl || "https://via.placeholder.com/150x100?text=No+Image";
+  const duration = attr.duration ? formatDuration(attr.duration) : "N/A";
+  const skill = extractSkillInfo(data);
 
-    let html = `
-      <div class="card">
-        <div class="card-header">
-          <img src="${image}" alt="Course Image">
-          <div>
-            <h2>${title}</h2>
-            <p>${description}</p>
-            <p><strong>Duration:</strong> ${duration}</p>
-            ${skillData ? `<p><strong>Skill:</strong> ${skillData.name} (Level ${skillData.level}, Credits: ${skillData.maxCredits})</p>` : ""}
-            <a href="https://learningmanager.adobe.com/accountiplogin?ipId=18979&accesskey=bsni4medbhhps" class="register-btn">Register</a>
-          </div>
+  let html = `
+  <div class="card">
+    <div class="card-header">
+      <img src="${image}" alt="Course Image">
+      <div>
+        <h2>${title}</h2>
+        <p>${desc}</p>
+        <p><strong>Duration:</strong> ${duration}</p>
+        ${skill ? `<p><strong>Skill:</strong> ${skill.name} (Level ${skill.level}, Credits: ${skill.maxCredits})</p>` : ""}
+        <a href="#" class="register-btn">Register</a>
+      </div>
+    </div>
+    <div class="card-content">
+      <h3>Your Learning Journey for this ${type}</h3>
+  `;
+
+  if (type === "course") html += renderModules(data);
+  else if (type === "learningProgram" || type === "certification") html += renderSubLOs(data);
+
+  html += "</div></div>";
+  content.innerHTML = html;
+}
+
+function extractSkillInfo(data) {
+  const inc = data.included || [];
+  const s = inc.find(i => i.type === "skill");
+  const sl = inc.find(i => i.type === "skillLevel");
+  if (!s || !sl) return null;
+  return { name: s.attributes?.name || "Skill", level: sl.attributes?.level || "N/A", maxCredits: sl.attributes?.maxCredits || "N/A" };
+}
+
+function getFormatColor(type) {
+  const map = {
+    'INTERACTIVE': '#0078ff',
+    'VIDEO': '#e67e22',
+    'PDF': '#d32f2f',
+    'DOC': '#1976d2',
+    'DOCX': '#1976d2',
+    'AUDIO': '#9c27b0',
+    'PPT': '#6a1b9a',
+    'PPTX': '#6a1b9a'
+  };
+  return map[type?.toUpperCase()] || '#2e7d32';
+}
+
+function renderModules(data) {
+  const inc = data.included || [];
+  const loInst = inc.filter(i => i.type === "learningObjectInstance");
+  const loRes = inc.filter(i => i.type === "learningObjectResource");
+  const res = inc.filter(i => i.type === "resource");
+  if (!loInst.length) return "<p>No modules available.</p>";
+
+  return loInst.map(inst => {
+    const refs = inst.relationships?.loResources?.data || [];
+    const matched = loRes.filter(lr => refs.some(r => r.id === lr.id));
+    let html = "";
+    matched.forEach(lr => {
+      const m = lr.attributes?.localizedMetadata?.[0];
+      const name = m?.name || "Module";
+      const resRefs = lr.relationships?.resources?.data || [];
+      const related = res.filter(r => resRefs.some(rr => rr.id === r.id));
+
+      html += `
+      <div class="module-card">
+        <div class="module-header"><span>${name}</span></div>
+        <div class="chapter-list">
+          ${related.map(r => {
+            const a = r.attributes || {};
+            const t = a.contentType;
+            const display = ["CP","SCORM12","SCORM2004"].includes(t) ? "Interactive" : (t || a.resourceType || "N/A");
+            const color = getFormatColor(display);
+            return `
+            <div class="resource-card">
+              <div class="chapter-item">
+                <i class="fa-solid fa-circle-play"></i>
+                <span>${a.name}</span>
+                <small class="format-label" style="color:${color};">
+                  (${a.desiredDuration || 0} mins - ${display})
+                </small>
+              </div>
+            </div>`;
+          }).join('')}
         </div>
-        <div class="card-content">
-          <h3>Your Learning Journey for this ${type}</h3>
-    `;
+      </div>`;
+    });
+    return html;
+  }).join('');
+}
 
-    if (type === "course") {
-      html += renderModules(data);
-    } else if (type === "learningProgram" || type === "certification") {
-      html += renderSubLOs(data);
-    }
+function renderSubLOs(data) {
+  const inc = data.included || [];
+  const subCourses = inc.filter(i => i.type === "learningObject" && i.attributes?.loType === "course");
+  if (!subCourses.length) return "<p>No related courses available.</p>";
 
-    html += "</div></div>";
-    content.innerHTML = html;
-  }
+  return subCourses.map(sub => {
+    const a = sub.attributes || {};
+    const m = a.localizedMetadata?.[0] || {};
+    const name = m.name || a.name || "Untitled Course";
+    const desc = m.overview || a.description || "";
+    const img = a.imageUrl || "https://via.placeholder.com/100x80?text=No+Image";
+    const dur = a.duration ? formatDuration(a.duration) : "N/A";
 
-  function extractSkillInfo(data) {
-    const included = data.included || [];
-    const skill = included.find(i => i.type === "skill");
-    const skillLevel = included.find(i => i.type === "skillLevel");
-    if (!skill || !skillLevel) return null;
-    return {
-      name: skill.attributes?.name || "Skill",
-      level: skillLevel.attributes?.level || "N/A",
-      maxCredits: skillLevel.attributes?.maxCredits || "N/A"
-    };
-  }
+    // extract nested resources for this sub-course
+    const subInc = inc.filter(i => i.relationships?.learningObject?.data?.id === sub.id || i.id === sub.id);
+    const loInst = subInc.filter(i => i.type === "learningObjectInstance");
+    const loRes = subInc.filter(i => i.type === "learningObjectResource");
+    const res = subInc.filter(i => i.type === "resource");
 
-  function getFormatColor(type) {
-    const map = {
-      'Interactive': '#0078ff',
-      'VIDEO': '#e67e22',
-      'PDF': '#d32f2f',
-      'DOC': '#1976d2',
-      'DOCX': '#1976d2',
-      'AUDIO': '#9c27b0',
-      'PPT': '#6a1b9a',
-      'PPTX': '#6a1b9a'
-    };
-    return map[type?.toUpperCase()] || '#2e7d32';
-  }
-
-  function renderModules(data) {
-    const included = data.included || [];
-    const loInstances = included.filter(i => i.type === "learningObjectInstance");
-    const loResources = included.filter(i => i.type === "learningObjectResource");
-    const resources = included.filter(i => i.type === "resource");
-
-    if (!loInstances.length) return "<p>No modules available.</p>";
-
-    return loInstances.map(instance => {
-      const loResRefs = instance.relationships?.loResources?.data || [];
-      const matchedResources = loResources.filter(lr => loResRefs.some(ref => ref.id === lr.id));
-
-      let moduleHTML = "";
-      matchedResources.forEach(lr => {
+    let resourceHTML = "";
+    loInst.forEach(inst => {
+      const refs = inst.relationships?.loResources?.data || [];
+      const matched = loRes.filter(lr => refs.some(r => r.id === lr.id));
+      matched.forEach(lr => {
         const meta = lr.attributes?.localizedMetadata?.[0];
-        const name = meta?.name || "Module";
+        const moduleName = meta?.name || "Module";
         const resRefs = lr.relationships?.resources?.data || [];
-        const relatedRes = resources.filter(r => resRefs.some(ref => ref.id === r.id));
-
-        moduleHTML += `
-          <div class="module-card">
-            <div class="module-header"><span>${name}</span></div>
-            <div class="chapter-list">
-              ${relatedRes.map(r => {
-                const attr = r.attributes || {};
-                const type = attr.contentType;
-                const displayType = ["CP", "SCORM12", "SCORM2004"].includes(type)
-                  ? "Interactive"
-                  : (type || attr.resourceType || "N/A");
-                const color = getFormatColor(displayType);
-                return `
-                  <div class="resource-card">
-                    <div class="chapter-item">
-                      <i class="fa-solid fa-circle-play"></i>
-                      <span>${attr.name}</span>
-                      <small class="format-label" style="color:${color};">(${attr.desiredDuration || 0} mins - ${displayType})</small>
-                    </div>
-                  </div>
-                `;
-              }).join('')}
-            </div>
-          </div>
-        `;
-      });
-
-      return moduleHTML;
-    }).join('');
-  }
-
-  function renderSubLOs(data) {
-    const included = data.included || [];
-    const subCourses = included.filter(i => i.type === "learningObject" && i.attributes?.loType === "course");
-
-    if (!subCourses.length) return "<p>No related courses available.</p>";
-
-    return subCourses.map(sub => {
-      const subAttr = sub.attributes || {};
-      const subMeta = subAttr.localizedMetadata?.[0] || {};
-      const subName = subMeta.name || subAttr.name || "Untitled Course";
-      const subDesc = subMeta.overview || subAttr.description || "";
-      const subImage = subAttr.imageUrl || "https://via.placeholder.com/100x80?text=No+Image";
-      const subDuration = subAttr.duration ? formatDuration(subAttr.duration) : "N/A";
-
-      const subData = {
-        included: included.filter(i => i.relationships?.learningObject?.data?.id === sub.id || i.id === sub.id)
-      };
-
-      return `
-        <div class="sublo-card">
-          <div class="sublo-header">
-            <div style="display:flex;align-items:center;gap:0.8rem;">
-              <img src="${subImage}" style="width:60px;height:60px;border-radius:8px;object-fit:cover;">
-              <span>${subName} (${subAttr.loType})</span>
-            </div>
-            <small>${subDuration}</small>
-          </div>
+        const related = res.filter(r => resRefs.some(rr => rr.id === r.id));
+        resourceHTML += `
+        <div class="module-card">
+          <div class="module-header"><span>${moduleName}</span></div>
           <div class="chapter-list">
-            <p>${subDesc || "No description available."}</p>
-            ${renderModules(subData)}
+            ${related.map(r => {
+              const attr = r.attributes || {};
+              const type = attr.contentType;
+              const display = ["CP","SCORM12","SCORM2004"].includes(type) ? "Interactive" : (type || attr.resourceType || "N/A");
+              const color = getFormatColor(display);
+              return `
+              <div class="resource-card">
+                <div class="chapter-item">
+                  <i class="fa-solid fa-circle-play"></i>
+                  <span>${attr.name}</span>
+                  <small class="format-label" style="color:${color};">
+                    (${attr.desiredDuration || 0} mins - ${display})
+                  </small>
+                </div>
+              </div>`;
+            }).join('')}
           </div>
+        </div>`;
+      });
+    });
+
+    return `
+    <div class="sublo-card">
+      <div class="sublo-header">
+        <div style="display:flex;align-items:center;gap:0.8rem;">
+          <img src="${img}" style="width:60px;height:60px;border-radius:8px;object-fit:cover;">
+          <span>${name} (${a.loType})</span>
         </div>
-      `;
-    }).join('');
-  }
+        <small>${dur}</small>
+      </div>
+      <div class="chapter-list">
+        <p>${desc || "No description available."}</p>
+        ${resourceHTML || "<p>No resources available.</p>"}
+      </div>
+    </div>`;
+  }).join('');
+}
 
-  function formatDuration(totalMins) {
-    const days = Math.floor(totalMins / 1440);
-    const mins = totalMins % 1440;
-    return days > 0 ? `${days} day(s) ${mins} mins` : `${mins} mins`;
-  }
+function formatDuration(mins) {
+  const d = Math.floor(mins / 1440), m = mins % 1440;
+  return d > 0 ? `${d} day(s) ${m} mins` : `${m} mins`;
+}
 
-  fetchDetails();
-  </script>
+fetchDetails();
+</script>
 </body>
 </html>
-
