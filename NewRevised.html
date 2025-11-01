@@ -193,9 +193,10 @@
 </div>
 
 <script>
-const accountId = "108079";
-const apiKey = "9b1e6b7f-20f3-4c49-a9c8-f5f4131096f8";
+const accountId = "9759";
+const apiKey = "5fc01dd5-de45-408d-9b07-b267d40ebef9";
 
+// Catalogs, tags, skills
 const catalogs = ["Default Catalog", "Special Catalog"];
 catalogs.forEach(c => document.getElementById("catalogNamesSelect").innerHTML += `<option value="${c}">${c}</option>`);
 
@@ -216,10 +217,10 @@ async function fetchResults(filters = {}, page = 0) {
     paginationDiv.innerHTML = "";
     loadingDiv.style.display = "block";
 
-    const apiUrl = `https://primeapps.adobe.com/almsearch/api/v1/production/${accountId}/${apiKey}/search?size=${pageSize}&from=${page * pageSize}`;
+    const apiUrl = `https://primeapps.adobe.com/almsearch/api/v1/eu/${accountId}/${apiKey}/search?size=${pageSize}&from=${page * pageSize}`;
 
     let filterTerms = {};
-    if (filters.loType?.length) filterTerms.loType = filters.loType; // ✅ fixed singular
+    if (filters.loType?.length) filterTerms.loType = filters.loType;
     if (filters.deliveryType?.length) filterTerms.deliveryType = filters.deliveryType;
     if (filters.loSkillLevels?.length) filterTerms.loSkillLevels = filters.loSkillLevels;
     if (filters.loSkillNames?.length) filterTerms.loSkillNames = filters.loSkillNames;
@@ -271,7 +272,7 @@ async function fetchResults(filters = {}, page = 0) {
             container.appendChild(card);
 
             const numericId = lo.loId.split(":")[1];
-            fetch(`https://cpcontents.adobe.com/public/guest/production/api/${apiKey}/${accountId}/course/${numericId}.json`)
+            fetch(`https://cpcontents.adobe.com/eu/public/guest/eu/api/${apiKey}/${accountId}/course/${numericId}.json`)
                 .then(res => res.json())
                 .then(detail => {
                     if (detail?.data?.attributes?.imageUrl) {
