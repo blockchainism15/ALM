@@ -63,7 +63,7 @@
     line-height: 1.6;
   }
   .thumbnail {
-    width: 120px;
+    width: 140px;
     border-radius: 12px;
     margin-bottom: 15px;
     display: block;
@@ -139,13 +139,13 @@ async function loadDetails() {
 
 function getFormatTag(format) {
   let label = format;
-  let color = "#10b981"; // default green
+  let color = "#10b981";
   if (["SCORM12", "SCORM2004", "CP"].includes(format)) {
     label = "Interactive";
     color = "#2563eb";
   } else if (format === "VIDEO") color = "#ef4444";
   else if (format === "PDF") color = "#9333ea";
-  else if (format === "DOC" || format === "DOCX" || format === "PPT" || format === "PPTX") color = "#f59e0b";
+  else if (["DOC", "DOCX", "PPT", "PPTX"].includes(format)) color = "#f59e0b";
   return `<span class="format-tag" style="background:${color}">${label}</span>`;
 }
 
@@ -155,6 +155,7 @@ function renderDetails(data) {
   const relationships = data.relationships || {};
   const bannerUrl = attrs.bannerUrl || "";
   const loType = attrs.loType || "learningObject";
+  const included = data.included || [];
 
   let html = `
   <div class="card">
@@ -174,62 +175,61 @@ function renderDetails(data) {
       <a href="https://learningmanager.adobe.com/accountiplogin?ipId=18979&accesskey=bsni4medbhhps" target="_blank" class="register-btn">Register</a>
     </div>`;
 
-  // Show modules or subLOs
+  // Handle learning programs or certifications (with courses/subLOs)
   if (relationships.subLoList?.data?.length > 0) {
     html += `<h3 class="section-title">Courses</h3>`;
     relationships.subLoList.data.forEach(sub => {
-      const subObj = data.included.find(i => i.id === sub.id);
-      if (subObj) {
-        const subAttr = subObj.attributes || {};
-        html += `
-          <div class="sub-card">
-            <p><strong>${subAttr.localizedMetadata?.title || 'Untitled Course'}</strong></p>
-            <p>${subAttr.localizedMetadata?.description || 'No description available'}</p>
-            <p><span class="label">Type:</span> ${subAttr.loType || 'N/A'}</p>
-            <p><span class="label">Duration:</span> ${subAttr.duration || 'N/A'} mins</p>
-        `;
+      const subObj = included.find(i => i.id === sub.id);
+      if (!subObj) return;
+      const subAttr = subObj.attributes || {};
+      const subRel = subObj.relationships || {};
 
-        const subRel = subObj.relationships || {};
-        if (subRel.learningObjectResourceList?.data?.length > 0) {
-          html += `<div class="section-title">Modules</div>`;
-          subRel.learningObjectResourceList.data.forEach(lor => {
-            const lorObj = data.included.find(i => i.id === lor.id);
-            if (lorObj) {
-              const lorAttr = lorObj.attributes || {};
-              html += `
-                <div class="sub-card">
-                  <p><strong>${lorAttr.localizedMetadata?.title || 'Untitled Resource'}</strong></p>
-                  <p><span class="label">Duration:</span> ${lorAttr.duration || 'N/A'} mins</p>
-                  <p><span class="label">Format:</span> ${getFormatTag(lorAttr.resourceType || 'N/A')}</p>
-                </div>`;
-            }
-          });
-        }
-        html += `</div>`;
+      html += `
+        <div class="sub-card">
+          <p><strong>${subAttr.localizedMetadata?.title || 'Untitled Course'}</strong></p>
+          <p>${subAttr.localizedMetadata?.description || 'No description available'}</p>
+          <p><span class="label">Type:</span> ${subAttr.loType || 'N/A'}</p>
+          <p><span class="label">Duration:</span> ${subAttr.duration || 'N/A'} mins</p>`;
+
+      // show learningObjectResources under each sub-course
+      if (subRel.learningObjectResourceList?.data?.length > 0) {
+        html += `<div class="section-title">Modules</div>`;
+        subRel.learningObjectResourceList.data.forEach(lor => {
+          const lorObj = included.find(i => i.id === lor.id);
+          if (!lorObj) return;
+          const lorAttr = lorObj.attributes || {};
+          html += `
+            <div class="sub-card">
+              <p><strong>${lorAttr.localizedMetadata?.title || 'Untitled Resource'}</strong></p>
+              <p><span class="label">Duration:</span> ${lorAttr.duration || 'N/A'} mins</p>
+              <p><span class="label">Format:</span> ${getFormatTag(lorAttr.resourceType || 'N/A')}</p>
+            </div>`;
+        });
       }
+      html += `</div>`;
     });
   }
 
+  // Handle modules for direct course
   if (relationships.learningObjectResourceList?.data?.length > 0) {
     html += `<h3 class="section-title">Modules</h3>`;
     relationships.learningObjectResourceList.data.forEach(item => {
-      const modObj = data.included.find(i => i.id === item.id);
-      if (modObj) {
-        const modAttr = modObj.attributes || {};
-        html += `
-          <div class="sub-card">
-            <p><strong>${modAttr.localizedMetadata?.title || 'Untitled Module'}</strong></p>
-            <p><span class="label">Duration:</span> ${modAttr.duration || 'N/A'} mins</p>
-            <p><span class="label">Format:</span> ${getFormatTag(modAttr.resourceType || 'N/A')}</p>
-          </div>`;
-      }
+      const modObj = included.find(i => i.id === item.id);
+      if (!modObj) return;
+      const modAttr = modObj.attributes || {};
+      html += `
+        <div class="sub-card">
+          <p><strong>${modAttr.localizedMetadata?.title || 'Untitled Module'}</strong></p>
+          <p><span class="label">Duration:</span> ${modAttr.duration || 'N/A'} mins</p>
+          <p><span class="label">Format:</span> ${getFormatTag(modAttr.resourceType || 'N/A')}</p>
+        </div>`;
     });
   }
 
   html += `</div>`;
   container.innerHTML = html;
 
-  // set background image on header dynamically
+  // Apply banner background image
   const headers = document.querySelectorAll(".card-header");
   headers.forEach(h => {
     const bg = h.style.getPropertyValue("--bg");
