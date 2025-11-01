@@ -1,359 +1,323 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Course Details</title>
-
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
   <style>
-    :root {
-      --blue-1: #4b6cb7;
-      --purple-1: #6a11cb;
-    }
-    body{
-      font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-      background:#f4f6f8;
-      margin:0;
-      color:#222;
-      -webkit-font-smoothing:antialiased;
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f9fafb;
+      margin: 0;
+      padding: 0;
+      color: #222;
     }
 
-    /* header with banner (barely visible) */
-    .page-header{
-      position:relative;
-      padding:28px 20px;
-      text-align:center;
-      overflow:hidden;
-      background:linear-gradient(90deg,#003366,#0055cc);
-      color:white;
-    }
-    .page-header .banner-bg{
-      position:absolute;
-      inset:0;
-      background-position:center;
-      background-size:cover;
-      opacity:0.12; /* barely visible */
-      pointer-events:none;
-      z-index:0;
-      filter:blur(1px);
-    }
-    .page-header h1{position:relative;z-index:1;margin:0;font-size:20px;font-weight:600;}
-
-    .container{
-      max-width:1100px;
-      margin:22px auto;
-      padding:0 18px 42px;
+    header {
+      background: linear-gradient(90deg, #003366, #0055cc);
+      color: white;
+      text-align: center;
+      padding: 1.5rem 1rem;
+      font-size: 1.8rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
     }
 
-    .card{
-      background: rgba(255,255,255,0.78);
-      border-radius:16px;
-      border-top:3px solid rgba(77,163,255,0.9);
-      border-bottom:3px solid rgba(102,51,255,0.9);
-      box-shadow:0 6px 20px rgba(15,23,42,0.06);
-      overflow:hidden;
-      margin-bottom:18px;
+    .container {
+      max-width: 1200px;
+      margin: 2rem auto;
+      padding: 1rem;
     }
 
-    .card-body{
-      display:flex;
-      gap:18px;
-      padding:20px;
-      align-items:flex-start;
+    .card {
+      background: rgba(255, 255, 255, 0.7);
+      border-radius: 18px;
+      border-top: 3px solid #4da3ff;
+      border-bottom: 3px solid #4da3ff;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      margin-bottom: 1.5rem;
+      overflow: hidden;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
 
-    .thumbnail {
-      width:170px;                /* slightly bigger thumbnail as requested */
-      height:110px;
-      object-fit:cover;
-      border-radius:12px;
-      flex:0 0 170px;
-      box-shadow:0 6px 18px rgba(10,20,40,0.12);
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.1);
     }
 
-    .main-meta{
-      flex:1;
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      background: rgba(255, 255, 255, 0.5);
+      padding: 1rem 1.5rem;
+      border-bottom: 1px solid #dbe2ef;
     }
 
-    .main-meta h2{margin:0 0 6px;font-size:1.35rem;color:#02335e;}
-    .meta-row{margin:6px 0;color:#465a6b;font-size:0.95rem;line-height:1.45}
-
-    .register-btn{
-      display:inline-block;
-      padding:10px 20px;
-      border-radius:999px;
-      background:transparent;
-      border:2px solid transparent;
-      font-weight:600;
-      cursor:pointer;
-      margin-top:8px;
-      transition:all .22s ease;
-      color:var(--blue-1);
-      border-image-slice:1;
-      border-image-source: linear-gradient(90deg,var(--blue-1),var(--purple-1));
-    }
-    .register-btn:hover{
-      color:white;
-      background: linear-gradient(90deg,var(--blue-1),var(--purple-1));
-      transform:translateY(-2px);
+    .card-header img {
+      width: 130px;
+      height: 130px;
+      border-radius: 14px;
+      object-fit: cover;
     }
 
-    .card-content{
-      padding: 18px 20px 26px;
+    .card-header h2 {
+      margin: 0;
+      font-size: 1.5rem;
+      color: #003366;
     }
 
-    .card-content h3{margin:0 0 12px;font-size:1.05rem;color:#0b3250}
-    .module-card{
-      background: rgba(255,255,255,0.66);
-      border-radius:10px;
-      padding:12px;
-      border:1px solid #e6eef8;
-      margin-bottom:10px;
+    .card-content {
+      padding: 1.2rem 1.5rem;
+      font-size: 0.95rem;
+      line-height: 1.6;
     }
 
-    .module-header{
-      display:flex;align-items:center;justify-content:space-between;
-      gap:8px;margin-bottom:8px;font-weight:600;color:#02335e;
+    .module-card, .resource-card, .sublo-card {
+      border: 1px solid #e0e6ef;
+      border-radius: 12px;
+      margin: 1rem 0;
+      background-color: rgba(255,255,255,0.8);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
-    .module-items{padding-left:0;margin:0}
-    .module-item{
-      display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid #f1f5f9;
-    }
-    .module-item:first-child{border-top:0}
-    .module-item .name{flex:1;color:#234559}
-    .module-item .meta{color:#687782;font-size:0.9rem;white-space:nowrap}
 
-    .sub-lo{
-      display:flex; gap:12px; align-items:center; justify-content:space-between;
-      padding:10px;border-radius:10px;background:#fbfdff;border:1px solid #eef6ff;margin-bottom:10px;
+    .module-card:hover, .resource-card:hover, .sublo-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.08);
     }
-    .sub-lo .left{display:flex;gap:12px;align-items:center}
-    .sub-lo .sub-thumb{width:64px;height:44px;object-fit:cover;border-radius:8px}
-    .badge{display:inline-block;padding:6px 8px;border-radius:8px;background:#f2f7ff;color:#0b3d72;font-weight:600;font-size:0.85rem}
 
-    @media (max-width:820px){
-      .card-body{flex-direction:column;align-items:stretch}
-      .thumbnail{width:100%;height:170px;flex:unset}
+    .module-header, .sublo-header {
+      background: rgba(230,240,255,0.8);
+      padding: 0.8rem 1rem;
+      border-bottom: 1px solid #e0e6ef;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .chapter-list {
+      padding: 0.8rem 1rem;
+    }
+
+    .chapter-item {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid #f0f2f7;
+    }
+
+    .chapter-item:last-child {
+      border-bottom: none;
+    }
+
+    .chapter-item i {
+      color: #0055cc;
+      font-size: 1rem;
+      width: 18px;
+      text-align: center;
+    }
+
+    .register-btn {
+      display: inline-block;
+      background: transparent;
+      border: 2px solid;
+      border-image: linear-gradient(45deg, #4da3ff, #a259ff) 1;
+      color: #003366;
+      text-decoration: none;
+      font-weight: 600;
+      padding: 0.7rem 1.4rem;
+      border-radius: 8px;
+      margin-top: 1rem;
+      transition: all 0.3s ease;
+    }
+
+    .register-btn:hover {
+      background: linear-gradient(45deg, #4da3ff, #a259ff);
+      color: white;
+      border-image: none;
+    }
+
+    @media (max-width: 768px) {
+      .card-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .card-header img {
+        width: 100%;
+        height: 220px;
+      }
     }
   </style>
 </head>
+
 <body>
-  <header class="page-header">
-    <div class="banner-bg" id="bannerBg"></div>
-    <h1>Learning Object Details</h1>
-  </header>
+  <header>Course Details</header>
 
-  <main class="container" id="content">
-    <p>Loading details…</p>
-  </main>
+  <div class="container" id="content">
+    <p>Loading details...</p>
+  </div>
 
-<script>
-(async function(){
-  const content = document.getElementById('content');
-  const params = new URLSearchParams(window.location.search);
-  const courseIdParam = params.get('courseId');
+  <script>
+  async function fetchDetails() {
+    const content = document.getElementById('content');
+    const params = new URLSearchParams(window.location.search);
+    const courseId = params.get('courseId');
+    if (!courseId) {
+      content.innerHTML = "<p>Invalid course ID.</p>";
+      return;
+    }
 
-  if(!courseIdParam){
-    content.innerHTML = '<p>Invalid course ID in URL.</p>';
-    return;
+    const [type, id] = courseId.split(':');
+    const apiUrl = `https://cpcontents.adobe.com/eu/public/guest/eu/api/5fc01dd5-de45-408d-9b07-b267d40ebef9/9759/${type}/${id}.json`;
+
+    try {
+      const response = await fetch(apiUrl);
+      if (!response.ok) throw new Error('Network error');
+      const data = await response.json();
+      renderDetails(data, type);
+    } catch (error) {
+      console.error(error);
+      content.innerHTML = "<p>Failed to load course details.</p>";
+    }
   }
 
-  // Split "course:1773966" into [type, id]
-  const [loType, loId] = courseIdParam.split(':');
-  // Use the working API path you provided earlier
-  const apiBase = 'https://cpcontents.adobe.com/eu/public/guest/eu/api/5fc01dd5-de45-408d-9b07-b267d40ebef9/9759';
-  const apiUrl = `${apiBase}/${loType}/${loId}.json`;
+  function renderDetails(data, type) {
+    const content = document.getElementById('content');
+    const attributes = data.data?.attributes || {};
+    const localized = attributes.localizedMetadata?.[0] || {};
+    const title = localized.name || attributes.name || "Untitled";
+    const description = localized.overview || localized.description || attributes.description || "No description available.";
+    const image = attributes.imageUrl || "https://via.placeholder.com/150x100?text=No+Image";
+    const duration = attributes.duration ? formatDuration(attributes.duration) : "N/A";
+    const skillData = extractSkillInfo(data);
 
-  try{
-    const res = await fetch(apiUrl);
-    if(!res.ok) throw new Error('Network '+res.status);
-    const payload = await res.json();
+    let html = `
+      <div class="card">
+        <div class="card-header">
+          <img src="${image}" alt="Course Image">
+          <div>
+            <h2>${title}</h2>
+            <p>${description}</p>
+            <p><strong>Duration:</strong> ${duration}</p>
+            ${skillData ? `<p><strong>Skill:</strong> ${skillData.name} (Level ${skillData.level}, Credits: ${skillData.maxCredits})</p>` : ""}
+            <a href="https://learningmanager.adobe.com/accountiplogin?ipId=18979&accesskey=bsni4medbhhps" class="register-btn">Register</a>
+          </div>
+        </div>
+        <div class="card-content">
+          <h3>Your Learning Journey for this ${type}</h3>
+    `;
 
-    // core attributes
-    const data = payload.data || {};
-    const attributes = data.attributes || {};
-    const included = payload.included || [];
-
-    // set page header banner if present (barely visible)
-    const bannerUrl = attributes.bannerUrl || attributes.imageUrl || '';
-    if(bannerUrl){
-      const bg = document.getElementById('bannerBg');
-      bg.style.backgroundImage = `url("${bannerUrl}")`;
+    if (type === "course") {
+      html += renderModules(data);
+    } else if (type === "learningProgram" || type === "certification") {
+      html += renderSubLOs(data);
     }
 
-    // title/description
-    const localized = (attributes.localizedMetadata && attributes.localizedMetadata[0]) || {};
-    const title = localized.name || attributes.name || 'Untitled';
-    const description = localized.overview || localized.description || attributes.description || 'No description available.';
-    const imageUrl = attributes.imageUrl || attributes.cardImageUrl || 'https://via.placeholder.com/300x200?text=No+Image';
-    const durationMain = (typeof attributes.duration === 'number') ? `${attributes.duration} mins` : (attributes.duration || 'N/A');
-
-    // skill info: find learningObjectSkill -> find skillLevel and skill
-    // We search included for learningObjectSkill => relationships.skillLevel => skillLevel id => included find
-    let skillName = 'N/A', skillLevel = 'N/A', skillCredits = 'N/A';
-    // find learningObjectSkill entries (they have type learningObjectSkill)
-    const loSkills = included.filter(i => i.type === 'learningObjectSkill');
-    if(loSkills.length){
-      // take first skill relation (common case)
-      const skillRel = loSkills[0];
-      // skillLevel id (in its relationships)
-      const skillLevelRef = skillRel.relationships?.skillLevel?.data?.id;
-      // find skillLevel included
-      const skillLevelObj = included.find(i => i.type==='skillLevel' && i.id===skillLevelRef);
-      if(skillLevelObj){
-        skillLevel = skillLevelObj.attributes?.level ?? 'N/A';
-        skillCredits = skillLevelObj.attributes?.maxCredits ?? (skillLevelObj.attributes?.maxCredits === 0 ? '0' : 'N/A');
-      }
-      // try to find the skill object referenced by learningObjectSkill -> skill relationship is on skillLevel -> skill
-      const skillObjRefId = skillLevelObj?.relationships?.skill?.data?.id;
-      const skillObj = included.find(i => i.type==='skill' && i.id===skillObjRefId) || included.find(i => i.type==='skill');
-      if(skillObj){
-        skillName = skillObj.attributes?.name || 'N/A';
-        // if skillLevel didn't give credits, try skillObj relationships levels to find maxCredits
-        if(skillCredits === 'N/A'){
-          const lvlRef = skillObj.relationships?.levels?.data?.[0]?.id;
-          const lvlObj = included.find(i => i.type==='skillLevel' && i.id===lvlRef);
-          if(lvlObj) skillCredits = lvlObj.attributes?.maxCredits ?? 'N/A';
-        }
-      }
-    }
-
-    // Build HTML: main card
-    let html = '';
-    html += `<div class="card">`;
-    html +=   `<div class="card-body">`;
-    html +=     `<img class="thumbnail" src="${imageUrl}" alt="thumbnail">`;
-    html +=     `<div class="main-meta">`;
-    html +=       `<h2>${title}</h2>`;
-    html +=       `<div class="meta-row"><strong>Type:</strong> ${data.attributes?.loType || loType}</div>`;
-    html +=       `<div class="meta-row"><strong>Duration:</strong> ${durationMain}</div>`;
-    html +=       `<div class="meta-row"><strong>Skills:</strong> ${skillName}</div>`;
-    html +=       `<div class="meta-row"><strong>Skill Level:</strong> ${skillLevel}</div>`;
-    html +=       `<div class="meta-row"><strong>Skill Credits:</strong> ${skillCredits}</div>`;
-    html +=       `<div style="margin-top:10px"><a class="register-btn" href="https://learningmanager.adobe.com/accountiplogin?ipId=18979&accesskey=bsni4medbhhps" target="_blank" rel="noopener">Register</a></div>`;
-    html +=     `</div>`;
-    html +=   `</div>`; // card-body
-    html +=   `<div class="card-content">`;
-    html +=     `<h3>Your Learning Journey for this ${data.attributes?.loType || loType}</h3>`;
-    html +=     `<p style="margin-bottom:12px;">${description}</p>`;
-
-    // ---- Modules for courses (use included learningObjectInstance -> learningObjectResource -> resource)
-    if((data.attributes?.loType || loType) === 'course'){
-      // find instances in included
-      const instances = included.filter(i => i.type === 'learningObjectInstance');
-      if(instances.length){
-        html += `<h4 style="margin:10px 0 8px;color:#0b3d5b">Modules</h4>`;
-        // loop instances (usually one default)
-        for(const inst of instances){
-          const loResourcesRefs = inst.relationships?.loResources?.data || [];
-          // find learningObjectResource objects in included that match
-          const loResources = included.filter(i => i.type === 'learningObjectResource' && loResourcesRefs.some(r=>r.id===i.id));
-          if(loResources.length === 0){
-            html += `<div class="module-card"><div class="module-header">No modules available</div></div>`;
-          } else {
-            for(const lr of loResources){
-              const moduleName = (lr.attributes?.localizedMetadata && lr.attributes.localizedMetadata[0]?.name) || lr.attributes?.name || 'Module';
-              // find resource objects referenced by this lr
-              const resRefs = lr.relationships?.resources?.data || [];
-              const relatedResources = included.filter(i => i.type==='resource' && resRefs.some(r=>r.id===i.id));
-              html += `<div class="module-card">`;
-              html +=   `<div class="module-header"><div>${moduleName}</div><div class="badge">${lr.attributes?.resourceType || lr.attributes?.loResourceType || 'Content'}</div></div>`;
-              html +=   `<div>`;
-              if(relatedResources.length){
-                for(const r of relatedResources){
-                  const rName = r.attributes?.name || 'Resource';
-                  const rDuration = (typeof r.attributes?.desiredDuration === 'number') ? `${r.attributes.desiredDuration} mins` : (r.attributes?.desiredDuration || 'N/A');
-                  const rType = r.attributes?.contentType || r.attributes?.reportingType || 'N/A';
-                  html += `<div class="module-item"><div class="name">${rName}</div><div class="meta">${rType} • ${rDuration}</div></div>`;
-                }
-              } else {
-                html += `<div class="module-item"><div class="name">No resource entries</div></div>`;
-              }
-              html +=   `</div>`;
-              html += `</div>`;
-            }
-          }
-        }
-      } else {
-        html += `<p>No modules available.</p>`;
-      }
-    }
-
-    // ---- Sub learning objects (for learningProgram and certification)
-    if(data.attributes?.loType === 'learningProgram' || data.attributes?.loType === 'certification'){
-      const subLORefs = data.relationships?.subLOs?.data || [];
-      // Sometimes included contains the sub learning objects themselves
-      const subLOs = included.filter(i => i.type === 'learningObject' && subLORefs.some(ref => ref.id === i.id));
-      if(subLOs.length){
-        html += `<h4 style="margin:14px 0 8px;color:#0b3d5b">Included Courses</h4>`;
-        for(const sub of subLOs){
-          const sAttr = sub.attributes || {};
-          const sMeta = (sAttr.localizedMetadata && sAttr.localizedMetadata[0]) || {};
-          const sTitle = sMeta.name || sAttr.name || 'Untitled';
-          const sDesc = sMeta.overview || sMeta.description || sAttr.description || '';
-          const sImage = sAttr.imageUrl || '';
-          const sDuration = (typeof sAttr.duration === 'number') ? `${sAttr.duration} mins` : (sAttr.duration || 'N/A');
-          const sType = sAttr.loType || 'course';
-
-          // Try to gather module/resources for this sub from included: find learningObjectInstance with relationships.learningObject pointing to this sub
-          const subInstance = included.find(i => i.type==='learningObjectInstance' && i.relationships?.learningObject?.data?.id === sub.id);
-          // get loResources from that instance
-          let subModulesHtml = '';
-          if(subInstance){
-            const lrRefs = subInstance.relationships?.loResources?.data || [];
-            const subLoResources = included.filter(i => i.type==='learningObjectResource' && lrRefs.some(r=>r.id===i.id));
-            if(subLoResources.length){
-              for(const lr of subLoResources){
-                const moduleName = (lr.attributes?.localizedMetadata && lr.attributes.localizedMetadata[0]?.name) || lr.attributes?.name || 'Module';
-                const resRefs = lr.relationships?.resources?.data || [];
-                const relatedResources = included.filter(i => i.type==='resource' && resRefs.some(r=>r.id===i.id));
-                const resourceSummaries = (relatedResources.length) ? relatedResources.map(r => {
-                  const rName = r.attributes?.name || 'Resource';
-                  const rDuration = (typeof r.attributes?.desiredDuration === 'number') ? `${r.attributes.desiredDuration} mins` : (r.attributes?.desiredDuration || 'N/A');
-                  const rType = r.attributes?.contentType || r.attributes?.reportingType || 'N/A';
-                  return `${rName} (${rType} • ${rDuration})`;
-                }).join('<br>') : 'No resources';
-                subModulesHtml += `<div style="font-size:0.95rem;color:#3b5566;margin-top:8px"><strong>${moduleName}</strong><div style="margin-top:6px">${resourceSummaries}</div></div>`;
-              }
-            }
-          }
-
-          html += `
-            <div class="sub-lo">
-              <div class="left">
-                <img class="sub-thumb" src="${sImage || 'https://via.placeholder.com/120x80?text=No+Image'}" alt="">
-                <div>
-                  <div style="font-weight:700;color:#05324a">${sTitle}</div>
-                  <div style="color:#556b79;font-size:0.94rem;margin-top:6px">${sDesc || 'No description available.'}</div>
-                </div>
-              </div>
-              <div style="text-align:right">
-                <div style="margin-bottom:8px"><strong>${sType}</strong></div>
-                <div style="color:#687782">${sDuration}</div>
-              </div>
-            </div>
-          `;
-          if(subModulesHtml) {
-            html += `<div style="margin:8px 0 14px;padding-left:8px">${subModulesHtml}</div>`;
-          }
-        }
-      } else {
-        html += `<p>No related courses available.</p>`;
-      }
-    }
-
-    html += `</div></div>`; // close card-content and card
-
+    html += "</div></div>";
     content.innerHTML = html;
-
-  } catch(err){
-    console.error('fetch error',err);
-    content.innerHTML = `<div class="card"><div class="card-body"><div><h2>Error loading details.</h2><p style="color:#666">See console for details.</p></div></div></div>`;
   }
 
-})();
-</script>
+  function extractSkillInfo(data) {
+    const included = data.included || [];
+    const skill = included.find(i => i.type === "skill");
+    const skillLevel = included.find(i => i.type === "skillLevel");
+    if (!skill || !skillLevel) return null;
+    return {
+      name: skill.attributes?.name || "Skill",
+      level: skillLevel.attributes?.level || "N/A",
+      maxCredits: skillLevel.attributes?.maxCredits || "N/A"
+    };
+  }
+
+  function renderModules(data) {
+    const included = data.included || [];
+    const loInstances = included.filter(i => i.type === "learningObjectInstance");
+    const loResources = included.filter(i => i.type === "learningObjectResource");
+    const resources = included.filter(i => i.type === "resource");
+
+    if (!loInstances.length) return "<p>No modules available.</p>";
+
+    return loInstances.map(instance => {
+      const loResRefs = instance.relationships?.loResources?.data || [];
+      const matchedResources = loResources.filter(lr => loResRefs.some(ref => ref.id === lr.id));
+
+      let moduleHTML = "";
+      matchedResources.forEach(lr => {
+        const meta = lr.attributes?.localizedMetadata?.[0];
+        const name = meta?.name || "Module";
+        const resRefs = lr.relationships?.resources?.data || [];
+        const relatedRes = resources.filter(r => resRefs.some(ref => ref.id === r.id));
+
+        moduleHTML += `
+          <div class="module-card">
+            <div class="module-header">
+              <span>${name}</span>
+            </div>
+            <div class="chapter-list">
+              ${relatedRes.map(r => `
+                <div class="resource-card">
+                  <div class="chapter-item">
+                    <i class="fa-solid fa-circle-play"></i>
+                    <span>${r.attributes?.name}</span>
+                    <small style="color:#666;">(${r.attributes?.desiredDuration || 0} mins - ${r.attributes?.resourceType || "N/A"})</small>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      });
+
+      return moduleHTML;
+    }).join('');
+  }
+
+  function renderSubLOs(data) {
+    const included = data.included || [];
+    const subCourses = included.filter(i => i.type === "learningObject" && i.attributes?.loType === "course");
+
+    if (!subCourses.length) return "<p>No related courses available.</p>";
+
+    return subCourses.map(sub => {
+      const subAttr = sub.attributes || {};
+      const subMeta = subAttr.localizedMetadata?.[0] || {};
+      const subName = subMeta.name || subAttr.name || "Untitled Course";
+      const subDesc = subMeta.overview || subAttr.description || "";
+      const subImage = subAttr.imageUrl || "https://via.placeholder.com/100x80?text=No+Image";
+      const subDuration = subAttr.duration ? formatDuration(subAttr.duration) : "N/A";
+
+      return `
+        <div class="sublo-card">
+          <div class="sublo-header">
+            <div style="display:flex;align-items:center;gap:0.8rem;">
+              <img src="${subImage}" style="width:60px;height:60px;border-radius:8px;object-fit:cover;">
+              <span>${subName} (${subAttr.loType})</span>
+            </div>
+            <small>${subDuration}</small>
+          </div>
+          <div class="chapter-list">
+            <p>${subDesc || "No description available."}</p>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  function formatDuration(totalMins) {
+    const days = Math.floor(totalMins / 1440);
+    const mins = totalMins % 1440;
+    return days > 0 ? `${days} day(s) ${mins} mins` : `${mins} mins`;
+  }
+
+  fetchDetails();
+  </script>
 </body>
 </html>
