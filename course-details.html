@@ -34,7 +34,7 @@
     .card-header {
       position: relative;
       padding: 40px 20px 20px 20px;
-      background: rgba(0, 0, 0, 0.5);
+      background: rgba(0, 0, 0, 0.6);
       color: white;
       text-align: center;
     }
@@ -45,7 +45,7 @@
       inset: 0;
       background-size: cover;
       background-position: center;
-      opacity: 0.25; /* Controls how visible the banner image is */
+      opacity: 0.25; /* Controls image visibility */
       z-index: 0;
     }
 
@@ -152,9 +152,8 @@
   <script>
     const urlParams = new URLSearchParams(window.location.search);
     const courseId = urlParams.get("courseId");
-    const detailsContainer = document.getElementById("detailsContainer");
-    const detailsContent = document.getElementById("detailsContent");
     const headerSection = document.getElementById("headerSection");
+    const detailsContent = document.getElementById("detailsContent");
 
     async function fetchDetails() {
       try {
@@ -165,8 +164,8 @@
 
         const response = await fetch(url);
         if (!response.ok) throw new Error("API request failed");
-        const data = await response.json();
 
+        const data = await response.json();
         displayDetails(data);
       } catch (err) {
         console.error(err);
@@ -179,37 +178,31 @@
       const lo = data.data;
       if (!lo) return;
 
-      const attributes = lo.attributes || {};
-      const relationships = lo.relationships || {};
-      const bannerUrl = attributes.bannerUrl || "";
+      const attr = lo.attributes || {};
+      const rel = lo.relationships || {};
+      const bannerUrl = attr.bannerUrl || "";
 
-      // Update header background
+      // Background image for header
       headerSection.style.setProperty("--banner-url", `url('${bannerUrl}')`);
-      headerSection.style.background = "rgba(0, 0, 0, 0.5)";
-      headerSection.querySelector("h2").textContent = attributes.localizedMetadata?.title || "Untitled";
-      headerSection.querySelector("p").textContent =
-        attributes.localizedMetadata?.description?.substring(0, 150) || "No description available";
-      headerSection.style.position = "relative";
-      headerSection.style.color = "white";
-      headerSection.style.textShadow = "0 1px 2px rgba(0,0,0,0.5)";
+      headerSection.style.background = "rgba(0, 0, 0, 0.6)";
+      headerSection.querySelector("h2").textContent = attr.localizedMetadata?.title || "Untitled";
+      headerSection.querySelector("p").textContent = attr.localizedMetadata?.description?.substring(0, 150) || "No description available";
       headerSection.style.backgroundSize = "cover";
       headerSection.style.backgroundPosition = "center";
       headerSection.style.setProperty("background-image", `linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.55)), url('${bannerUrl}')`);
 
-      const loType = lo.type;
-      const title = attributes.localizedMetadata?.title || "Untitled";
-      const desc = attributes.localizedMetadata?.description || "No description available";
-      const duration = attributes.duration || "N/A";
-      const skills = attributes.skills?.map(s => s.skillName !== "Unnamed Skill" ? s.skillName : "").filter(Boolean).join(", ") || "N/A";
-      const skillLevel = attributes.skillLevel || "N/A";
-      const credits = attributes.maxCredits || "N/A";
+      const type = lo.type;
+      const duration = attr.duration || "N/A";
+      const skills = attr.skills?.map(s => s.skillName !== "Unnamed Skill" ? s.skillName : "").filter(Boolean).join(", ") || "N/A";
+      const skillLevel = attr.skillLevel || "N/A";
+      const credits = attr.maxCredits || "N/A";
 
       let html = `
         <div class="section">
-          <div class="section-title">Your Learning Journey for this ${loType}</div>
+          <div class="section-title">Your Learning Journey for this ${type}</div>
           <div class="meta-info">
-            <strong>Title:</strong> ${title}<br>
-            <strong>Description:</strong> ${desc}<br>
+            <strong>Title:</strong> ${attr.localizedMetadata?.title || "Untitled"}<br>
+            <strong>Description:</strong> ${attr.localizedMetadata?.description || "No description available"}<br>
             <strong>Duration:</strong> ${duration} mins<br>
             <strong>Skills:</strong> ${skills}<br>
             <strong>Skill Level:</strong> ${skillLevel}<br>
@@ -219,10 +212,9 @@
         </div>
       `;
 
-      const modules = relationships.learningObjectResource?.data || [];
-      const subCourses = relationships.subLoList?.data || [];
-
-      if (modules.length) {
+      // If type is course → show modules
+      if (type === "course" && rel.learningObjectResource?.data) {
+        const modules = rel.learningObjectResource.data;
         html += `<div class="section"><div class="section-title">Modules</div>`;
         modules.forEach(mod => {
           const modData = data.included.find(m => m.id === mod.id);
@@ -238,17 +230,36 @@
         html += `</div>`;
       }
 
-      if (subCourses.length) {
+      // If type is learningProgram or certification → show sub courses and their modules
+      if ((type === "learningProgram" || type === "certification") && rel.subLoList?.data) {
+        const subCourses = rel.subLoList.data;
         html += `<div class="section"><div class="section-title">Courses</div>`;
         subCourses.forEach(sub => {
           const subData = data.included.find(m => m.id === sub.id);
           if (subData) {
-            const subAttr = subData.attributes;
+            const subAttr = subData.attributes || {};
+            const subRel = subData.relationships || {};
             html += `
               <div class="sub-course-card">
                 <div class="module-title">${subAttr.localizedMetadata?.title || "Untitled Course"}</div>
                 <div class="meta-info"><i class="fa-solid fa-clock"></i> ${subAttr.duration || "N/A"} mins</div>
-              </div>`;
+            `;
+            if (subRel.learningObjectResource?.data) {
+              html += `<div class="section"><div class="section-title">Modules</div>`;
+              subRel.learningObjectResource.data.forEach(mod => {
+                const modData = data.included.find(m => m.id === mod.id);
+                if (modData) {
+                  const modAttr = modData.attributes;
+                  html += `
+                    <div class="module-card">
+                      <div class="module-title">${modAttr.localizedMetadata?.title || "Untitled Module"}</div>
+                      <div class="meta-info"><i class="fa-solid fa-clock"></i> ${modAttr.duration || "N/A"} mins</div>
+                    </div>`;
+                }
+              });
+              html += `</div>`;
+            }
+            html += `</div>`;
           }
         });
         html += `</div>`;
