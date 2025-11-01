@@ -4,6 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Course Details</title>
+
+  <!-- Google Fonts and Icons -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -59,8 +61,8 @@
     }
 
     .card-header img {
-      width: 100px;
-      height: 100px;
+      width: 120px;
+      height: 120px;
       border-radius: 12px;
       object-fit: cover;
     }
@@ -75,6 +77,30 @@
       padding: 1.2rem 1.5rem;
       font-size: 0.95rem;
       line-height: 1.6;
+    }
+
+    .skills-container {
+      margin-top: 1rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+    }
+
+    .skill-tag {
+      background: rgba(0, 102, 255, 0.1);
+      color: #003399;
+      padding: 0.4rem 0.8rem;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .skill-tag i {
+      color: #003399;
+      font-size: 0.85rem;
     }
 
     .module-card {
@@ -97,7 +123,6 @@
 
     .chapter-list {
       padding: 0.8rem 1rem;
-      display: block;
     }
 
     .chapter-item {
@@ -152,148 +177,137 @@
   <header>Course Details</header>
 
   <div class="container" id="content">
-    <p>Loading details...</p>
+    <p>Loading course details...</p>
   </div>
 
   <script>
-  async function fetchDetails() {
-    const content = document.getElementById('content');
-    const params = new URLSearchParams(window.location.search);
-    const courseId = params.get('courseId');
-    if (!courseId) {
-      content.innerHTML = "<p>Invalid course ID.</p>";
-      return;
+    async function fetchDetails() {
+      const content = document.getElementById('content');
+      const params = new URLSearchParams(window.location.search);
+      const courseId = params.get('courseId');
+      if (!courseId) {
+        content.innerHTML = "<p>Invalid course ID.</p>";
+        return;
+      }
+
+      const [type, id] = courseId.split(':');
+      const apiUrl = `https://cpcontents.adobe.com/eu/public/guest/eu/api/5fc01dd5-de45-408d-9b07-b267d40ebef9/9759/${type}/${id}.json`;
+
+      try {
+        const response = await fetch(apiUrl);
+        if (!response.ok) throw new Error('Network error');
+        const data = await response.json();
+        renderCourse(data);
+      } catch (error) {
+        console.error(error);
+        content.innerHTML = "<p>Error loading details.</p>";
+      }
     }
 
-    const [type, id] = courseId.split(':');
-    const apiUrl = `https://cpcontents.adobe.com/eu/public/guest/eu/api/5fc01dd5-de45-408d-9b07-b267d40ebef9/9759/${type}/${id}.json`;
+    function renderCourse(data) {
+      const content = document.getElementById('content');
+      const attributes = data.data?.attributes || {};
+      const localized = attributes.localizedMetadata?.[0] || {};
+      const title = localized.name || attributes.name || "Untitled";
+      const description = localized.overview || localized.description || "No description available.";
+      const image = attributes.imageUrl || attributes.cardImageUrl || "https://via.placeholder.com/150x100?text=No+Image";
+      const included = data.included || [];
 
-    try {
-      const response = await fetch(apiUrl);
-      if (!response.ok) throw new Error('Network error');
-      const data = await response.json();
-      renderDetails(data, type);
-    } catch (error) {
-      console.error(error);
-      content.innerHTML = "<p>Error loading details.</p>";
-    }
-  }
+      const skills = included.filter(i => i.type === "skill");
+      const skillLevels = included.filter(i => i.type === "skillLevel");
 
-  function renderDetails(data, type) {
-    const content = document.getElementById('content');
-    const attributes = data.data?.attributes || {};
-    const localized = attributes.localizedMetadata?.[0] || {};
-    const title = localized.name || attributes.name || "Untitled";
-    const description = localized.description || attributes.description || "No description available.";
-    const image = attributes.imageUrl || attributes.cardImageUrl || "https://via.placeholder.com/150x100?text=No+Image";
-
-    let html = `
-      <div class="card">
-        <div class="card-header">
-          <img src="${image}" alt="Course Image">
-          <div>
-            <h2>${title}</h2>
-            <p>${description}</p>
-            <a href="https://learningmanager.adobe.com/accountiplogin?ipId=18979&accesskey=bsni4medbhhps" class="register-btn">Register</a>
-          </div>
-        </div>
-        <div class="card-content">
-    `;
-
-    if (type === "course") {
-      html += renderModules(data);
-    } else if (type === "learningProgram" || type === "certification") {
-      html += renderSubLOs(data);
-    } else {
-      html += "<p>Unsupported content type.</p>";
-    }
-
-    html += "</div></div>";
-    content.innerHTML = html;
-  }
-
-  function renderModules(data) {
-    const modules = data.linked?.learningObjectResource || data.linked?.learningObjectResources || data.linked?.learningObjects || [];
-    if (!modules.length) return "<p>No modules available.</p>";
-
-    const allResources = data.linked?.resources || [];
-
-    return modules.map(module => {
-      const modAttr = module.attributes || {};
-      const modMeta = modAttr.localizedMetadata?.[0] || {};
-      const moduleName = modMeta.name || modAttr.name || "Untitled Module";
-      const resRefs = module.relationships?.resources?.data || [];
-
-      let moduleHTML = `
-        <div class="module-card">
-          <div class="module-header">${moduleName}</div>
-          <div class="chapter-list">
-      `;
-
-      const relatedResources = allResources.filter(r => resRefs.some(x => x.id === r.id));
-
-      relatedResources.forEach(res => {
-        const resAttr = res.attributes || {};
-        const resMeta = resAttr.localizedMetadata?.[0] || {};
-        const resName = resMeta.name || "Unnamed Chapter";
-        const format = resAttr.format || "";
-        let iconClass = "fa-file";
-        let typeLabel = format;
-
-        if (["SCORM12", "SCORM2004", "xAPI", "CP"].includes(format)) {
-          typeLabel = "Interactive";
-          iconClass = "fa-gamepad";
-        } else if (["pdf", "doc", "docx", "ppt", "pptx"].includes(format.toLowerCase())) {
-          iconClass = "fa-file-lines";
-        } else if (["video"].includes(format.toLowerCase())) {
-          iconClass = "fa-video";
-        } else if (["VC"].includes(format.toUpperCase())) {
-          iconClass = "fa-video";
-        } else if (["CR"].includes(format.toUpperCase())) {
-          iconClass = "fa-chalkboard-user";
-        }
-
-        moduleHTML += `
-          <div class="chapter-item">
-            <i class="fa-solid ${iconClass}"></i>
-            <span>${resName}</span>
-            <small style="color:#666;">(${typeLabel})</small>
+      let skillTags = "";
+      skills.forEach(skill => {
+        const skillName = skill.attributes?.localizedMetadata?.[0]?.name || "Unnamed Skill";
+        const relatedLevel = skillLevels.find(l => skill.relationships?.skillLevel?.data?.id === l.id);
+        const levelName = relatedLevel?.attributes?.localizedMetadata?.[0]?.name || "General";
+        skillTags += `
+          <div class="skill-tag">
+            <i class="fa-solid fa-star"></i>
+            ${skillName} – ${levelName}
           </div>
         `;
       });
 
-      moduleHTML += "</div></div>";
-      return moduleHTML;
-    }).join('');
-  }
-
-  function renderSubLOs(data) {
-    const subLOs = data.linked?.subLOs || [];
-    if (!subLOs.length) return "<p>No related courses available.</p>";
-
-    return subLOs.map(sub => {
-      const subAttr = sub.attributes || {};
-      const subMeta = subAttr.localizedMetadata?.[0] || {};
-      const subName = subMeta.name || subAttr.name || "Untitled Course";
-      const subDesc = subMeta.description || "";
-      const subImage = subAttr.imageUrl || "https://via.placeholder.com/100x80?text=No+Image";
-
-      return `
-        <div class="module-card">
-          <div class="module-header">
-            <img src="${subImage}" style="width:60px;height:60px;border-radius:8px;object-fit:cover;">
-            <span>${subName}</span>
+      let html = `
+        <div class="card">
+          <div class="card-header">
+            <img src="${image}" alt="Course Image">
+            <div>
+              <h2>${title}</h2>
+              <p>${description}</p>
+              <div class="skills-container">${skillTags}</div>
+              <a href="https://learningmanager.adobe.com/accountiplogin?ipId=18979&accesskey=bsni4medbhhps" class="register-btn">Register</a>
+            </div>
           </div>
-          <div class="chapter-list">
-            <p>${subDesc || "No description available."}</p>
-            ${renderModules({ linked: sub.linked || data.linked })}
+          <div class="card-content">
+            ${renderModules(data)}
           </div>
         </div>
       `;
-    }).join('');
-  }
 
-  fetchDetails();
+      content.innerHTML = html;
+    }
+
+    function renderModules(data) {
+      const included = data.included || [];
+      const loInstances = included.filter(i => i.type === "learningObjectInstance");
+      if (!loInstances.length) return "<p>No modules available.</p>";
+
+      let html = "";
+      loInstances.forEach(instance => {
+        const loResources = instance.relationships?.loResources?.data || [];
+        const allResources = included.filter(i => i.type === "learningObjectResource");
+        const realResources = included.filter(i => i.type === "resource");
+
+        loResources.forEach(resRef => {
+          const loRes = allResources.find(r => r.id === resRef.id);
+          if (loRes) {
+            const resMeta = loRes.attributes.localizedMetadata?.[0] || {};
+            const moduleName = resMeta.name || "Untitled Module";
+
+            html += `
+              <div class="module-card">
+                <div class="module-header">${moduleName}</div>
+                <div class="chapter-list">
+            `;
+
+            const resLinks = loRes.relationships?.resources?.data || [];
+            resLinks.forEach(link => {
+              const resItem = realResources.find(r => r.id === link.id);
+              if (resItem) {
+                const resAttr = resItem.attributes;
+                const resName = resAttr.name || "Unnamed Chapter";
+                const format = resAttr.reportingType || resAttr.contentType || "";
+                let iconClass = "fa-file";
+                let typeLabel = format;
+
+                if (["SCORM12", "SCORM2004", "xAPI", "CP"].includes(format)) {
+                  typeLabel = "Interactive";
+                  iconClass = "fa-gamepad";
+                } else if (format.toLowerCase().includes("video")) {
+                  iconClass = "fa-video";
+                }
+
+                html += `
+                  <div class="chapter-item">
+                    <i class="fa-solid ${iconClass}"></i>
+                    <span>${resName}</span>
+                    <small style="color:#666;">(${typeLabel})</small>
+                  </div>
+                `;
+              }
+            });
+
+            html += "</div></div>";
+          }
+        });
+      });
+
+      return html || "<p>No modules available.</p>";
+    }
+
+    fetchDetails();
   </script>
 </body>
 </html>
