@@ -100,8 +100,23 @@ async function loadCourseDetails() {
   }
 
   try {
-    // ✅ Fixed correct API path (EU + public)
-    const apiUrl = `https://cpcontents.adobe.com/eu/public/guest/eu/api/5fc01dd5-de45-408d-9b07-b267d40ebef9/9759/${courseId}.json`;
+    // ✅ Dynamically determine the type and ID from URL
+    const [type, id] = courseId.split(':');
+    let endpoint = '';
+
+    if (type === 'course') {
+      endpoint = `course/${id}.json`;
+    } else if (type === 'learningProgram') {
+      endpoint = `learningProgram/${id}.json`;
+    } else if (type === 'certification') {
+      endpoint = `certification/${id}.json`;
+    } else {
+      throw new Error('Invalid courseId format');
+    }
+
+    // ✅ Correct API URL construction
+    const apiUrl = `https://cpcontents.adobe.com/eu/public/guest/eu/api/5fc01dd5-de45-408d-9b07-b267d40ebef9/9759/${endpoint}`;
+
     const response = await fetch(apiUrl);
     if (!response.ok) throw new Error('Network error');
     const data = await response.json();
@@ -116,15 +131,15 @@ async function loadCourseDetails() {
 
     const title = lo.attributes.localizedMetadata?.[0]?.name || 'Untitled';
     const desc = lo.attributes.localizedMetadata?.[0]?.description || '';
-    const type = lo.attributes.loType || 'N/A';
+    const loType = lo.attributes.loType || type || 'N/A';
 
     let html = `
       <h1>${title}</h1>
-      <p><strong>Type:</strong> ${type}</p>
+      <p><strong>Type:</strong> ${loType}</p>
       <p>${desc}</p>
     `;
 
-    // --- Find sub-courses or modules ---
+    // --- Build modules/subcourses ---
     const subCourses = inc.filter(i => i.type === "learningObject");
     let moduleHTML = "";
 
@@ -145,7 +160,7 @@ async function loadCourseDetails() {
           const resRefs = lr.relationships?.resources?.data || [];
           const related = res.filter(r => resRefs.some(rr => rr.id === r.id));
 
-          // ✅ Display resource info under module
+          // ✅ Display related resource info
           let resourceInfo = "";
           if (related.length > 0) {
             resourceInfo = related.map(r => `
