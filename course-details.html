@@ -6,9 +6,7 @@
   <title>Course Details</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <!-- Use Inter for Apple-like clean font -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-  <!-- Font Awesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
   <style>
@@ -37,8 +35,10 @@
     }
 
     .card {
-      background: #fff;
+      background: rgba(255, 255, 255, 0.7);
       border-radius: 18px;
+      border-top: 3px solid #4da3ff;
+      border-bottom: 3px solid #4da3ff;
       box-shadow: 0 4px 12px rgba(0,0,0,0.08);
       margin-bottom: 1.5rem;
       overflow: hidden;
@@ -53,21 +53,21 @@
       display: flex;
       align-items: center;
       gap: 1rem;
-      background: linear-gradient(90deg, #f0f4ff, #e9f0ff);
+      background: rgba(255, 255, 255, 0.5);
       padding: 1rem 1.5rem;
       border-bottom: 1px solid #dbe2ef;
     }
 
     .card-header img {
-      width: 80px;
-      height: 80px;
-      border-radius: 10px;
+      width: 100px;
+      height: 100px;
+      border-radius: 12px;
       object-fit: cover;
     }
 
     .card-header h2 {
       margin: 0;
-      font-size: 1.4rem;
+      font-size: 1.5rem;
       color: #003366;
     }
 
@@ -81,23 +81,18 @@
       border: 1px solid #e0e6ef;
       border-radius: 12px;
       margin: 1rem 0;
-      background-color: #fdfdfd;
+      background-color: rgba(255,255,255,0.6);
       box-shadow: 0 2px 6px rgba(0,0,0,0.04);
     }
 
     .module-header {
-      background: #f7f9ff;
+      background: rgba(230,240,255,0.8);
       padding: 0.8rem 1rem;
       border-bottom: 1px solid #e0e6ef;
       font-weight: 600;
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      cursor: pointer;
-    }
-
-    .module-header i {
-      color: #0055cc;
+      gap: 0.8rem;
     }
 
     .chapter-list {
@@ -124,11 +119,6 @@
       text-align: center;
     }
 
-    .chapter-item span {
-      flex: 1;
-      font-size: 0.95rem;
-    }
-
     .register-btn {
       display: inline-block;
       background: #0055cc;
@@ -152,7 +142,7 @@
       }
       .card-header img {
         width: 100%;
-        height: 180px;
+        height: 200px;
       }
     }
   </style>
@@ -223,7 +213,7 @@
   }
 
   function renderModules(data) {
-    const modules = data.linked?.learningObjectResource || data.linked?.learningObjectResources || [];
+    const modules = data.linked?.learningObjectResource || data.linked?.learningObjectResources || data.linked?.learningObjects || [];
     if (!modules.length) return "<p>No modules available.</p>";
 
     const allResources = data.linked?.resources || [];
@@ -292,9 +282,10 @@
         <div class="module-card">
           <div class="module-header">
             <img src="${subImage}" style="width:60px;height:60px;border-radius:8px;object-fit:cover;">
-            ${subName}
+            <span>${subName}</span>
           </div>
           <div class="chapter-list">
+            <p>${subDesc || "No description available."}</p>
             ${renderModules({ linked: sub.linked || data.linked })}
           </div>
         </div>
@@ -303,7 +294,6 @@
   }
 
   fetchDetails();
-</script>
-
+  </script>
 </body>
 </html>
