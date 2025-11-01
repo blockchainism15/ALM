@@ -24,7 +24,7 @@
         position: absolute;
         inset: 0;
         background: inherit;
-        opacity: 0.3;
+        opacity: 0.25;
         z-index: 0;
     }
     .card-header-content {
@@ -32,8 +32,8 @@
         z-index: 1;
     }
     .title { font-size: 24px; font-weight:600; margin-bottom:10px; }
-    .desc { font-size:16px; color:#555; margin-bottom:10px; }
-    .thumbnail { width:160px; border-radius:10px; margin-bottom:15px; }
+    .desc { font-size:16px; color:#eee; margin-bottom:10px; }
+    .thumbnail { width:160px; border-radius:10px; margin-bottom:15px; display:block; }
     .register-btn {
         background: none;
         border: 2px solid;
@@ -72,16 +72,17 @@
 document.addEventListener("DOMContentLoaded", async () => {
     const urlParams = new URLSearchParams(window.location.search);
     const courseId = urlParams.get("courseId");
-
     const courseDetailsContainer = document.getElementById("courseDetails");
 
     try {
         const response = await fetch(`your_api_url_here/${courseId}`);
-        const data = await response.json();
+        const json = await response.json();
 
-        if (!data || !data.data) throw new Error("Invalid response");
+        // Use the correct object (your API may send course, learningProgram, or certification)
+        const data = json.course || json.learningProgram || json.certification || json.data;
+        if (!data) throw new Error("Invalid structure");
 
-        const lo = data.data;
+        const lo = data;
         const attributes = lo.attributes || {};
         const bannerUrl = attributes.bannerUrl || '';
         const title = attributes.title || "Untitled";
@@ -110,9 +111,9 @@ document.addEventListener("DOMContentLoaded", async () => {
                 <p><b>Skill Credits:</b> ${skillCredits}</p>
         `;
 
-        // Helper: color-coded format labels
+        // Color-coded format labels
         const getFormatLabel = (contentType) => {
-            const colorMap = {
+            const map = {
                 'Interactive': '#9b59b6',
                 'VIDEO': '#27ae60',
                 'PDF': '#2980b9',
@@ -120,48 +121,37 @@ document.addEventListener("DOMContentLoaded", async () => {
                 'AUDIO': '#8e44ad',
                 'HTML': '#16a085'
             };
-            const color = colorMap[contentType] || '#555';
+            const color = map[contentType] || '#555';
             return `<span class="label" style="background:${color}20; color:${color}">${contentType}</span>`;
         };
 
+        // Render nested resources (added fix for learningProgram/certification)
         const renderResources = (resources) => {
             if (!resources || !resources.length) return '';
             return resources.map(r => {
-                const rType = (r.contentType === "CP" || r.contentType === "SCORM12" || r.contentType === "SCORM2004") ? "Interactive" : r.contentType;
-                let nestedResources = '';
-                if (r.resources && r.resources.length > 0) {
-                    nestedResources = `
-                        <div class="nested-card">
-                            <b>Sub-Resources:</b>
-                            ${r.resources.map(sub => {
-                                const sType = (sub.contentType === "CP" || sub.contentType === "SCORM12" || sub.contentType === "SCORM2004") ? "Interactive" : sub.contentType;
-                                return `
-                                    <div>
-                                        <b>${sub.name}</b> - ${sub.duration || 'N/A'} mins
-                                        ${getFormatLabel(sType)}
-                                    </div>
-                                `;
-                            }).join('')}
-                        </div>
-                    `;
-                }
+                const rType = (["CP","SCORM12","SCORM2004"].includes(r.contentType)) ? "Interactive" : (r.contentType || "N/A");
+                const subRes = (r.resources && r.resources.length)
+                    ? `<div class="nested-card"><b>Sub-Resources:</b>${r.resources.map(sub => {
+                        const subType = (["CP","SCORM12","SCORM2004"].includes(sub.contentType)) ? "Interactive" : (sub.contentType || "N/A");
+                        return `<div><b>${sub.name}</b> - ${sub.duration || 'N/A'} mins ${getFormatLabel(subType)}</div>`;
+                    }).join('')}</div>` : '';
                 return `
                     <div class="nested-card">
-                        <b>${r.name}</b> - ${r.duration || 'N/A'} mins
-                        ${getFormatLabel(rType)}
-                        ${nestedResources}
+                        <b>${r.name}</b> - ${r.duration || 'N/A'} mins ${getFormatLabel(rType)}
+                        ${subRes}
                     </div>
                 `;
             }).join('');
         };
 
+        // Recursive renderer for subLOs
         const renderLearningObjects = (los) => {
             if (!los || !los.length) return '';
             return los.map(loItem => {
                 const attr = loItem.attributes || {};
                 const typeLabel = loItem.type ? `<span class="label" style="background:#007aff20; color:#007aff;">${loItem.type}</span>` : '';
+                const loResources = renderResources(loItem.resources || loItem.learningObjectResources);
                 const subLos = loItem.subLos ? renderLearningObjects(loItem.subLos) : '';
-                const loResources = renderResources(loItem.resources);
                 return `
                     <div class="subcard">
                         <b>${attr.title || "Untitled"}</b> ${typeLabel}<br>
@@ -174,7 +164,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             }).join('');
         };
 
-        // Render nested structure (courses → modules → resources)
+        // Show sub learning objects (modules/courses)
         if (lo.subLos && lo.subLos.length > 0) {
             html += `<div class="section-title">Modules / Sub-Learning Objects</div>`;
             html += renderLearningObjects(lo.subLos);
