@@ -166,139 +166,144 @@
   </div>
 
   <script>
-    async function fetchDetails() {
-      const content = document.getElementById('content');
-      const params = new URLSearchParams(window.location.search);
-      const courseId = params.get('courseId');
-      if (!courseId) {
-        content.innerHTML = "<p>Invalid course ID.</p>";
-        return;
-      }
-
-      const [type, id] = courseId.split(':');
-      const apiUrl = `https://cpcontents.adobe.com/eu/public/guest/eu/api/5fc01dd5-de45-408d-9b07-b267d40ebef9/9759/${type}/${id}.json`;
-
-      try {
-        const response = await fetch(apiUrl);
-        if (!response.ok) throw new Error('Network error');
-        const data = await response.json();
-
-        renderDetails(data, type);
-      } catch (error) {
-        console.error(error);
-        content.innerHTML = "<p>Error loading details.</p>";
-      }
+  async function fetchDetails() {
+    const content = document.getElementById('content');
+    const params = new URLSearchParams(window.location.search);
+    const courseId = params.get('courseId');
+    if (!courseId) {
+      content.innerHTML = "<p>Invalid course ID.</p>";
+      return;
     }
 
-    function renderDetails(data, type) {
-      const content = document.getElementById('content');
-      const attributes = data.data.attributes || {};
-      const title = attributes.localizedMetadata?.[0]?.name || "Untitled";
-      const description = attributes.localizedMetadata?.[0]?.description || "No description available.";
-      const image = attributes.imageUrl || "https://via.placeholder.com/150x100?text=No+Image";
+    const [type, id] = courseId.split(':');
+    const apiUrl = `https://cpcontents.adobe.com/eu/public/guest/eu/api/5fc01dd5-de45-408d-9b07-b267d40ebef9/9759/${type}/${id}.json`;
 
-      let html = `
-        <div class="card">
-          <div class="card-header">
-            <img src="${image}" alt="Course Image">
-            <div>
-              <h2>${title}</h2>
-              <p>${description}</p>
-              <a href="https://learningmanager.adobe.com/accountiplogin?ipId=18979&accesskey=bsni4medbhhps" class="register-btn">Register</a>
-            </div>
+    try {
+      const response = await fetch(apiUrl);
+      if (!response.ok) throw new Error('Network error');
+      const data = await response.json();
+      renderDetails(data, type);
+    } catch (error) {
+      console.error(error);
+      content.innerHTML = "<p>Error loading details.</p>";
+    }
+  }
+
+  function renderDetails(data, type) {
+    const content = document.getElementById('content');
+    const attributes = data.data?.attributes || {};
+    const localized = attributes.localizedMetadata?.[0] || {};
+    const title = localized.name || attributes.name || "Untitled";
+    const description = localized.description || attributes.description || "No description available.";
+    const image = attributes.imageUrl || attributes.cardImageUrl || "https://via.placeholder.com/150x100?text=No+Image";
+
+    let html = `
+      <div class="card">
+        <div class="card-header">
+          <img src="${image}" alt="Course Image">
+          <div>
+            <h2>${title}</h2>
+            <p>${description}</p>
+            <a href="https://learningmanager.adobe.com/accountiplogin?ipId=18979&accesskey=bsni4medbhhps" class="register-btn">Register</a>
           </div>
-          <div class="card-content">
+        </div>
+        <div class="card-content">
+    `;
+
+    if (type === "course") {
+      html += renderModules(data);
+    } else if (type === "learningProgram" || type === "certification") {
+      html += renderSubLOs(data);
+    } else {
+      html += "<p>Unsupported content type.</p>";
+    }
+
+    html += "</div></div>";
+    content.innerHTML = html;
+  }
+
+  function renderModules(data) {
+    const modules = data.linked?.learningObjectResource || data.linked?.learningObjectResources || [];
+    if (!modules.length) return "<p>No modules available.</p>";
+
+    const allResources = data.linked?.resources || [];
+
+    return modules.map(module => {
+      const modAttr = module.attributes || {};
+      const modMeta = modAttr.localizedMetadata?.[0] || {};
+      const moduleName = modMeta.name || modAttr.name || "Untitled Module";
+      const resRefs = module.relationships?.resources?.data || [];
+
+      let moduleHTML = `
+        <div class="module-card">
+          <div class="module-header">${moduleName}</div>
+          <div class="chapter-list">
       `;
 
-      if (type === "course") {
-        html += renderModules(data);
-      } else if (type === "learningProgram" || type === "certification") {
-        html += renderSubLOs(data);
-      } else {
-        html += "<p>Unsupported content type.</p>";
-      }
+      const relatedResources = allResources.filter(r => resRefs.some(x => x.id === r.id));
 
-      html += "</div></div>";
-      content.innerHTML = html;
-    }
+      relatedResources.forEach(res => {
+        const resAttr = res.attributes || {};
+        const resMeta = resAttr.localizedMetadata?.[0] || {};
+        const resName = resMeta.name || "Unnamed Chapter";
+        const format = resAttr.format || "";
+        let iconClass = "fa-file";
+        let typeLabel = format;
 
-    function renderModules(data) {
-      const modules = data.linked?.learningObjectResource || [];
-      if (!modules.length) return "<p>No modules available.</p>";
+        if (["SCORM12", "SCORM2004", "xAPI", "CP"].includes(format)) {
+          typeLabel = "Interactive";
+          iconClass = "fa-gamepad";
+        } else if (["pdf", "doc", "docx", "ppt", "pptx"].includes(format.toLowerCase())) {
+          iconClass = "fa-file-lines";
+        } else if (["video"].includes(format.toLowerCase())) {
+          iconClass = "fa-video";
+        } else if (["VC"].includes(format.toUpperCase())) {
+          iconClass = "fa-video";
+        } else if (["CR"].includes(format.toUpperCase())) {
+          iconClass = "fa-chalkboard-user";
+        }
 
-      return modules.map(module => {
-        const modAttr = module.attributes;
-        const moduleName = modAttr.localizedMetadata?.[0]?.name || "Untitled Module";
-        const resources = module.relationships?.resources?.data || [];
-
-        let moduleHTML = `
-          <div class="module-card">
-            <div class="module-header">${moduleName}</div>
-            <div class="chapter-list">
-        `;
-
-        const allResources = data.linked?.resources || [];
-        const relatedResources = allResources.filter(r => resources.some(x => x.id === r.id));
-
-        relatedResources.forEach(res => {
-          const resAttr = res.attributes;
-          const resName = resAttr.localizedMetadata?.[0]?.name || "Unnamed Chapter";
-          const format = resAttr.format || "";
-          let iconClass = "fa-file";
-          let typeLabel = format;
-
-          if (["SCORM12", "SCORM2004", "xAPI", "CP"].includes(format)) {
-            typeLabel = "Interactive";
-            iconClass = "fa-gamepad";
-          } else if (["pdf", "doc", "docx", "ppt", "pptx"].includes(format.toLowerCase())) {
-            iconClass = "fa-file-lines";
-          } else if (["video"].includes(format.toLowerCase())) {
-            iconClass = "fa-video";
-          } else if (["VC"].includes(format.toUpperCase())) {
-            iconClass = "fa-video";
-          } else if (["CR"].includes(format.toUpperCase())) {
-            iconClass = "fa-chalkboard-user";
-          }
-
-          moduleHTML += `
-            <div class="chapter-item">
-              <i class="fa-solid ${iconClass}"></i>
-              <span>${resName}</span>
-              <small style="color:#666;">(${typeLabel})</small>
-            </div>
-          `;
-        });
-
-        moduleHTML += "</div></div>";
-        return moduleHTML;
-      }).join('');
-    }
-
-    function renderSubLOs(data) {
-      const subLOs = data.linked?.subLOs || [];
-      if (!subLOs.length) return "<p>No related courses available.</p>";
-
-      return subLOs.map(sub => {
-        const subAttr = sub.attributes;
-        const subName = subAttr.localizedMetadata?.[0]?.name || "Untitled Course";
-        const subDesc = subAttr.localizedMetadata?.[0]?.description || "";
-        const subImage = subAttr.imageUrl || "https://via.placeholder.com/100x80?text=No+Image";
-
-        return `
-          <div class="module-card">
-            <div class="module-header">
-              <img src="${subImage}" style="width:60px;height:60px;border-radius:8px;object-fit:cover;">
-              ${subName}
-            </div>
-            <div class="chapter-list">
-              ${renderModules({ linked: sub.linked || data.linked })}
-            </div>
+        moduleHTML += `
+          <div class="chapter-item">
+            <i class="fa-solid ${iconClass}"></i>
+            <span>${resName}</span>
+            <small style="color:#666;">(${typeLabel})</small>
           </div>
         `;
-      }).join('');
-    }
+      });
 
-    fetchDetails();
-  </script>
+      moduleHTML += "</div></div>";
+      return moduleHTML;
+    }).join('');
+  }
+
+  function renderSubLOs(data) {
+    const subLOs = data.linked?.subLOs || [];
+    if (!subLOs.length) return "<p>No related courses available.</p>";
+
+    return subLOs.map(sub => {
+      const subAttr = sub.attributes || {};
+      const subMeta = subAttr.localizedMetadata?.[0] || {};
+      const subName = subMeta.name || subAttr.name || "Untitled Course";
+      const subDesc = subMeta.description || "";
+      const subImage = subAttr.imageUrl || "https://via.placeholder.com/100x80?text=No+Image";
+
+      return `
+        <div class="module-card">
+          <div class="module-header">
+            <img src="${subImage}" style="width:60px;height:60px;border-radius:8px;object-fit:cover;">
+            ${subName}
+          </div>
+          <div class="chapter-list">
+            ${renderModules({ linked: sub.linked || data.linked })}
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  fetchDetails();
+</script>
+
 </body>
 </html>
