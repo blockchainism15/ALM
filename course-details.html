@@ -1,286 +1,196 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Course Details</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Course Details</title>
+<style>
     body {
-      font-family: 'Inter', sans-serif;
-      background-color: #f9fafb;
-      margin: 0;
-      padding: 0;
-      color: #222;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        background-color: #f5f5f7;
+        margin: 0;
+        padding: 0;
+        color: #1d1d1f;
     }
-    header {
-      background: linear-gradient(90deg, #003366, #0055cc);
-      color: white;
-      text-align: center;
-      padding: 1.5rem 1rem;
-      font-size: 1.8rem;
-      font-weight: 600;
-      letter-spacing: 0.5px;
+
+    header, footer {
+        background-color: #fff;
+        padding: 15px 30px;
+        text-align: center;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        position: sticky;
+        top: 0;
+        z-index: 100;
     }
-    .container {
-      max-width: 1200px;
-      margin: 2rem auto;
-      padding: 1rem;
+
+    footer {
+        bottom: 0;
+        position: fixed;
+        width: 100%;
+        box-shadow: 0 -2px 4px rgba(0,0,0,0.1);
     }
+
+    main {
+        padding: 100px 20px 80px;
+        max-width: 900px;
+        margin: auto;
+    }
+
     .card {
-      background: rgba(255, 255, 255, 0.7);
-      border-radius: 18px;
-      border-top: 3px solid #4da3ff;
-      border-bottom: 3px solid #4da3ff;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-      margin-bottom: 1.5rem;
-      overflow: hidden;
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
+        background: #fff;
+        border-radius: 18px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+        padding: 20px;
+        margin-bottom: 20px;
     }
-    .card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+
+    h1, h2, h3 {
+        margin: 0 0 10px;
+        font-weight: 600;
     }
-    .card-header {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      background: rgba(255, 255, 255, 0.5);
-      padding: 1rem 1.5rem;
-      border-bottom: 1px solid #dbe2ef;
+
+    .module-card {
+        background: #ffffff;
+        border: 1px solid #ddd;
+        border-radius: 12px;
+        padding: 15px;
+        margin-bottom: 12px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     }
-    .card-header img {
-      width: 130px;
-      height: 130px;
-      border-radius: 14px;
-      object-fit: cover;
+
+    .resource-details {
+        margin-left: 10px;
+        padding: 6px 10px;
+        background: #f7f7f7;
+        border-left: 3px solid #007aff;
+        border-radius: 8px;
+        font-size: 14px;
+        color: #333;
     }
-    .card-header h2 {
-      margin: 0;
-      font-size: 1.5rem;
-      color: #003366;
+
+    .loading {
+        text-align: center;
+        margin-top: 50px;
+        font-size: 18px;
+        color: #666;
     }
-    .card-content {
-      padding: 1.2rem 1.5rem;
-      font-size: 0.95rem;
-      line-height: 1.6;
+
+    .error {
+        color: red;
+        text-align: center;
+        margin-top: 50px;
     }
-    .module-card, .resource-card, .sublo-card {
-      border: 1px solid #e0e6ef;
-      border-radius: 12px;
-      margin: 1rem 0;
-      background-color: rgba(255,255,255,0.8);
-      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
-    .module-card:hover, .resource-card:hover, .sublo-card:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 4px 10px rgba(0,0,0,0.08);
-    }
-    .module-header, .sublo-header {
-      background: rgba(230,240,255,0.8);
-      padding: 0.8rem 1rem;
-      border-bottom: 1px solid #e0e6ef;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    .chapter-list { padding: 0.8rem 1rem; }
-    .chapter-item {
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-      padding: 0.5rem 0;
-      border-bottom: 1px solid #f0f2f7;
-    }
-    .chapter-item:last-child { border-bottom: none; }
-    .chapter-item i { color: #0055cc; font-size: 1rem; width: 18px; text-align: center; }
-    .format-label { font-weight: 600; }
-    .register-btn {
-      display: inline-block;
-      background: transparent;
-      border: 2px solid;
-      border-image: linear-gradient(45deg, #4da3ff, #a259ff) 1;
-      color: #003366;
-      text-decoration: none;
-      font-weight: 600;
-      padding: 0.7rem 1.4rem;
-      border-radius: 8px;
-      margin-top: 1rem;
-      transition: all 0.3s ease;
-    }
-    .register-btn:hover {
-      background: linear-gradient(45deg, #4da3ff, #a259ff);
-      color: white;
-      border-image: none;
-    }
-    @media (max-width: 768px) {
-      .card-header { flex-direction: column; align-items: flex-start; }
-      .card-header img { width: 100%; height: 220px; }
-    }
-  </style>
+</style>
 </head>
-
 <body>
-<header>Course Details</header>
-<div class="container" id="content"><p>Loading details...</p></div>
+    <header>
+        <h2>ALM Course Details</h2>
+    </header>
 
-<script>
-async function fetchDetails() {
-  const content = document.getElementById('content');
-  const params = new URLSearchParams(window.location.search);
-  const courseId = params.get('courseId');
-  if (!courseId) { content.innerHTML = "<p>Invalid course ID.</p>"; return; }
-
-  const [type, id] = courseId.split(':');
-  const apiUrl = `https://cpcontents.adobe.com/eu/public/guest/eu/api/5fc01dd5-de45-408d-9b07-b267d40ebef9/9759/${type}/${id}.json`;
-
-  try {
-    const response = await fetch(apiUrl);
-    if (!response.ok) throw new Error('Network error');
-    const data = await response.json();
-    renderDetails(data, type);
-  } catch (e) {
-    console.error(e);
-    content.innerHTML = "<p>Failed to load course details.</p>";
-  }
-}
-
-function renderDetails(data, type) {
-  const content = document.getElementById('content');
-  const attr = data.data?.attributes || {};
-  const meta = attr.localizedMetadata?.[0] || {};
-  const title = meta.name || attr.name || "Untitled";
-  const desc = meta.overview || meta.description || attr.description || "No description available.";
-  const image = attr.imageUrl || "https://via.placeholder.com/150x100?text=No+Image";
-  const duration = attr.duration ? formatDuration(attr.duration) : "N/A";
-  const skill = extractSkillInfo(data);
-
-  let html = `
-  <div class="card">
-    <div class="card-header">
-      <img src="${image}" alt="Course Image">
-      <div>
-        <h2>${title}</h2>
-        <p>${desc}</p>
-        <p><strong>Duration:</strong> ${duration}</p>
-        ${skill ? `<p><strong>Skill:</strong> ${skill.name} (Level ${skill.level}, Credits: ${skill.maxCredits})</p>` : ""}
-        <a href="#" class="register-btn">Register</a>
-      </div>
-    </div>
-    <div class="card-content">
-      <h3>Your Learning Journey for this ${type}</h3>
-  `;
-
-  if (type === "course") html += renderModules(data);
-  else if (type === "learningProgram" || type === "certification") html += renderSubLOs(data);
-
-  html += "</div></div>";
-  content.innerHTML = html;
-}
-
-function extractSkillInfo(data) {
-  const inc = data.included || [];
-  const s = inc.find(i => i.type === "skill");
-  const sl = inc.find(i => i.type === "skillLevel");
-  if (!s || !sl) return null;
-  return { name: s.attributes?.name || "Skill", level: sl.attributes?.level || "N/A", maxCredits: sl.attributes?.maxCredits || "N/A" };
-}
-
-function getFormatColor(type) {
-  const map = {
-    'INTERACTIVE': '#0078ff',
-    'VIDEO': '#e67e22',
-    'PDF': '#d32f2f',
-    'DOC': '#1976d2',
-    'DOCX': '#1976d2',
-    'AUDIO': '#9c27b0',
-    'PPT': '#6a1b9a',
-    'PPTX': '#6a1b9a'
-  };
-  return map[type?.toUpperCase()] || '#2e7d32';
-}
-
-/* UPDATED renderModules() BELOW */
-function renderModules(data) {
-  const inc = data.included || [];
-  const loInst = inc.filter(i => i.type === "learningObjectInstance");
-  const loRes = inc.filter(i => i.type === "learningObjectResource");
-  const res = inc.filter(i => i.type === "resource");
-  if (!loInst.length) return "<p>No modules available.</p>";
-
-  return loInst.map(inst => {
-    const refs = inst.relationships?.loResources?.data || [];
-    const matched = loRes.filter(lr => refs.some(r => r.id === lr.id));
-    let html = "";
-
-    matched.forEach(lr => {
-      const m = lr.attributes?.localizedMetadata?.[0];
-      const name = m?.name || "Module";
-      const resRefs = lr.relationships?.resources?.data || [];
-      const relatedResources = res.filter(r => resRefs.some(rr => rr.id === r.id));
-
-      html += `
-      <div class="module-card">
-        <div class="module-header"><span>${name}</span></div>
-        <div class="chapter-list">
-          ${relatedResources.length ? relatedResources.map(r => {
-            const a = r.attributes || {};
-            const duration = a.desiredDuration || a.authorDesiredDuration || "N/A";
-            const type = a.contentType || "Unknown";
-            const color = getFormatColor(type);
-            return `
-              <div class="chapter-item">
-                <i class="fa-solid fa-circle-play"></i>
-                <span>${a.name || "Unnamed Resource"}</span>
-                <small class="format-label" style="color:${color};">
-                  (${duration} mins - ${type})
-                </small>
-              </div>`;
-          }).join('') : `<p>No resources found for this module.</p>`}
+    <main>
+        <div id="course-details" class="card">
+            <div class="loading">Loading course details...</div>
         </div>
-      </div>`;
-    });
+    </main>
 
-    return html;
-  }).join('');
-}
+    <footer>
+        <p>© 2025 Adobe Learning Manager Integration</p>
+    </footer>
 
-function renderSubLOs(data) {
-  const inc = data.included || [];
-  const subCourses = inc.filter(i => i.type === "learningObject" && i.attributes?.loType === "course");
-  if (!subCourses.length) return "<p>No related courses available.</p>";
-  return subCourses.map(sub => {
-    const a = sub.attributes || {};
-    const m = a.localizedMetadata?.[0] || {};
-    const name = m.name || a.name || "Untitled Course";
-    const desc = m.overview || a.description || "";
-    const img = a.imageUrl || "https://via.placeholder.com/100x80?text=No+Image";
-    const dur = a.duration ? formatDuration(a.duration) : "N/A";
-    return `
-    <div class="sublo-card">
-      <div class="sublo-header">
-        <div style="display:flex;align-items:center;gap:0.8rem;">
-          <img src="${img}" style="width:60px;height:60px;border-radius:8px;object-fit:cover;">
-          <span>${name} (${a.loType})</span>
-        </div>
-        <small>${dur}</small>
-      </div>
-      <div class="chapter-list"><p>${desc || "No description available."}</p></div>
-    </div>`;
-  }).join('');
-}
+    <script>
+    async function loadCourseDetails() {
+        const params = new URLSearchParams(window.location.search);
+        const courseId = params.get('courseId');
+        const detailsContainer = document.getElementById('course-details');
 
-function formatDuration(mins) {
-  const d = Math.floor(mins / 1440), m = mins % 1440;
-  return d > 0 ? `${d} day(s) ${m} mins` : `${m} mins`;
-}
+        if (!courseId) {
+            detailsContainer.innerHTML = '<p class="error">Missing courseId in URL.</p>';
+            return;
+        }
 
-fetchDetails();
-</script>
+        try {
+            const apiUrl = `https://cpcontents.adobe.com/public/guest/production/api/v2/learningObjects/${courseId}?include=instances,catalogs,resources,learningObjectResource,learningObjectInstance,modules`;
+            const response = await fetch(apiUrl);
+            if (!response.ok) throw new Error('Network response was not ok');
+
+            const data = await response.json();
+            const lo = data.data;
+            const included = data.included || [];
+
+            if (!lo) {
+                detailsContainer.innerHTML = '<p class="error">Failed to load course details.</p>';
+                return;
+            }
+
+            const localizedTitle = lo.attributes.localizedMetadata?.[0]?.name || 'No Title';
+            const description = lo.attributes.localizedMetadata?.[0]?.description || 'No description available';
+            const loType = lo.attributes.loType || 'N/A';
+
+            let html = `
+                <h1>${localizedTitle}</h1>
+                <p><strong>Type:</strong> ${loType}</p>
+                <p>${description}</p>
+            `;
+
+            // --- MODULES ---
+            const modules = included.filter(item => item.type === 'learningObjectResource');
+
+            if (modules.length > 0) {
+                const moduleContainer = document.createElement('div');
+                moduleContainer.className = 'card';
+                moduleContainer.innerHTML = '<h3>Modules</h3>';
+
+                modules.forEach(mod => {
+                    const localizedName = mod.attributes.localizedMetadata?.[0]?.name || 'Unnamed Module';
+                    const resourceLinks = mod.relationships?.resources?.data || [];
+
+                    // Create module card
+                    const modCard = document.createElement('div');
+                    modCard.className = 'module-card';
+                    modCard.innerHTML = `
+                        <p><strong>${localizedName}</strong></p>
+                        <div class="resource-info">Loading resources...</div>
+                    `;
+
+                    moduleContainer.appendChild(modCard);
+
+                    // Find and display resources
+                    if (resourceLinks.length > 0) {
+                        const relatedResources = included.filter(r =>
+                            resourceLinks.some(link => link.id === r.id && r.type === 'resource')
+                        );
+
+                        if (relatedResources.length > 0) {
+                            const resourceInfoHTML = relatedResources.map(r => `
+                                <div class="resource-details">
+                                    <p><strong>Resource Name:</strong> ${r.attributes.name || 'N/A'}</p>
+                                    <p><strong>Duration:</strong> ${r.attributes.desiredDuration || 'N/A'} sec</p>
+                                    <p><strong>Content Type:</strong> ${r.attributes.contentType || 'N/A'}</p>
+                                </div>
+                            `).join('');
+
+                            modCard.querySelector('.resource-info').innerHTML = resourceInfoHTML;
+                        } else {
+                            modCard.querySelector('.resource-info').innerHTML = '<p>No resource info found.</p>';
+                        }
+                    } else {
+                        modCard.querySelector('.resource-info').innerHTML = '<p>No resources linked.</p>';
+                    }
+                });
+
+                detailsContainer.innerHTML = html;
+                detailsContainer.appendChild(moduleContainer);
+            } else {
+                detailsContainer.innerHTML = html + '<p>No modules found for this learning object.</p>';
+            }
+
+        } catch (error) {
+            console.error('Error loading course details:', error);
+            detailsContainer.innerHTML = '<p class="error">Failed to load course details.</p>';
+        }
+    }
+
+    loadCourseDetails();
+    </script>
 </body>
 </html>
