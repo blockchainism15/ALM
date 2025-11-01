@@ -16,7 +16,6 @@
       padding: 0;
       color: #222;
     }
-  
     .container {
       max-width: 1200px;
       margin: 2rem auto;
@@ -32,39 +31,18 @@
       overflow: hidden;
       transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
-    .card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 6px 16px rgba(0,0,0,0.1);
-    }
+    .card:hover { transform: translateY(-4px); box-shadow: 0 6px 16px rgba(0,0,0,0.1); }
     .card-header {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
+      display: flex; align-items: center; gap: 1rem;
       background: rgba(255, 255, 255, 0.5);
-      padding: 1rem 1.5rem;
-      border-bottom: 1px solid #dbe2ef;
+      padding: 1rem 1.5rem; border-bottom: 1px solid #dbe2ef;
     }
-    .card-header img {
-      width: 130px;
-      height: 130px;
-      border-radius: 14px;
-      object-fit: cover;
-    }
-    .card-header h2 {
-      margin: 0;
-      font-size: 1.5rem;
-      color: #003366;
-    }
-    .card-content {
-      padding: 1.2rem 1.5rem;
-      font-size: 0.95rem;
-      line-height: 1.6;
-    }
+    .card-header img { width: 130px; height: 130px; border-radius: 14px; object-fit: cover; }
+    .card-header h2 { margin: 0; font-size: 1.5rem; color: #003366; }
+    .card-content { padding: 1.2rem 1.5rem; font-size: 0.95rem; line-height: 1.6; }
     .module-card, .resource-card, .sublo-card {
-      border: 1px solid #e0e6ef;
-      border-radius: 12px;
-      margin: 1rem 0;
-      background-color: rgba(255,255,255,0.8);
+      border: 1px solid #e0e6ef; border-radius: 12px;
+      margin: 1rem 0; background-color: rgba(255,255,255,0.8);
       box-shadow: 0 2px 6px rgba(0,0,0,0.05);
       transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
@@ -74,52 +52,37 @@
     }
     .module-header, .sublo-header {
       background: rgba(230,240,255,0.8);
-      padding: 0.8rem 1rem;
-      border-bottom: 1px solid #e0e6ef;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
+      padding: 0.8rem 1rem; border-bottom: 1px solid #e0e6ef;
+      font-weight: 600; display: flex; align-items: center; justify-content: space-between;
     }
-    /* ✅ Updated sublo-header gradient */
     .sublo-header {
       background: linear-gradient(90deg, rgba(0,85,204,0.15), rgba(162,89,255,0.15));
-      padding: 0.8rem 1rem;
-      border-bottom: 1px solid #e0e6ef;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
       border-radius: 8px 8px 0 0;
     }
     .chapter-list { padding: 0.8rem 1rem; }
     .chapter-item {
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-      padding: 0.5rem 0;
-      border-bottom: 1px solid #f0f2f7;
+      display: flex; align-items: center; gap: 0.6rem;
+      padding: 0.5rem 0; border-bottom: 1px solid #f0f2f7;
     }
     .chapter-item:last-child { border-bottom: none; }
     .chapter-item i { color: #0055cc; font-size: 1rem; width: 18px; text-align: center; }
     .format-label { font-weight: 600; }
     .register-btn {
-      display: inline-block;
-      background: transparent;
-      border: 2px solid;
-      border-image: linear-gradient(45deg, #4da3ff, #a259ff) 1;
-      color: #003366;
-      text-decoration: none;
-      font-weight: 600;
-      padding: 0.7rem 1.4rem;
-      border-radius: 8px;
-      margin-top: 1rem;
+      display: inline-block; background: transparent;
+      border: 2px solid; border-image: linear-gradient(45deg, #4da3ff, #a259ff) 1;
+      color: #003366; text-decoration: none; font-weight: 600;
+      padding: 0.7rem 1.4rem; border-radius: 8px; margin-top: 1rem;
       transition: all 0.3s ease;
     }
-    .register-btn:hover {
-      background: linear-gradient(45deg, #4da3ff, #a259ff);
-      color: white;
-      border-image: none;
+    .register-btn:hover { background: linear-gradient(45deg, #4da3ff, #a259ff); color: white; border-image: none; }
+    .side-info-box {
+      margin-top: 1rem;
+      background: rgba(240, 245, 255, 0.7);
+      border-left: 4px solid #4da3ff;
+      padding: 0.8rem 1rem;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      color: #003366;
     }
     @media (max-width: 768px) {
       .card-header { flex-direction: column; align-items: flex-start; }
@@ -129,7 +92,6 @@
 </head>
 
 <body>
-
 <div class="container" id="content"><p>Loading details...</p></div>
 
 <script>
@@ -163,6 +125,11 @@ function renderDetails(data, type) {
   const duration = attr.duration ? formatDuration(attr.duration) : "N/A";
   const skill = extractSkillInfo(data);
 
+  let extraDetails = "";
+  if (type === "certification") {
+    extraDetails = renderCertificationDetails(data);
+  }
+
   let html = `
   <div class="card">
     <div class="card-header">
@@ -170,6 +137,7 @@ function renderDetails(data, type) {
       <div>
         <h2>${title}</h2>
         <p>${desc}</p>
+        ${extraDetails}
         <p><strong>Duration:</strong> ${duration}</p>
         ${skill ? `<p><strong>Skill:</strong> ${skill.name} (Level ${skill.level}, Credits: ${skill.maxCredits})</p>` : ""}
         <a href="#" class="register-btn">Register</a>
@@ -186,6 +154,28 @@ function renderDetails(data, type) {
   content.innerHTML = html;
 }
 
+function renderCertificationDetails(data) {
+  const inc = data.included || [];
+  const mainLO = data.data;
+  const relInstanceId = mainLO.relationships?.instances?.data?.[0]?.id;
+  const instanceObj = inc.find(i => i.id === relInstanceId && i.type === "learningObjectInstance");
+
+  if (!instanceObj) return "";
+  const a = instanceObj.attributes || {};
+  const validity = a.validity ? `${a.validity} days` : "N/A";
+  const state = a.state || "N/A";
+  const deadline = a.completionDeadline ? new Date(a.completionDeadline).toLocaleDateString() : "N/A";
+
+  return `
+    <div class="side-info-box">
+      <strong>Certification Details:</strong><br>
+      <span><b>Validity:</b> ${validity}</span><br>
+      <span><b>State:</b> ${state}</span><br>
+      <span><b>Completion Deadline:</b> ${deadline}</span>
+    </div>
+  `;
+}
+
 function extractSkillInfo(data) {
   const inc = data.included || [];
   const s = inc.find(i => i.type === "skill");
@@ -196,14 +186,8 @@ function extractSkillInfo(data) {
 
 function getFormatColor(type) {
   const map = {
-    'INTERACTIVE': '#0078ff',
-    'VIDEO': '#e67e22',
-    'PDF': '#d32f2f',
-    'DOC': '#1976d2',
-    'DOCX': '#1976d2',
-    'AUDIO': '#9c27b0',
-    'PPT': '#6a1b9a',
-    'PPTX': '#6a1b9a'
+    'INTERACTIVE': '#0078ff', 'VIDEO': '#e67e22', 'PDF': '#d32f2f', 'DOC': '#1976d2',
+    'DOCX': '#1976d2', 'AUDIO': '#9c27b0', 'PPT': '#6a1b9a', 'PPTX': '#6a1b9a'
   };
   return map[type?.toUpperCase()] || '#2e7d32';
 }
@@ -313,7 +297,6 @@ function formatDuration(mins) {
   const d = Math.floor(mins / 1440), m = mins % 1440;
   return d > 0 ? `${d} day(s) ${m} mins` : `${m} mins`;
 }
-
 fetchDetails();
 </script>
 </body>
