@@ -125,6 +125,10 @@
       text-align: center;
     }
 
+    .format-label {
+      font-weight: 600;
+    }
+
     .register-btn {
       display: inline-block;
       background: transparent;
@@ -237,6 +241,20 @@
     };
   }
 
+  function getFormatColor(type) {
+    const map = {
+      'Interactive': '#0078ff',
+      'VIDEO': '#e67e22',
+      'PDF': '#d32f2f',
+      'DOC': '#1976d2',
+      'DOCX': '#1976d2',
+      'AUDIO': '#9c27b0',
+      'PPT': '#6a1b9a',
+      'PPTX': '#6a1b9a'
+    };
+    return map[type?.toUpperCase()] || '#2e7d32';
+  }
+
   function renderModules(data) {
     const included = data.included || [];
     const loInstances = included.filter(i => i.type === "learningObjectInstance");
@@ -258,20 +276,21 @@
 
         moduleHTML += `
           <div class="module-card">
-            <div class="module-header">
-              <span>${name}</span>
-            </div>
+            <div class="module-header"><span>${name}</span></div>
             <div class="chapter-list">
               ${relatedRes.map(r => {
                 const attr = r.attributes || {};
-                const isInteractive = ["CP", "SCORM12", "SCORM2004"].includes(attr.contentType);
-                const displayType = isInteractive ? "Interactive" : (attr.resourceType || "N/A");
+                const type = attr.contentType;
+                const displayType = ["CP", "SCORM12", "SCORM2004"].includes(type)
+                  ? "Interactive"
+                  : (type || attr.resourceType || "N/A");
+                const color = getFormatColor(displayType);
                 return `
                   <div class="resource-card">
                     <div class="chapter-item">
                       <i class="fa-solid fa-circle-play"></i>
                       <span>${attr.name}</span>
-                      <small style="color:#666;">(${attr.desiredDuration || 0} mins - ${displayType})</small>
+                      <small class="format-label" style="color:${color};">(${attr.desiredDuration || 0} mins - ${displayType})</small>
                     </div>
                   </div>
                 `;
@@ -299,6 +318,10 @@
       const subImage = subAttr.imageUrl || "https://via.placeholder.com/100x80?text=No+Image";
       const subDuration = subAttr.duration ? formatDuration(subAttr.duration) : "N/A";
 
+      const subData = {
+        included: included.filter(i => i.relationships?.learningObject?.data?.id === sub.id || i.id === sub.id)
+      };
+
       return `
         <div class="sublo-card">
           <div class="sublo-header">
@@ -310,6 +333,7 @@
           </div>
           <div class="chapter-list">
             <p>${subDesc || "No description available."}</p>
+            ${renderModules(subData)}
           </div>
         </div>
       `;
