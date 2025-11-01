@@ -281,24 +281,7 @@ function renderSubLOs(data) {
         resourceHTML += `
         <div class="module-card">
           <div class="module-header"><span>${moduleName}</span></div>
-          <div class="chapter-list">
-            ${related.map(r => {
-              const attr = r.attributes || {};
-              const type = attr.contentType;
-              const display = ["CP","SCORM12","SCORM2004"].includes(type) ? "Interactive" : (type || attr.resourceType || "N/A");
-              const color = getFormatColor(display);
-              return `
-              <div class="resource-card">
-                <div class="chapter-item">
-                  <i class="fa-solid fa-circle-play"></i>
-                  <span>${attr.name}</span>
-                  <small class="format-label" style="color:${color};">
-                    (${attr.desiredDuration || 0} mins - ${display})
-                  </small>
-                </div>
-              </div>`;
-            }).join('')}
-          </div>
+         
         </div>`;
       });
     });
