@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -89,6 +88,17 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
+    }
+    /* ✅ Updated sublo-header gradient */
+    .sublo-header {
+      background: linear-gradient(90deg, rgba(0,85,204,0.15), rgba(162,89,255,0.15));
+      padding: 0.8rem 1rem;
+      border-bottom: 1px solid #e0e6ef;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-radius: 8px 8px 0 0;
     }
     .chapter-list { padding: 0.8rem 1rem; }
     .chapter-item {
@@ -220,7 +230,7 @@ function renderModules(data) {
     matched.forEach(lr => {
       const m = lr.attributes?.localizedMetadata?.[0];
       const name = m?.name || "Module";
-      const resourceType = lr.attributes?.resourceType || "N/A"; // ✅ added
+      const resourceType = lr.attributes?.resourceType || "N/A";
       const resRefs = lr.relationships?.resources?.data || [];
       const related = res.filter(r => resRefs.some(rr => rr.id === r.id));
 
@@ -228,7 +238,7 @@ function renderModules(data) {
       <div class="module-card">
         <div class="module-header">
           <span>${name}</span>
-          <span style="font-size:0.9em; color:#6a5acd;">${resourceType}</span> <!-- ✅ added -->
+          <span style="font-size:0.9em; color:#6a5acd;">${resourceType}</span>
         </div>
         <div class="chapter-list">
           ${related.map(r => {
@@ -267,7 +277,6 @@ function renderSubLOs(data) {
     const img = a.imageUrl || "https://via.placeholder.com/100x80?text=No+Image";
     const dur = a.duration ? formatDuration(a.duration) : "N/A";
 
-    // extract nested resources for this sub-course
     const subInc = inc.filter(i => i.relationships?.learningObject?.data?.id === sub.id || i.id === sub.id);
     const loInst = subInc.filter(i => i.type === "learningObjectInstance");
     const loRes = subInc.filter(i => i.type === "learningObjectResource");
@@ -280,14 +289,12 @@ function renderSubLOs(data) {
       matched.forEach(lr => {
         const meta = lr.attributes?.localizedMetadata?.[0];
         const moduleName = meta?.name || "Module";
-        const resourceType = lr.attributes?.resourceType || "N/A"; // ✅ added
-        const resRefs = lr.relationships?.resources?.data || [];
-        const related = res.filter(r => resRefs.some(rr => rr.id === r.id));
+        const resourceType = lr.attributes?.resourceType || "N/A";
         resourceHTML += `
         <div class="module-card">
           <div class="module-header">
             <span>${moduleName}</span>
-            <span style="font-size:0.9em; color:#6a5acd;">${resourceType}</span> <!-- ✅ added -->
+            <span style="font-size:0.9em; color:#6a5acd;">${resourceType}</span>
           </div>
         </div>`;
       });
