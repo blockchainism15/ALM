@@ -262,15 +262,20 @@
               <span>${name}</span>
             </div>
             <div class="chapter-list">
-              ${relatedRes.map(r => `
-                <div class="resource-card">
-                  <div class="chapter-item">
-                    <i class="fa-solid fa-circle-play"></i>
-                    <span>${r.attributes?.name}</span>
-                    <small style="color:#666;">(${r.attributes?.desiredDuration || 0} mins - ${r.attributes?.resourceType || "N/A"})</small>
+              ${relatedRes.map(r => {
+                const attr = r.attributes || {};
+                const isInteractive = ["CP", "SCORM12", "SCORM2004"].includes(attr.contentType);
+                const displayType = isInteractive ? "Interactive" : (attr.resourceType || "N/A");
+                return `
+                  <div class="resource-card">
+                    <div class="chapter-item">
+                      <i class="fa-solid fa-circle-play"></i>
+                      <span>${attr.name}</span>
+                      <small style="color:#666;">(${attr.desiredDuration || 0} mins - ${displayType})</small>
+                    </div>
                   </div>
-                </div>
-              `).join('')}
+                `;
+              }).join('')}
             </div>
           </div>
         `;
