@@ -162,7 +162,7 @@ function renderCertificationDetails(data) {
 
   if (!instanceObj) return "";
   const a = instanceObj.attributes || {};
-  const validity = a.validity ? `${a.validity} days` : "N/A";
+  const validity = a.validity ? `${a.validity} months` : "N/A";
   const state = a.state || "N/A";
 
   let deadline = "N/A";
