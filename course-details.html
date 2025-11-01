@@ -1,330 +1,243 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Course Details</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <style>
-    body {
-      font-family: 'Inter', sans-serif;
-      background-color: #f9fafb;
-      margin: 0;
-      padding: 0;
-      color: #222;
-    }
-    header {
-      background: linear-gradient(90deg, #003366, #0055cc);
-      color: white;
-      text-align: center;
-      padding: 1.5rem 1rem;
-      font-size: 1.8rem;
-      font-weight: 600;
-      letter-spacing: 0.5px;
-    }
-    .container {
-      max-width: 1200px;
-      margin: 2rem auto;
-      padding: 1rem;
-    }
-    .card {
-      background: rgba(255, 255, 255, 0.7);
-      border-radius: 18px;
-      border-top: 3px solid #4da3ff;
-      border-bottom: 3px solid #4da3ff;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-      margin-bottom: 1.5rem;
-      overflow: hidden;
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
-    .card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 6px 16px rgba(0,0,0,0.1);
-    }
-    .card-header {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      background: rgba(255, 255, 255, 0.5);
-      padding: 1rem 1.5rem;
-      border-bottom: 1px solid #dbe2ef;
-    }
-    .card-header img {
-      width: 130px;
-      height: 130px;
-      border-radius: 14px;
-      object-fit: cover;
-    }
-    .card-header h2 {
-      margin: 0;
-      font-size: 1.5rem;
-      color: #003366;
-    }
-    .card-content {
-      padding: 1.2rem 1.5rem;
-      font-size: 0.95rem;
-      line-height: 1.6;
-    }
-    .module-card, .resource-card, .sublo-card {
-      border: 1px solid #e0e6ef;
-      border-radius: 12px;
-      margin: 1rem 0;
-      background-color: rgba(255,255,255,0.8);
-      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
-    .module-card:hover, .resource-card:hover, .sublo-card:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 4px 10px rgba(0,0,0,0.08);
-    }
-    .module-header, .sublo-header {
-      background: rgba(230,240,255,0.8);
-      padding: 0.8rem 1rem;
-      border-bottom: 1px solid #e0e6ef;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    .chapter-list { padding: 0.8rem 1rem; }
-    .chapter-item {
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-      padding: 0.5rem 0;
-      border-bottom: 1px solid #f0f2f7;
-    }
-    .chapter-item:last-child { border-bottom: none; }
-    .chapter-item i { color: #0055cc; font-size: 1rem; width: 18px; text-align: center; }
-    .format-label { font-weight: 600; }
-    .register-btn {
-      display: inline-block;
-      background: transparent;
-      border: 2px solid;
-      border-image: linear-gradient(45deg, #4da3ff, #a259ff) 1;
-      color: #003366;
-      text-decoration: none;
-      font-weight: 600;
-      padding: 0.7rem 1.4rem;
-      border-radius: 8px;
-      margin-top: 1rem;
-      transition: all 0.3s ease;
-    }
-    .register-btn:hover {
-      background: linear-gradient(45deg, #4da3ff, #a259ff);
-      color: white;
-      border-image: none;
-    }
-    @media (max-width: 768px) {
-      .card-header { flex-direction: column; align-items: flex-start; }
-      .card-header img { width: 100%; height: 220px; }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ALM Course Details</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+  body {
+    font-family: 'Inter', sans-serif;
+    background: linear-gradient(120deg, #f5f7fa, #c3cfe2);
+    margin: 0;
+    padding: 0;
+  }
+  .container {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 20px;
+  }
+  .card {
+    background: rgba(255, 255, 255, 0.7);
+    border-top: 3px solid;
+    border-image: linear-gradient(90deg, #4A90E2, #8E2DE2) 1;
+    border-bottom: 3px solid;
+    border-radius: 16px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    padding: 20px;
+    margin-bottom: 25px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  .card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+  }
+  .card-header {
+    position: relative;
+    background: rgba(255,255,255,0.3);
+    border-radius: 12px;
+    padding: 20px;
+    font-weight: 600;
+    font-size: 1.5rem;
+    color: #0a2540;
+    overflow: hidden;
+  }
+  .card-header::before {
+    content: "";
+    background-size: cover;
+    background-position: center;
+    position: absolute;
+    top:0; left:0;
+    width:100%; height:100%;
+    opacity: 0.15;
+    z-index: 0;
+  }
+  .card-header h2, .card-header p {
+    position: relative;
+    z-index: 1;
+  }
+  .card-content {
+    margin-top: 15px;
+    color: #1f2937;
+    font-size: 1rem;
+    line-height: 1.6;
+  }
+  .thumbnail {
+    width: 120px;
+    border-radius: 12px;
+    margin-bottom: 15px;
+    display: block;
+  }
+  .register-btn {
+    display: inline-block;
+    padding: 10px 18px;
+    border-radius: 8px;
+    font-weight: 600;
+    text-decoration: none;
+    border: 2px solid;
+    border-image: linear-gradient(90deg, #4A90E2, #8E2DE2) 1;
+    background: transparent;
+    color: #4A90E2;
+    transition: all 0.3s ease;
+  }
+  .register-btn:hover {
+    background: linear-gradient(90deg, #4A90E2, #8E2DE2);
+    color: white;
+  }
+  .section-title {
+    font-weight: 600;
+    font-size: 1.2rem;
+    margin-top: 20px;
+    color: #0a2540;
+  }
+  .sub-card {
+    background: rgba(255,255,255,0.6);
+    border-radius: 10px;
+    padding: 15px;
+    margin-top: 10px;
+  }
+  .label {
+    font-weight: 600;
+    color: #374151;
+  }
+  .format-tag {
+    display: inline-block;
+    margin-left: 10px;
+    padding: 4px 8px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    color: white;
+  }
+</style>
 </head>
-
 <body>
-<header>Course Details</header>
-<div class="container" id="content"><p>Loading details...</p></div>
+<div class="container">
+  <div id="details"></div>
+</div>
 
 <script>
-async function fetchDetails() {
-  const content = document.getElementById('content');
-  const params = new URLSearchParams(window.location.search);
-  const courseId = params.get('courseId');
-  if (!courseId) { content.innerHTML = "<p>Invalid course ID.</p>"; return; }
+const apiBase = "https://cpcontents.adobe.com/eu/public/guest/eu/api/5fc01dd5-de45-408d-9b07-b267d40ebef9/9759";
 
-  const [type, id] = courseId.split(':');
-  const apiUrl = `https://cpcontents.adobe.com/eu/public/guest/eu/api/5fc01dd5-de45-408d-9b07-b267d40ebef9/9759/${type}/${id}.json`;
+async function loadDetails() {
+  const params = new URLSearchParams(window.location.search);
+  const id = params.get('id');
+  const type = params.get('type') || 'course';
+  if (!id) return;
+
+  const url = `${apiBase}/${type}/${id}.json`;
+  const container = document.getElementById("details");
 
   try {
-    const response = await fetch(apiUrl);
-    if (!response.ok) throw new Error('Network error');
-    const data = await response.json();
-    renderDetails(data, type);
+    const res = await fetch(url);
+    if (!res.ok) throw new Error("Failed to load");
+    const data = await res.json();
+    renderDetails(data);
   } catch (e) {
-    console.error(e);
-    content.innerHTML = "<p>Failed to load course details.</p>";
+    container.innerHTML = `<p style="color:red;">Failed to load course details.</p>`;
   }
 }
 
-function renderDetails(data, type) {
-  const content = document.getElementById('content');
-  const attr = data.data?.attributes || {};
-  const meta = attr.localizedMetadata?.[0] || {};
-  const title = meta.name || attr.name || "Untitled";
-  const desc = meta.overview || meta.description || attr.description || "No description available.";
-  const image = attr.imageUrl || "https://via.placeholder.com/150x100?text=No+Image";
-  const duration = attr.duration ? formatDuration(attr.duration) : "N/A";
-  const skill = extractSkillInfo(data);
+function getFormatTag(format) {
+  let label = format;
+  let color = "#10b981"; // default green
+  if (["SCORM12", "SCORM2004", "CP"].includes(format)) {
+    label = "Interactive";
+    color = "#2563eb";
+  } else if (format === "VIDEO") color = "#ef4444";
+  else if (format === "PDF") color = "#9333ea";
+  else if (format === "DOC" || format === "DOCX" || format === "PPT" || format === "PPTX") color = "#f59e0b";
+  return `<span class="format-tag" style="background:${color}">${label}</span>`;
+}
+
+function renderDetails(data) {
+  const container = document.getElementById("details");
+  const attrs = data.attributes || {};
+  const relationships = data.relationships || {};
+  const bannerUrl = attrs.bannerUrl || "";
+  const loType = attrs.loType || "learningObject";
 
   let html = `
   <div class="card">
-    <div class="card-header">
-      <img src="${image}" alt="Course Image">
-      <div>
-        <h2>${title}</h2>
-        <p>${desc}</p>
-        <p><strong>Duration:</strong> ${duration}</p>
-        ${skill ? `<p><strong>Skill:</strong> ${skill.name} (Level ${skill.level}, Credits: ${skill.maxCredits})</p>` : ""}
-        <a href="#" class="register-btn">Register</a>
-      </div>
+    <div class="card-header" style="--bg:url(${bannerUrl})">
+      <img src="${attrs.imageUrl || bannerUrl}" alt="thumbnail" class="thumbnail">
+      <h2>${attrs.localizedMetadata?.title || 'Untitled'}</h2>
+      <p>${attrs.localizedMetadata?.description || 'No description available'}</p>
     </div>
     <div class="card-content">
-      <h3>Your Learning Journey for this ${type}</h3>
-  `;
-
-  if (type === "course") html += renderModules(data);
-  else if (type === "learningProgram" || type === "certification") html += renderSubLOs(data);
-
-  html += "</div></div>";
-  content.innerHTML = html;
-}
-
-function extractSkillInfo(data) {
-  const inc = data.included || [];
-  const s = inc.find(i => i.type === "skill");
-  const sl = inc.find(i => i.type === "skillLevel");
-  if (!s || !sl) return null;
-  return { name: s.attributes?.name || "Skill", level: sl.attributes?.level || "N/A", maxCredits: sl.attributes?.maxCredits || "N/A" };
-}
-
-function getFormatColor(type) {
-  const map = {
-    'INTERACTIVE': '#0078ff',
-    'VIDEO': '#e67e22',
-    'PDF': '#d32f2f',
-    'DOC': '#1976d2',
-    'DOCX': '#1976d2',
-    'AUDIO': '#9c27b0',
-    'PPT': '#6a1b9a',
-    'PPTX': '#6a1b9a'
-  };
-  return map[type?.toUpperCase()] || '#2e7d32';
-}
-
-function renderModules(data) {
-  const inc = data.included || [];
-  const loInst = inc.filter(i => i.type === "learningObjectInstance");
-  const loRes = inc.filter(i => i.type === "learningObjectResource");
-  const res = inc.filter(i => i.type === "resource");
-  if (!loInst.length) return "<p>No modules available.</p>";
-
-  return loInst.map(inst => {
-    const refs = inst.relationships?.loResources?.data || [];
-    const matched = loRes.filter(lr => refs.some(r => r.id === lr.id));
-    let html = "";
-    matched.forEach(lr => {
-      const m = lr.attributes?.localizedMetadata?.[0];
-      const name = m?.name || "Module";
-      const resRefs = lr.relationships?.resources?.data || [];
-      const related = res.filter(r => resRefs.some(rr => rr.id === r.id));
-
-      html += `
-      <div class="module-card">
-        <div class="module-header"><span>${name}</span></div>
-        <div class="chapter-list">
-          ${related.map(r => {
-            const a = r.attributes || {};
-            const t = a.contentType;
-            const display = ["CP","SCORM12","SCORM2004"].includes(t) ? "Interactive" : (t || a.resourceType || "N/A");
-            const color = getFormatColor(display);
-            return `
-            <div class="resource-card">
-              <div class="chapter-item">
-                <i class="fa-solid fa-circle-play"></i>
-                <span>${a.name}</span>
-                <small class="format-label" style="color:${color};">
-                  (${a.desiredDuration || 0} mins - ${display})
-                </small>
-              </div>
-            </div>`;
-          }).join('')}
-        </div>
-      </div>`;
-    });
-    return html;
-  }).join('');
-}
-
-function renderSubLOs(data) {
-  const inc = data.included || [];
-  const subCourses = inc.filter(i => i.type === "learningObject" && i.attributes?.loType === "course");
-  if (!subCourses.length) return "<p>No related courses available.</p>";
-
-  return subCourses.map(sub => {
-    const a = sub.attributes || {};
-    const m = a.localizedMetadata?.[0] || {};
-    const name = m.name || a.name || "Untitled Course";
-    const desc = m.overview || a.description || "";
-    const img = a.imageUrl || "https://via.placeholder.com/100x80?text=No+Image";
-    const dur = a.duration ? formatDuration(a.duration) : "N/A";
-
-    // extract nested resources for this sub-course
-    const subInc = inc.filter(i => i.relationships?.learningObject?.data?.id === sub.id || i.id === sub.id);
-    const loInst = subInc.filter(i => i.type === "learningObjectInstance");
-    const loRes = subInc.filter(i => i.type === "learningObjectResource");
-    const res = subInc.filter(i => i.type === "resource");
-
-    let resourceHTML = "";
-    loInst.forEach(inst => {
-      const refs = inst.relationships?.loResources?.data || [];
-      const matched = loRes.filter(lr => refs.some(r => r.id === lr.id));
-      matched.forEach(lr => {
-        const meta = lr.attributes?.localizedMetadata?.[0];
-        const moduleName = meta?.name || "Module";
-        const resRefs = lr.relationships?.resources?.data || [];
-        const related = res.filter(r => resRefs.some(rr => rr.id === r.id));
-        resourceHTML += `
-        <div class="module-card">
-          <div class="module-header"><span>${moduleName}</span></div>
-          <div class="chapter-list">
-            ${related.map(r => {
-              const attr = r.attributes || {};
-              const type = attr.contentType;
-              const display = ["CP","SCORM12","SCORM2004"].includes(type) ? "Interactive" : (type || attr.resourceType || "N/A");
-              const color = getFormatColor(display);
-              return `
-              <div class="resource-card">
-                <div class="chapter-item">
-                  <i class="fa-solid fa-circle-play"></i>
-                  <span>${attr.name}</span>
-                  <small class="format-label" style="color:${color};">
-                    (${attr.desiredDuration || 0} mins - ${display})
-                  </small>
-                </div>
-              </div>`;
-            }).join('')}
-          </div>
-        </div>`;
-      });
-    });
-
-    return `
-    <div class="sublo-card">
-      <div class="sublo-header">
-        <div style="display:flex;align-items:center;gap:0.8rem;">
-          <img src="${img}" style="width:60px;height:60px;border-radius:8px;object-fit:cover;">
-          <span>${name} (${a.loType})</span>
-        </div>
-        <small>${dur}</small>
-      </div>
-      <div class="chapter-list">
-        <p>${desc || "No description available."}</p>
-        ${resourceHTML || "<p>No resources available.</p>"}
-      </div>
+      <p><strong>Your Learning Journey for this ${loType}</strong></p>
+      <p><span class="label">Title:</span> ${attrs.localizedMetadata?.title || 'N/A'}</p>
+      <p><span class="label">Description:</span> ${attrs.localizedMetadata?.description || 'N/A'}</p>
+      <p><span class="label">Duration:</span> ${attrs.duration || 'N/A'} mins</p>
+      <p><span class="label">Skills:</span> ${attrs.skills?.map(s=>s.name).join(", ") || 'N/A'}</p>
+      <p><span class="label">Skill Level:</span> ${attrs.skillLevel || 'N/A'}</p>
+      <p><span class="label">Skill Credits:</span> ${attrs.maxCredits || 'N/A'}</p>
+      <a href="https://learningmanager.adobe.com/accountiplogin?ipId=18979&accesskey=bsni4medbhhps" target="_blank" class="register-btn">Register</a>
     </div>`;
-  }).join('');
+
+  // Show modules or subLOs
+  if (relationships.subLoList?.data?.length > 0) {
+    html += `<h3 class="section-title">Courses</h3>`;
+    relationships.subLoList.data.forEach(sub => {
+      const subObj = data.included.find(i => i.id === sub.id);
+      if (subObj) {
+        const subAttr = subObj.attributes || {};
+        html += `
+          <div class="sub-card">
+            <p><strong>${subAttr.localizedMetadata?.title || 'Untitled Course'}</strong></p>
+            <p>${subAttr.localizedMetadata?.description || 'No description available'}</p>
+            <p><span class="label">Type:</span> ${subAttr.loType || 'N/A'}</p>
+            <p><span class="label">Duration:</span> ${subAttr.duration || 'N/A'} mins</p>
+        `;
+
+        const subRel = subObj.relationships || {};
+        if (subRel.learningObjectResourceList?.data?.length > 0) {
+          html += `<div class="section-title">Modules</div>`;
+          subRel.learningObjectResourceList.data.forEach(lor => {
+            const lorObj = data.included.find(i => i.id === lor.id);
+            if (lorObj) {
+              const lorAttr = lorObj.attributes || {};
+              html += `
+                <div class="sub-card">
+                  <p><strong>${lorAttr.localizedMetadata?.title || 'Untitled Resource'}</strong></p>
+                  <p><span class="label">Duration:</span> ${lorAttr.duration || 'N/A'} mins</p>
+                  <p><span class="label">Format:</span> ${getFormatTag(lorAttr.resourceType || 'N/A')}</p>
+                </div>`;
+            }
+          });
+        }
+        html += `</div>`;
+      }
+    });
+  }
+
+  if (relationships.learningObjectResourceList?.data?.length > 0) {
+    html += `<h3 class="section-title">Modules</h3>`;
+    relationships.learningObjectResourceList.data.forEach(item => {
+      const modObj = data.included.find(i => i.id === item.id);
+      if (modObj) {
+        const modAttr = modObj.attributes || {};
+        html += `
+          <div class="sub-card">
+            <p><strong>${modAttr.localizedMetadata?.title || 'Untitled Module'}</strong></p>
+            <p><span class="label">Duration:</span> ${modAttr.duration || 'N/A'} mins</p>
+            <p><span class="label">Format:</span> ${getFormatTag(modAttr.resourceType || 'N/A')}</p>
+          </div>`;
+      }
+    });
+  }
+
+  html += `</div>`;
+  container.innerHTML = html;
+
+  // set background image on header dynamically
+  const headers = document.querySelectorAll(".card-header");
+  headers.forEach(h => {
+    const bg = h.style.getPropertyValue("--bg");
+    if (bg && bg !== "url()") h.style.backgroundImage = `url(${bg})`;
+  });
 }
 
-function formatDuration(mins) {
-  const d = Math.floor(mins / 1440), m = mins % 1440;
-  return d > 0 ? `${d} day(s) ${m} mins` : `${m} mins`;
-}
-
-fetchDetails();
+loadDetails();
 </script>
 </body>
 </html>
