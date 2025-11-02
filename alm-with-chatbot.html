@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -67,6 +68,16 @@ transition: transform 0.3s;
 .filters.open {
 transform: translateX(0);
 }
+.filter-drawer-overlay {
+display: none;
+position: fixed;
+inset: 0;
+background: rgba(0,0,0,0.3);
+z-index: 999;
+}
+.filter-drawer-overlay.active {
+display: block;
+}
 }
 .filters {
 background: linear-gradient(317deg, rgba(59, 130, 246, 0.3), rgba(139, 92, 246, 0.3));
@@ -86,8 +97,10 @@ overflow-y: auto;
 .filters::-webkit-scrollbar { width: 8px; }
 .filters::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.2); border-radius: 10px; }
 .filters::-webkit-scrollbar-thumb { background: linear-gradient(317deg, #3b82f6, #8b5cf6); border-radius: 10px; }
+.active-filters-chips { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 14px; align-items: center; }
 .filter-chip { background: #e6f0ff; color: #007bff; border-radius: 18px; padding: 5px 14px; font-size: 13px; display: inline-flex; align-items: center; }
 .filter-chip .remove-chip { background: none; border: none; color: #007bff; font-size: 15px; cursor: pointer; margin-left: 6px; }
+.clear-all-chips { background: none; border: none; color: #005ecb; font-size: 13px; text-decoration: underline; cursor: pointer; }
 .filter-section { padding: 0 0 12px 0; border-bottom: 1px solid #e8e8e8; }
 .filter-section:last-child { border-bottom: none; }
 .filter-heading { margin: 0; padding: 0; color: #001f3f; font-weight: 600; font-size: 1em; text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer; display: flex; align-items: center; justify-content: space-between; user-select: none; }
@@ -107,6 +120,7 @@ overflow-y: auto;
 #applyFilters { background: linear-gradient(to right, #007bff, #00c6ff); color: white; border: none; border-radius: 8px; font-size: 15px; padding: 10px 24px; cursor: pointer; transition: 0.3s; }
 #applyFilters:hover { background: linear-gradient(to right, #005ecb, #00a3d4); }
 #clearFilters { background: #eee; color: #001f3f; border-radius: 8px; font-size: 15px; padding: 10px 18px; border: none; cursor: pointer; }
+#clearFilters:hover { background: #d3eafd; }
 #results { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; }
 .card { position: relative; background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(10px); border-radius: 14px; box-shadow: 0 3px 10px rgba(0,0,0,0.1); text-align: center; text-decoration: none; color: #000; padding: 15px; transition: transform 0.2s; }
 .card::before, .card::after { content: ""; position: absolute; left: 0; width: 100%; height: 4px; background: linear-gradient(to right, #007bff, #a400ff); }
@@ -116,9 +130,10 @@ overflow-y: auto;
 .card img { width: 100%; height: 260px; object-fit: cover; border-radius: 10px; margin-bottom: 10px; }
 .card h4 { background: linear-gradient(135deg, #4287f5, #8c4bc4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin: 8px 0; font-size: 1.1em; }
 #pagination { text-align: center; margin-top: 20px; }
+.no-results { text-align: center; color: #005ecb; font-size: 18px; background: #eef6ff; border-radius: 10px; padding: 20px; }
 @media (max-width: 900px) { #results { grid-template-columns: 1fr;} }
 
-/* ===== CHATBOT MODAL ===== */
+/* ===== ADVANCED CHATBOT MODAL STYLES ===== */
 .chatbot-modal {
 display: none;
 position: fixed;
@@ -284,6 +299,14 @@ background: linear-gradient(135deg, #4287f5, #8c4bc4);
 color: white;
 border-bottom-right-radius: 4px;
 }
+.message.system .message-content {
+background: #fff3cd;
+color: #856404;
+font-size: 12px;
+justify-content: center;
+text-align: center;
+border-radius: 8px;
+}
 .chatbot-results-panel {
 flex: 1;
 overflow-y: auto;
@@ -402,6 +425,9 @@ outline: none;
 border-color: #4287f5;
 box-shadow: 0 0 0 3px rgba(66, 135, 245, 0.1);
 }
+.chat-input-wrapper input::placeholder {
+color: #999;
+}
 .send-btn {
 padding: 12px 20px;
 background: linear-gradient(135deg, #4287f5, #8c4bc4);
@@ -419,6 +445,9 @@ gap: 6px;
 transform: translateY(-2px);
 box-shadow: 0 4px 12px rgba(66, 135, 245, 0.3);
 }
+.send-btn:active {
+transform: translateY(0);
+}
 .spinner {
 display: inline-block;
 width: 14px;
@@ -430,6 +459,15 @@ animation: spin 0.6s linear infinite;
 }
 @keyframes spin {
 to { transform: rotate(360deg); }
+}
+.info-badge {
+background: #e3f2fd;
+color: #1976d2;
+padding: 8px 12px;
+border-radius: 8px;
+font-size: 12px;
+margin-bottom: 12px;
+border-left: 3px solid #1976d2;
 }
 .suggestion-chips {
 display: flex;
@@ -451,15 +489,6 @@ transition: all 0.2s;
 background: #e8eef7;
 border-color: #4287f5;
 color: #4287f5;
-}
-.training-info {
-background: #e3f2fd;
-color: #1976d2;
-padding: 8px 12px;
-border-radius: 8px;
-font-size: 11px;
-margin-bottom: 8px;
-border-left: 3px solid #1976d2;
 }
 @media (max-width: 1200px) {
 .chatbot-container {
@@ -487,6 +516,7 @@ max-height: 150px;
 <h1>Explore Adobe Learning Manager Courses</h1>
 <button onclick="openChatbot()">Explore Now</button>
 </div>
+<div class="filter-drawer-overlay" id="drawerOverlay"></div>
 <div class="main-content">
 <div class="filters" id="filtersPanel">
 <div class="active-filters-chips" id="activeFiltersChips"></div>
@@ -496,6 +526,15 @@ max-height: 150px;
 <div class="custom-multiselect" id="multiSelect-loType">
 <div class="multi-trigger" onclick="openMultiSelect('loType')"><span>Training Type</span> <span class="badge-count" id="badgeCount-loType">0</span></div>
 <div class="multi-select-box" id="selectBox-loType"></div>
+</div>
+</div>
+</div>
+<div class="filter-section expanded" data-section="delivery">
+<div class="filter-heading" onclick="toggleSection(this.parentNode)">Training Delivery <span class="filter-toggle">☰</span></div>
+<div class="filter-content">
+<div class="custom-multiselect" id="multiSelect-deliveryType">
+<div class="multi-trigger" onclick="openMultiSelect('deliveryType')"><span>Delivery Types</span> <span class="badge-count" id="badgeCount-deliveryType">0</span></div>
+<div class="multi-select-box" id="selectBox-deliveryType"></div>
 </div>
 </div>
 </div>
@@ -517,10 +556,12 @@ max-height: 150px;
 <h2><i class="fas fa-robot"></i> Learning Assistant</h2>
 <div class="chatbot-header-actions">
 <button class="chatbot-icon-btn" title="Clear chat" onclick="clearChatHistory()"><i class="fas fa-trash"></i></button>
+<button class="chatbot-icon-btn" title="Settings" onclick="toggleSettings()"><i class="fas fa-cog"></i></button>
 <button class="chatbot-icon-btn" onclick="closeChatbot()"><i class="fas fa-times"></i></button>
 </div>
 </div>
 <div class="chatbot-content">
+<!-- Sidebar with quick filters -->
 <div class="chatbot-sidebar">
 <div class="sidebar-section">
 <div class="sidebar-title">Quick Filters</div>
@@ -541,6 +582,7 @@ max-height: 150px;
 <div id="recentQueries"></div>
 </div>
 </div>
+<!-- Main chat and results area -->
 <div class="chatbot-main">
 <div class="chatbot-messages" id="chatMessages"></div>
 <div class="chatbot-results-panel" id="chatResults"></div>
@@ -548,7 +590,7 @@ max-height: 150px;
 </div>
 <div class="chatbot-input-area">
 <div class="chat-input-wrapper">
-<input type="text" id="chatInput" placeholder="Ask anything... e.g., 'Show me Python courses' or 'Find advanced certifications'" />
+<input type="text" id="chatInput" placeholder="Ask anything... e.g., 'Show me advanced courses' or 'Find blended trainings'" />
 </div>
 <button class="send-btn" onclick="sendChatMessage()"><i class="fas fa-paper-plane"></i></button>
 </div>
@@ -558,60 +600,6 @@ max-height: 150px;
 <script>
 const accountId = "9759";
 const apiKey = "5fc01dd5-de45-408d-9b07-b267d40ebef9";
-
-// ===== KNOWLEDGE BASE - Trained Data from Detailed APIs =====
-let knowledgeBase = {};
-let searchIndex = [];
-
-async function buildKnowledgeBase(results) {
-console.log("Building knowledge base from detailed APIs...");
-for (let lo of results) {
-try {
-const [type, id] = lo.loId.split(':');
-const detailUrl = `https://cpcontents.adobe.com/eu/public/guest/eu/api/${apiKey}/${accountId}/${type}/${id}.json`;
-const res = await fetch(detailUrl);
-const detail = await res.json();
-const attr = detail?.data?.attributes || {};
-const meta = attr.localizedMetadata?.[0] || {};
-
-// Store detailed information
-knowledgeBase[lo.loId] = {
-id: lo.loId,
-name: lo.name,
-type: lo.loType,
-deliveryType: lo.deliveryType,
-duration: lo.duration,
-description: meta.overview || attr.description || "",
-skills: lo.loSkillNames || [],
-tags: attr.tags || [],
-rating: lo.averageRating || 0,
-imageUrl: attr.imageUrl || "https://via.placeholder.com/150x100?text=No+Image",
-author: meta.author || "",
-learningOutcomes: attr.learningOutcomes || [],
-prerequisites: attr.prerequisites || "",
-difficulty: attr.difficulty || "intermediate"
-};
-
-// Build searchable index
-const searchTerms = [
-lo.name.toLowerCase(),
-(meta.overview || "").toLowerCase(),
-(attr.description || "").toLowerCase(),
-...(lo.loSkillNames || []).map(s => s.toLowerCase()),
-...(attr.tags || []).map(t => t.toLowerCase())
-].join(" ");
-
-searchIndex.push({
-id: lo.loId,
-terms: searchTerms
-});
-
-} catch (err) {
-console.warn(`Failed to fetch details for ${lo.loId}:`, err);
-}
-}
-console.log(`Knowledge base built with ${Object.keys(knowledgeBase).length} courses`);
-}
 
 const filterOptions = {
 loType: [
@@ -657,10 +645,14 @@ initializeChatbot();
 }
 }
 
+function toggleSettings() {
+alert('Settings: Advanced filtering, language preferences, and more coming soon!');
+}
+
 function initializeChatbot() {
-addBotMessage("👋 Welcome! I'm using advanced AI trained on detailed course data.");
-addBotMessage("I can understand course descriptions, skills, outcomes, and more!");
-const suggestions = ['Python courses', 'Advanced certifications', 'Self-paced trainings', 'Virtual classes'];
+addBotMessage("👋 Welcome to your Learning Assistant! I can help you find the perfect course.");
+addBotMessage("Try asking: 'Show me Python courses' or 'Find self-paced certifications'");
+const suggestions = ['Show all courses', 'Find certifications', 'Self-paced trainings', 'Virtual classroom sessions'];
 let html = '<div class="suggestion-chips">';
 suggestions.forEach(s => {
 html += `<div class="suggestion-chip" onclick="populateAndSend('${s}')">${s}</div>`;
@@ -700,7 +692,9 @@ event.target.classList.add('active');
 activeQuickFilter = filter;
 
 let intent = { loType: [], deliveryType: [] };
-if (filter === 'course') {
+if (filter === 'all') {
+addBotMessage('Showing all courses...');
+} else if (filter === 'course') {
 intent.loType = ['course'];
 populateAndSend('Show me courses');
 } else if (filter === 'certification') {
@@ -724,16 +718,10 @@ populateAndSend('Show me blended trainings');
 }
 }
 
-// ===== IMPROVED INTENT PARSING WITH KNOWLEDGE BASE =====
-function parseUserIntentWithKnowledge(query) {
+function parseUserIntent(query) {
 const lowerQuery = query.toLowerCase();
-const intent = { loType: [], deliveryType: [], keywords: [] };
+const intent = { loType: [], deliveryType: [] };
 
-// Extract keywords for knowledge base search
-const keywords = lowerQuery.split(/[\s,;]+/).filter(w => w.length > 2);
-intent.keywords = keywords;
-
-// Traditional pattern matching
 if (lowerQuery.includes('course') && !lowerQuery.includes('certification')) intent.loType.push('course');
 if (lowerQuery.includes('certification')) intent.loType.push('certification');
 if (lowerQuery.includes('learning program')) intent.loType.push('learningProgram');
@@ -746,47 +734,17 @@ if (lowerQuery.includes('activity')) intent.deliveryType.push('instructorLed');
 return intent;
 }
 
-// ===== SMART FILTERING USING KNOWLEDGE BASE =====
-function filterResultsByKnowledge(results, intent) {
-if (intent.keywords.length === 0) return results;
-
-return results.filter(result => {
-const courseData = knowledgeBase[result.loId];
-if (!courseData) return true;
-
-const searchableText = [
-courseData.name.toLowerCase(),
-courseData.description.toLowerCase(),
-courseData.skills.join(" ").toLowerCase(),
-courseData.tags.join(" ").toLowerCase(),
-courseData.author.toLowerCase()
-].join(" ");
-
-// Check if any keyword matches
-return intent.keywords.some(keyword => searchableText.includes(keyword));
-});
-}
-
-async function fetchCourseDetailsFromAPI(results) {
+async function fetchCourseImages(results) {
 const updated = [];
 for (let lo of results) {
 try {
 const [type, id] = lo.loId.split(':');
 const res = await fetch(`https://cpcontents.adobe.com/eu/public/guest/eu/api/${apiKey}/${accountId}/${type}/${id}.json`);
 const detail = await res.json();
-const attr = detail?.data?.attributes || {};
-const meta = attr.localizedMetadata?.[0] || {};
-
-lo.imageUrl = attr.imageUrl || "https://via.placeholder.com/150x100?text=No+Image";
-lo.description = meta.overview || attr.description || "";
-lo.skills = lo.loSkillNames || [];
-lo.difficulty = attr.difficulty || "intermediate";
-
+lo.imageUrl = detail?.data?.attributes?.imageUrl || "https://via.placeholder.com/150x100?text=No+Image";
 updated.push(lo);
 } catch {
 lo.imageUrl = "https://via.placeholder.com/150x100?text=No+Image";
-lo.description = "";
-lo.skills = [];
 updated.push(lo);
 }
 }
@@ -798,8 +756,8 @@ const display = document.getElementById('chatResults');
 display.classList.add('active');
 
 if (!results || results.length === 0) {
-display.innerHTML = '<p style="color:#999;text-align:center;padding:20px;">No courses found matching your search.</p>';
-addBotMessage("❌ No results. Try keywords like 'Python', 'management', 'advanced', etc.");
+display.innerHTML = '<p style="color:#999;text-align:center;padding:20px;">No courses found</p>';
+addBotMessage("❌ No results found. Try different keywords!");
 return;
 }
 
@@ -812,7 +770,6 @@ let html = `<div class="results-header">
 <button class="sort-btn ${currentSortBy==='rating'?'active':''}" onclick="sortResults('rating')">Rating</button>
 </div>
 </div>
-<div class="training-info">🧠 AI Enhanced: Results filtered using detailed course data and knowledge base</div>
 <div class="chatbot-results-grid">`;
 
 results.slice(0, 15).forEach(lo => {
@@ -822,16 +779,16 @@ html += `
 <img src="${img}" class="chatbot-card-img" onerror="this.src='https://via.placeholder.com/150x100?text=No+Image'">
 <div class="chatbot-card-content">
 <h5>${lo.name}</h5>
-<p><strong>${lo.loType}</strong></p>
-<p>⏱️ ${lo.duration || 'N/A'} min</p>
+<p>${lo.loType}</p>
+<p>⏱️ ${lo.duration || 'N/A'} mins</p>
 <p>⭐ ${lo.averageRating || 'N/A'}</p>
-<span class="chatbot-card-badge">${lo.difficulty || 'Medium'}</span>
+<span class="chatbot-card-badge">${lo.deliveryType || 'Self'}</span>
 </div>
 </div>`;
 });
 html += '</div>';
 display.innerHTML = html;
-addBotMessage(`✅ Found ${results.length} courses! Using AI knowledge base for best matches.`);
+addBotMessage(`✅ Found ${results.length} courses! Click any to view details.`);
 }
 
 function sortResults(by) {
@@ -856,16 +813,16 @@ addUserMessage(query);
 input.value = '';
 
 const display = document.getElementById('chatResults');
-display.innerHTML = '<div style="text-align:center;padding:20px;"><div class="spinner"></div> AI is analyzing your request...</div>';
+display.innerHTML = '<div style="text-align:center;padding:20px;"><div class="spinner"></div> Searching...</div>';
 display.classList.add('active');
 
 try {
-const intent = parseUserIntentWithKnowledge(query);
+const intent = parseUserIntent(query);
 let filterTerms = {};
 if (intent.loType.length > 0) filterTerms.loType = intent.loType;
 if (intent.deliveryType.length > 0) filterTerms.deliveryType = intent.deliveryType;
 
-const apiUrl = `https://primeapics.adobe.com/almsearch/api/v1/eu/${accountId}/${apiKey}/search?size=50&from=0`;
+const apiUrl = `https://primeapps.adobe.com/almsearch/api/v1/eu/${accountId}/${apiKey}/search?size=50&from=0`;
 const body = { query: "", filters: { terms: filterTerms }, size: 50 };
 
 const res = await fetch(apiUrl, {
@@ -876,16 +833,12 @@ body: JSON.stringify(body)
 
 const data = await res.json();
 let results = data.results || [];
-
-// Fetch detailed information
-results = await fetchCourseDetailsFromAPI(results);
-
-// Apply knowledge-based filtering
-results = filterResultsByKnowledge(results, intent);
+results = await fetchCourseImages(results);
 
 displayChatResults(results);
-addRecentQuery(query);
 
+// Add to recent queries
+addRecentQuery(query);
 } catch (err) {
 console.error(err);
 display.innerHTML = '<p style="color:#d32f2f;padding:20px;">Error fetching courses</p>';
@@ -895,22 +848,21 @@ addBotMessage("⚠️ Error occurred. Please try again.");
 
 function addRecentQuery(query) {
 const recent = document.getElementById('recentQueries');
+const queries = recent.innerHTML.split('<div').length - 1;
+if (queries < 5) {
 const div = document.createElement('div');
 div.className = 'quick-filter';
 div.textContent = query.substring(0, 20) + (query.length > 20 ? '...' : '');
 div.onclick = () => populateAndSend(query);
-recent.insertBefore(div, recent.firstChild);
-if (recent.children.length > 5) recent.removeChild(recent.lastChild);
+recent.appendChild(div);
+}
 }
 
 document.getElementById('chatInput').addEventListener('keypress', (e) => {
 if (e.key === 'Enter') sendChatMessage();
 });
 
-// Initialize
-function toggleSection(sectionDiv){
-sectionDiv.classList.toggle('expanded');
-}
+// Existing filter functions (abbreviated)
 function renderMultiSelect(key) {
 const selectBox = document.getElementById('selectBox-' + key);
 selectBox.innerHTML = '';
@@ -918,17 +870,75 @@ const searchInp = document.createElement('input');
 searchInp.className = 'input-search';
 searchInp.placeholder = "Search...";
 selectBox.appendChild(searchInp);
+const selectAllRow = document.createElement('div');
+selectAllRow.className = "select-all-row";
+selectAllRow.innerHTML = '<strong>Select All</strong>';
+selectAllRow.onclick = function() {
+const allChecked = filtersState[key].length === filterOptions[key].length;
+filtersState[key] = allChecked ? [] : filterOptions[key].map(o => o.value);
+renderMultiSelect(key);
+updateChips();
+updateBadgeCounts();
+};
+selectBox.appendChild(selectAllRow);
+const optsContainer = document.createElement('div');
+optsContainer.className = "multi-select-options";
+const filteredOpts = searchInp.value ? filterOptions[key].filter(o => o.text.toLowerCase().includes(searchInp.value.toLowerCase())) : filterOptions[key];
+filteredOpts.forEach(opt => {
+const label = document.createElement('label');
+const cbx = document.createElement('input');
+cbx.type = "checkbox";
+cbx.value = opt.value;
+cbx.checked = filtersState[key].includes(opt.value);
+cbx.onchange = function() {
+if (cbx.checked) filtersState[key].push(opt.value);
+else filtersState[key] = filtersState[key].filter(v => v !== opt.value);
+updateChips();
+updateBadgeCounts();
+};
+label.appendChild(cbx);
+label.appendChild(document.createTextNode(opt.text));
+optsContainer.appendChild(label);
+});
+selectBox.appendChild(optsContainer);
+searchInp.oninput = () => { renderMultiSelect(key); }
 }
 function openMultiSelect(key) {
-document.getElementById('multiSelect-'+key)?.classList.toggle('open');
+['loType','deliveryType'].forEach(k => { document.getElementById('multiSelect-'+k)?.classList.remove('open'); });
+document.getElementById('multiSelect-'+key)?.classList.add('open');
 renderMultiSelect(key);
 }
-function updateBadgeCounts() {}
-function updateChips() {}
-
-// Load knowledge base on page load
-window.addEventListener('load', async () => {
-console.log("Loading knowledge base...");
+function updateBadgeCounts() {
+Object.keys(filtersState).forEach(key => {
+const badge = document.getElementById('badgeCount-'+key);
+if (badge) badge.innerText = filtersState[key].length;
+});
+}
+function toggleSection(sectionDiv){
+sectionDiv.classList.toggle('expanded');
+}
+function updateChips() {
+const chipCont = document.getElementById('activeFiltersChips');
+chipCont.innerHTML = '';
+let hasChips = false;
+Object.keys(filtersState).forEach(key=>{
+filtersState[key].forEach(val=>{
+hasChips = true;
+const opt = filterOptions[key].find(o=>o.value===val);
+const chipDiv = document.createElement('span');
+chipDiv.className = "filter-chip";
+chipDiv.innerHTML = opt.text + ` <button class="remove-chip" onclick="removeChip('${key}','${val}')">&times;</button>`;
+chipCont.appendChild(chipDiv);
+});
+});
+}
+function removeChip(key, value){
+filtersState[key] = filtersState[key].filter(v => v !== value);
+updateChips();
+updateBadgeCounts();
+}
+document.getElementById("applyFilters")?.addEventListener("click", () => {
+console.log("Filters applied");
 });
 </script>
 </body>
