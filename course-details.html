@@ -127,6 +127,13 @@
   background-clip: text;
   font-size: 19px;
 }
+    .card-header p1 {
+  background: black;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-size: 19px;
+}
 h3 {
   background: #18181a87;
   -webkit-background-clip: text;
@@ -183,7 +190,7 @@ function renderDetails(data, type) {
       <div>
       <br>
         <h2>${title}</h2>
-        <p>${desc}</p>
+        <p1>${desc}</p1>
         ${extraDetails}
         
         ${skill ? `<p><strong>Skill:</strong> ${skill.name} (Level ${skill.level}, Credits: ${skill.maxCredits})</p>` : ""}
