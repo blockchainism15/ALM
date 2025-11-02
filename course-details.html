@@ -45,6 +45,7 @@
       margin: 1rem 0; background-color: rgba(255,255,255,0.8);
       box-shadow: 0 2px 6px rgba(0,0,0,0.05);
       transition: transform 0.2s ease, box-shadow 0.2s ease;
+      cursor: pointer;
     }
     .module-card:hover, .resource-card:hover, .sublo-card:hover {
       transform: translateY(-3px);
@@ -84,6 +85,38 @@
       font-size: 0.9rem;
       color: #003366;
     }
+
+    /* Modal Styles */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 9999;
+      left: 0; top: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.4);
+      justify-content: center;
+      align-items: center;
+    }
+    .modal-content {
+      background: #fff;
+      padding: 1.5rem;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 600px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+      position: relative;
+    }
+    .close-btn {
+      position: absolute;
+      top: 10px; right: 15px;
+      font-size: 1.4rem;
+      color: #333;
+      cursor: pointer;
+    }
+    .modal h3 {
+      margin-top: 0;
+      color: #003366;
+    }
     @media (max-width: 768px) {
       .card-header { flex-direction: column; align-items: flex-start; }
       .card-header img { width: 100%; height: 220px; }
@@ -94,7 +127,18 @@
 <body>
 <div class="container" id="content"><p>Loading details...</p></div>
 
+<!-- Modal -->
+<div id="resourceModal" class="modal">
+  <div class="modal-content">
+    <span class="close-btn" onclick="closeModal()">&times;</span>
+    <h3 id="modalTitle"></h3>
+    <div id="modalBody"></div>
+  </div>
+</div>
+
 <script>
+let globalModules = {}; // store resources per module for popup
+
 async function fetchDetails() {
   const content = document.getElementById('content');
   const params = new URLSearchParams(window.location.search);
@@ -123,12 +167,6 @@ function renderDetails(data, type) {
   const desc = meta.overview || meta.description || attr.description || "No description available.";
   const image = attr.imageUrl || "https://via.placeholder.com/150x100?text=No+Image";
   const duration = attr.duration ? formatDuration(attr.duration) : "N/A";
-  const skill = extractSkillInfo(data);
-
-  let extraDetails = "";
-  if (type === "certification") {
-    extraDetails = renderCertificationDetails(data);
-  }
 
   let html = `
   <div class="card">
@@ -137,83 +175,22 @@ function renderDetails(data, type) {
       <div>
         <h2>${title}</h2>
         <p>${desc}</p>
-        ${extraDetails}
-        ${type !== "certification" ? `<p><strong>Duration:</strong> ${duration}</p>` : ""}
-        ${skill ? `<p><strong>Skill:</strong> ${skill.name} (Level ${skill.level}, Credits: ${skill.maxCredits})</p>` : ""}
-        <a href="#" class="register-btn">Register</a>
       </div>
     </div>
     <div class="card-content">
       <h3>Your Learning Journey for this ${type}</h3>
-  `;
-
-  if (type === "course") html += renderModules(data);
-  else if (type === "learningProgram" || type === "certification") html += renderSubLOs(data);
-
-  html += "</div></div>";
-  content.innerHTML = html;
-}
-
-function renderCertificationDetails(data) {
-  const inc = data.included || [];
-  const mainLO = data.data;
-  const relInstanceId = mainLO.relationships?.instances?.data?.[0]?.id;
-  const instanceObj = inc.find(i => i.id === relInstanceId && i.type === "learningObjectInstance");
-  if (!instanceObj) return "";
-  const a = instanceObj.attributes || {};
-  let validity = a.validity || "";
-  const state = a.state || "N/A";
-
-  if (validity && validity.endsWith("m")) {
-    const totalMonths = parseInt(validity.replace("m", ""), 10);
-    const years = Math.floor(totalMonths / 12);
-    const months = totalMonths % 12;
-    if (years > 0 && months > 0) validity = `${years} year${years>1?"s":""} ${months} month${months>1?"s":""}`;
-    else if (years > 0) validity = `${years} year${years>1?"s":""}`;
-    else validity = `${months} month${months>1?"s":""}`;
-  } else if (!validity) validity = "N/A";
-
-  let deadline = "N/A";
-  if (a.completionDeadline) {
-    const val = a.completionDeadline.trim();
-    if (val.endsWith("d")) {
-      const days = parseInt(val.replace("d", ""), 10);
-      if (!isNaN(days)) {
-        const d = new Date();
-        d.setDate(d.getDate() + days);
-        deadline = d.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
-      }
-    } else if (!isNaN(Date.parse(val))) {
-      const d = new Date(val);
-      deadline = d.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
-    }
-  }
-
-  return `
-    <div class="side-info-box">
-      <strong>Certification Details:</strong><br>
-      <span><b>Validity:</b> ${validity}</span><br>
-      <span><b>State:</b> ${state}</span><br>
-      <span><b>Completion Deadline:</b> ${deadline}</span>
+      ${renderModules(data)}
     </div>
-  `;
-}
+  </div>`;
+  content.innerHTML = html;
 
-function extractSkillInfo(data) {
-  const inc = data.included || [];
-  const s = inc.find(i => i.type === "skill");
-  const sl = inc.find(i => i.type === "skillLevel");
-  if (!s || !sl) return null;
-  return { name: s.attributes?.name || "Skill", level: sl.attributes?.level || "N/A", maxCredits: sl.attributes?.maxCredits || "N/A" };
-}
-
-function getFormatColor(type) {
-  const map = {
-    'INTERACTIVE': '#0078ff', 'VIDEO': '#e67e22', 'PDF': '#d32f2f',
-    'DOC': '#1976d2', 'DOCX': '#1976d2', 'AUDIO': '#9c27b0',
-    'PPT': '#6a1b9a', 'PPTX': '#6a1b9a'
-  };
-  return map[type?.toUpperCase()] || '#2e7d32';
+  // Add click handlers for module cards
+  document.querySelectorAll('.module-card').forEach(card => {
+    card.addEventListener('click', () => {
+      const key = card.dataset.module;
+      if (globalModules[key]) openModal(globalModules[key].name, globalModules[key].resources);
+    });
+  });
 }
 
 function renderModules(data) {
@@ -226,122 +203,48 @@ function renderModules(data) {
   return loInst.map(inst => {
     const refs = inst.relationships?.loResources?.data || [];
     const matched = loRes.filter(lr => refs.some(r => r.id === lr.id));
-    let html = "";
-    matched.forEach(lr => {
+    return matched.map(lr => {
       const m = lr.attributes?.localizedMetadata?.[0];
       const name = m?.name || "Module";
       const resourceType = lr.attributes?.resourceType || "N/A";
       const resRefs = lr.relationships?.resources?.data || [];
       const related = res.filter(r => resRefs.some(rr => rr.id === r.id));
 
-      html += `
-      <div class="module-card">
+      globalModules[name] = { name, resources: related };
+
+      return `
+      <div class="module-card" data-module="${name}">
         <div class="module-header">
           <span>${name}</span>
           <span style="font-size:0.9em; color:#6a5acd;">${resourceType}</span>
         </div>
-        <div class="chapter-list">
-          ${related.map(r => {
-            const a = r.attributes || {};
-            const t = a.contentType;
-            const display = ["CP","SCORM12","SCORM2004"].includes(t) ? "Interactive" : (t || a.resourceType || "N/A");
-            const color = getFormatColor(display);
-            return `
-            <div class="resource-card">
-              <div class="chapter-item">
-                <i class="fa-solid fa-circle-play"></i>
-                <span>${a.name}</span>
-                <small class="format-label" style="color:${color};">
-                  (${a.desiredDuration || 0} mins - ${display})
-                </small>
-              </div>
-            </div>`;
-          }).join('')}
-        </div>
       </div>`;
-    });
-    return html;
+    }).join('');
   }).join('');
 }
 
-function renderSubLOs(data) {
-  const inc = data.included || [];
-  const subCourses = inc.filter(i => i.type === "learningObject" && i.attributes?.loType === "course");
-  if (!subCourses.length) return "<p>No related courses available.</p>";
-
-  return subCourses.map(sub => {
-    const a = sub.attributes || {};
-    const m = a.localizedMetadata?.[0] || {};
-    const name = m.name || a.name || "Untitled Course";
-    const desc = m.overview || a.description || "";
-    const img = a.imageUrl || "https://via.placeholder.com/100x80?text=No+Image";
-    const dur = a.duration ? formatDuration(a.duration) : "N/A";
-
-    const subInc = inc.filter(i => i.relationships?.learningObject?.data?.id === sub.id || i.id === sub.id);
-    const loInst = subInc.filter(i => i.type === "learningObjectInstance");
-    const loRes = subInc.filter(i => i.type === "learningObjectResource");
-    const res = subInc.filter(i => i.type === "resource");
-
-    let resourceHTML = "";
-    loInst.forEach(inst => {
-      const refs = inst.relationships?.loResources?.data || [];
-      const matched = loRes.filter(lr => refs.some(r => r.id === lr.id));
-      matched.forEach(lr => {
-        const meta = lr.attributes?.localizedMetadata?.[0];
-        const moduleName = meta?.name || "Module";
-        const resourceType = lr.attributes?.resourceType || "N/A";
-        const resRefs = lr.relationships?.resources?.data || [];
-        const related = res.filter(r => resRefs.some(rr => rr.id === r.id));
-
-        resourceHTML += `
-        <div class="module-card">
-          <div class="module-header">
-            <span>${moduleName}</span>
-            <span style="font-size:0.9em; color:#6a5acd;">${resourceType}</span>
-          </div>
-          <div class="chapter-list">
-            ${related.map(r => {
-              const a = r.attributes || {};
-              const t = a.contentType;
-              const display = ["CP","SCORM12","SCORM2004"].includes(t) ? "Interactive" : (t || a.resourceType || "N/A");
-              const color = getFormatColor(display);
-              return `
-              <div class="resource-card">
-                <div class="chapter-item">
-                  <i class="fa-solid fa-circle-play"></i>
-                  <span>${a.name}</span>
-                  <small class="format-label" style="color:${color};">
-                    (${a.desiredDuration || 0} mins - ${display})
-                  </small>
-                </div>
-              </div>`;
-            }).join('')}
-          </div>
-        </div>`;
-      });
-    });
-
+function openModal(title, resources) {
+  document.getElementById('modalTitle').innerText = title;
+  const body = resources.map(r => {
+    const a = r.attributes || {};
     return `
-    <div class="sublo-card">
-      <div class="sublo-header">
-        <div style="display:flex;align-items:center;gap:0.8rem;">
-          <img src="${img}" style="width:60px;height:60px;border-radius:8px;object-fit:cover;">
-          <span>${name} (${a.loType})</span>
-        </div>
-        <small>${dur}</small>
-      </div>
-      <div class="chapter-list">
-        <p>${desc || "No description available."}</p>
-        ${resourceHTML || "<p>No resources available.</p>"}
-      </div>
-    </div>`;
-  }).join('');
+      <div class="resource-card" style="margin-bottom:10px;">
+        <strong>${a.name}</strong><br>
+        Type: ${a.contentType || a.resourceType || "N/A"}<br>
+        Duration: ${a.desiredDuration || "N/A"} mins
+      </div>`;
+  }).join('') || "<p>No resources available.</p>";
+  document.getElementById('modalBody').innerHTML = body;
+  document.getElementById('resourceModal').style.display = 'flex';
 }
+function closeModal() { document.getElementById('resourceModal').style.display = 'none'; }
+window.onclick = e => { if (e.target == document.getElementById('resourceModal')) closeModal(); };
 
 function formatDuration(mins) {
   const d = Math.floor(mins / 1440), m = mins % 1440;
   return d > 0 ? `${d} day(s) ${m} mins` : `${m} mins`;
 }
+
 fetchDetails();
 </script>
 </body>
