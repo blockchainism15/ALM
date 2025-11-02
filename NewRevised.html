@@ -231,7 +231,7 @@ const skills = ["Java Programming","LP SKILLS","Anupam's admin trial"];
 skills.forEach(s => document.getElementById("loSkillNamesSelect").innerHTML += `<option value="${s}">${s}</option>`);
 
 let currentPage = 0;
-const pageSize = 10;
+const pageSize = 30;
 
 async function fetchResults(filters = {}, page = 0) {
     const container = document.getElementById("results");
