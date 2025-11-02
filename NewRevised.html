@@ -325,6 +325,26 @@ body {
     border-radius: 10px;
     margin-bottom: 10px;
 }
+    /* Gradient for the course name (h4) */
+.card h4 {
+  background: linear-gradient(135deg, #001f3f, #7b1fa2);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent; /* for browsers supporting standard property */
+  margin: 8px 0;
+  font-size: 1.1em;
+}
+
+/* On hover, for other textual info, also change font to same gradient */
+.card:hover p {
+  background: linear-gradient(135deg, #001f3f, #7b1fa2);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+}
+
 .rating { color: #ff9800; font-weight: bold; }
 .loading {
     text-align: center;
