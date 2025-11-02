@@ -1,291 +1,359 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Adobe Learning Manager - Learning Objects</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ALM Learning Objects</title>
 <style>
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
-    background-color: #f5f5f7;
-    margin: 0;
-    padding: 20px;
-    color: #333;
-  }
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+        background: #f5f8ff;
+        margin: 0;
+        padding: 0;
+    }
 
-  header {
-    background: rgba(255, 255, 255, 0.85);
-    backdrop-filter: blur(10px);
-    padding: 20px;
-    border-radius: 20px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    text-align: center;
-    font-size: 1.8em;
-    font-weight: 600;
-    color: #1d1d1f;
-    margin-bottom: 30px;
-  }
+    /* Banner */
+    .banner {
+        background: #001f3f;
+        color: white;
+        text-align: center;
+        padding: 40px 20px;
+    }
 
-  .filters {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 15px;
-    align-items: flex-end;
-    background: rgba(255, 255, 255, 0.9);
-    border-radius: 16px;
-    padding: 15px 20px;
-    margin-bottom: 25px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-  }
+    .banner h1 {
+        margin: 0;
+        font-size: 2em;
+        letter-spacing: 1px;
+    }
 
-  .filter-group {
-    display: flex;
-    flex-direction: column;
-  }
+    .banner button {
+        margin-top: 15px;
+        background: #007bff;
+        border: none;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 8px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: 0.3s;
+    }
 
-  .filter-group label {
-    font-weight: 600;
-    color: #1d1d1f;
-    margin-bottom: 5px;
-  }
+    .banner button:hover {
+        background: #005ecb;
+    }
 
-  .filter-group select {
-    padding: 8px 12px;
-    border-radius: 10px;
-    border: 1px solid #ccc;
-    background: white;
-    font-size: 0.95em;
-  }
+    /* Layout container */
+    .main-content {
+        display: grid;
+        grid-template-columns: 300px 1fr;
+        gap: 20px;
+        padding: 30px;
+    }
 
-  .filter-actions {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-left: auto;
-  }
+    /* Filters panel */
+    .filters {
+        background: #ffffff;
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        height: fit-content;
+    }
 
-  .filter-actions button {
-    padding: 10px 20px;
-    border-radius: 12px;
-    border: none;
-    background: #0071e3;
-    color: white;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-  }
+    .filters h3 {
+        margin-top: 0;
+        color: #001f3f;
+        font-size: 1.2em;
+        text-align: center;
+        margin-bottom: 10px;
+    }
 
-  .filter-actions button:hover {
-    background: transparent;
-    border: 1px solid #0071e3;
-    color: #0071e3;
-  }
+    select, button {
+        padding: 8px 10px;
+        border-radius: 6px;
+        border: 1px solid #ccc;
+        font-size: 14px;
+    }
 
-  .results {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 20px;
-  }
+    button {
+        background: linear-gradient(to right, #007bff, #00c6ff);
+        color: white;
+        border: none;
+        cursor: pointer;
+        transition: 0.3s;
+    }
 
-  .card {
-    background: white;
-    border-radius: 18px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    overflow: hidden;
-    transition: transform 0.25s ease;
-    display: flex;
-    flex-direction: column;
-  }
+    button:hover {
+        background: linear-gradient(to right, #005ecb, #00a3d4);
+    }
 
-  .card:hover {
-    transform: scale(1.03);
-  }
+    /* Results area */
+    #results {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 20px;
+    }
 
-  .card-img {
-    width: 100%;
-    height: 160px;
-    object-fit: cover;
-  }
+    /* Translucent Apple-style Card with Blue Gradient Borders */
+    .card {
+        position: relative;
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(10px);
+        border-radius: 14px;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        text-align: center;
+        text-decoration: none;
+        color: #000;
+        padding: 15px;
+        transition: transform 0.2s, box-shadow 0.2s;
+        overflow: hidden;
+    }
 
-  .card-content {
-    padding: 15px;
-    flex-grow: 1;
-  }
+    /* Blue gradient borders */
+    .card::before,
+    .card::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(to right, #007bff, #00c6ff);
+    }
 
-  .card-content h3 {
-    margin: 0 0 8px;
-    font-size: 1.1em;
-    color: #1d1d1f;
-  }
+    .card::before {
+        top: 0;
+    }
 
-  .card-content p {
-    font-size: 0.9em;
-    color: #555;
-    line-height: 1.4em;
-  }
+    .card::after {
+        bottom: 0;
+    }
 
-  footer {
-    text-align: center;
-    margin-top: 40px;
-    color: #888;
-    font-size: 0.9em;
-  }
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        background: rgba(255, 255, 255, 0.85);
+    }
+
+    .card img {
+        width: 100%;
+        height: 160px;
+        object-fit: cover;
+        border-radius: 10px;
+        margin-bottom: 10px;
+    }
+
+    .rating {
+        color: #ff9800;
+        font-weight: bold;
+    }
+
+    .loading {
+        text-align: center;
+        font-size: 18px;
+        color: #007bff;
+        margin-top: 20px;
+    }
+
+    #pagination {
+        text-align: center;
+        margin-top: 20px;
+    }
+
+    @media (max-width: 900px) {
+        .main-content {
+            grid-template-columns: 1fr;
+        }
+    }
 </style>
 </head>
 <body>
-  <header>Adobe Learning Manager - Learning Objects</header>
 
-  <section class="filters">
-    <div>Loading filters...</div>
-  </section>
+<!-- Banner -->
+<div class="banner">
+    <h1>Explore Adobe Learning Manager Courses</h1>
+    <button onclick="scrollToContent()">Explore Now</button>
+</div>
 
-  <section class="results">
-    <div>Loading courses...</div>
-  </section>
+<!-- Main content area -->
+<div class="main-content" id="content">
+    <!-- Filters -->
+    <div class="filters">
+        <h3>Filter Courses</h3>
 
-  <footer>© 2025 Adobe Learning Manager Integration</footer>
+        <select id="loTypeSelect" multiple>
+            <option value="course">Course</option>
+            <option value="learningProgram">Learning Program</option>
+            <option value="jobAid">Job Aid</option>
+            <option value="certification">Certification</option>
+        </select>
+
+        <select id="deliveryTypeSelect" multiple>
+            <option value="selfPaced">Self Paced</option>
+            <option value="instructorLed">Instructor Led</option>
+        </select>
+
+        <select id="catalogNamesSelect" multiple></select>
+        <select id="tagsSelect" multiple></select>
+        <select id="loSkillNamesSelect" multiple></select>
+        <select id="loSkillLevelsSelect" multiple>
+            <option value="1">Level 1</option>
+            <option value="2">Level 2</option>
+            <option value="3">Level 3</option>
+        </select>
+
+        <button id="applyFilters">Apply Filters</button>
+        <button id="clearFilters">Clear Filters</button>
+    </div>
+
+    <!-- Results -->
+    <div>
+        <div id="results"></div>
+        <div id="pagination"></div>
+        <div id="loading" class="loading" style="display:none;">Loading results...</div>
+    </div>
+</div>
 
 <script>
-document.addEventListener("DOMContentLoaded", () => {
-  loadFilters();
-  loadAllCourses();
+const accountId = "9759";
+const apiKey = "5fc01dd5-de45-408d-9b07-b267d40ebef9";
+
+// Catalogs, tags, skills
+const catalogs = ["Default Catalog", "Special Catalog"];
+catalogs.forEach(c => document.getElementById("catalogNamesSelect").innerHTML += `<option value="${c}">${c}</option>`);
+
+const tags = ["anu","anupam","Diagnostic"];
+tags.forEach(t => document.getElementById("tagsSelect").innerHTML += `<option value="${t}">${t}</option>`);
+
+const skills = ["Java Programming","LP SKILLS","Anupam's admin trial"];
+skills.forEach(s => document.getElementById("loSkillNamesSelect").innerHTML += `<option value="${s}">${s}</option>`);
+
+let currentPage = 0;
+const pageSize = 30;
+
+async function fetchResults(filters = {}, page = 0) {
+    const container = document.getElementById("results");
+    const loadingDiv = document.getElementById("loading");
+    const paginationDiv = document.getElementById("pagination");
+    container.innerHTML = "";
+    paginationDiv.innerHTML = "";
+    loadingDiv.style.display = "block";
+
+    const apiUrl = `https://primeapps.adobe.com/almsearch/api/v1/eu/${accountId}/${apiKey}/search?size=${pageSize}&from=${page * pageSize}`;
+
+    let filterTerms = {};
+    if (filters.loType?.length) filterTerms.loType = filters.loType;
+    if (filters.deliveryType?.length) filterTerms.deliveryType = filters.deliveryType;
+    if (filters.loSkillLevels?.length) filterTerms.loSkillLevels = filters.loSkillLevels;
+    if (filters.loSkillNames?.length) filterTerms.loSkillNames = filters.loSkillNames;
+    if (filters.catalogNames?.length) filterTerms.catalogNames = filters.catalogNames;
+    if (filters.tags?.length) filterTerms.tags = filters.tags;
+
+    const body = { query: "", filters: { terms: filterTerms }, size: pageSize };
+
+    try {
+        const res = await fetch(apiUrl, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(body)
+        });
+        const data = await res.json();
+        loadingDiv.style.display = "none";
+
+        if (!data.results || data.results.length === 0) {
+            container.innerHTML = "<p>No results found.</p>";
+            return;
+        }
+
+        data.results.forEach(lo => {
+            const card = document.createElement("a");
+            card.href = `course-details.html?courseId=${lo.loId}`;
+            card.className = "card";
+            card.target = "_blank";
+
+            const img = document.createElement("img");
+            img.src = "https://via.placeholder.com/400x200?text=Loading...";
+            img.onerror = () => img.src = "https://cdn.pixabay.com/photo/2023/03/23/04/17/bookkeeper-adelaide-7871094_1280.jpg";
+            card.appendChild(img);
+
+            const h4 = document.createElement("h4");
+            h4.textContent = lo.name;
+            card.appendChild(h4);
+
+            const typeP = document.createElement("p");
+            typeP.textContent = `${lo.loType} | ${lo.deliveryType || "N/A"} | Duration: ${lo.duration || "N/A"} mins`;
+            card.appendChild(typeP);
+
+            const skillsP = document.createElement("p");
+            skillsP.textContent = "Skills: " + (lo.loSkillNames?.join(", ") || "N/A");
+            card.appendChild(skillsP);
+
+            const ratingP = document.createElement("p");
+            ratingP.innerHTML = `Rating: <span class="rating">${lo.averageRating || 0}★</span> (${lo.ratingsCount || 0})`;
+            card.appendChild(ratingP);
+
+            container.appendChild(card);
+
+            const numericId = lo.loId.split(":")[1];
+            fetch(`https://cpcontents.adobe.com/eu/public/guest/eu/api/${apiKey}/${accountId}/${lo.loType}/${numericId}.json`)
+                .then(res => res.json())
+                .then(detail => {
+                    if (detail?.data?.attributes?.imageUrl) {
+                        img.src = detail.data.attributes.imageUrl;
+                    }
+                })
+                .catch(() => {});
+        });
+
+        paginationDiv.innerHTML = `
+            <button ${page === 0 ? "disabled" : ""} onclick="changePage(${page - 1})">Previous</button>
+            <button onclick="changePage(${page + 1})">Next</button>
+        `;
+
+    } catch (err) {
+        console.error(err);
+        container.innerHTML = "<p>Error fetching results.</p>";
+        loadingDiv.style.display = "none";
+    }
+}
+
+function changePage(newPage) {
+    currentPage = newPage;
+    fetchResults(getFilters(), currentPage);
+}
+
+function getFilters() {
+    return {
+        loType: Array.from(document.getElementById("loTypeSelect").selectedOptions).map(o => o.value),
+        deliveryType: Array.from(document.getElementById("deliveryTypeSelect").selectedOptions).map(o => o.value),
+        loSkillLevels: Array.from(document.getElementById("loSkillLevelsSelect").selectedOptions).map(o => o.value),
+        loSkillNames: Array.from(document.getElementById("loSkillNamesSelect").selectedOptions).map(o => o.value),
+        catalogNames: Array.from(document.getElementById("catalogNamesSelect").selectedOptions).map(o => o.value),
+        tags: Array.from(document.getElementById("tagsSelect").selectedOptions).map(o => o.value)
+    };
+}
+
+document.getElementById("applyFilters").addEventListener("click", () => {
+    currentPage = 0;
+    fetchResults(getFilters());
 });
 
-// ---------------------
-// Load filters section
-// ---------------------
-async function loadFilters() {
-  const filterUrl = "https://primeapps.adobe.com/almsearch/api/v1/eu/9759/5fc01dd5-de45-408d-9b07-b267d40ebef9/filterableData";
-  const filterSection = document.querySelector(".filters");
-  filterSection.innerHTML = "<div>Loading filters...</div>";
+document.getElementById("clearFilters").addEventListener("click", () => {
+    document.querySelectorAll("select").forEach(sel => sel.selectedIndex = -1);
+    currentPage = 0;
+    fetchResults({});
+});
 
-  try {
-    const response = await fetch(filterUrl);
-    if (!response.ok) throw new Error("Failed to fetch filters");
-    const data = await response.json();
-
-    const { terms, range } = data;
-    if (!terms && !range) throw new Error("No filters found");
-
-    let html = `<form id="filterForm" class="filter-form">`;
-
-    // --- Build dropdowns for each term ---
-    for (const key in terms) {
-      const values = terms[key];
-      if (Array.isArray(values) && values.length > 0) {
-        html += `
-        <div class="filter-group">
-          <label>${key}</label>
-          <select name="${key}">
-            <option value="">All</option>
-            ${values.map(v => `<option value="${v}">${v}</option>`).join("")}
-          </select>
-        </div>`;
-      }
-    }
-
-    html += `
-      <div class="filter-actions">
-        <button type="button" id="applyFiltersBtn">Apply Filters</button>
-      </div>
-    </form>`;
-
-    filterSection.innerHTML = html;
-
-    // Attach click listener to Apply button
-    document.getElementById("applyFiltersBtn").addEventListener("click", applyFilters);
-
-  } catch (err) {
-    console.error(err);
-    filterSection.innerHTML = `<div style="color:red;">Failed to load filters</div>`;
-  }
+function scrollToContent() {
+    document.getElementById("content").scrollIntoView({ behavior: "smooth" });
 }
 
-// ---------------------
-// Apply filters & fetch results
-// ---------------------
-async function applyFilters() {
-  const form = document.getElementById("filterForm");
-  const selected = {};
-
-  // Collect selected values
-  for (const el of form.elements) {
-    if (el.tagName === "SELECT" && el.value) {
-      selected[el.name] = el.value;
-    }
-  }
-
-  // Build query parameters
-  const params = new URLSearchParams(selected).toString();
-
-  // Construct filtered API URL
-  const searchUrl = `https://primeapps.adobe.com/almsearch/api/v1/eu/9759/5fc01dd5-de45-408d-9b07-b267d40ebef9/search?${params}`;
-  const resultsSection = document.querySelector(".results");
-  resultsSection.innerHTML = "<div>Loading filtered results...</div>";
-
-  try {
-    const response = await fetch(searchUrl);
-    if (!response.ok) throw new Error("Failed to fetch search results");
-    const data = await response.json();
-
-    const items = data.hits || data.learningObjects || [];
-    if (!items.length) {
-      resultsSection.innerHTML = "<div>No results found.</div>";
-      return;
-    }
-
-    displayCourses(items);
-  } catch (err) {
-    console.error(err);
-    resultsSection.innerHTML = `<div style="color:red;">Failed to load filtered results</div>`;
-  }
-}
-
-// ---------------------
-// Load all courses initially
-// ---------------------
-async function loadAllCourses() {
-  const url = "https://primeapps.adobe.com/almsearch/api/v1/eu/9759/5fc01dd5-de45-408d-9b07-b267d40ebef9/search";
-  const resultsSection = document.querySelector(".results");
-  resultsSection.innerHTML = "<div>Loading courses...</div>";
-
-  try {
-    const response = await fetch(url);
-    if (!response.ok) throw new Error("Failed to load courses");
-    const data = await response.json();
-    const items = data.hits || data.learningObjects || [];
-    displayCourses(items);
-  } catch (err) {
-    console.error(err);
-    resultsSection.innerHTML = `<div style="color:red;">Failed to load courses</div>`;
-  }
-}
-
-// ---------------------
-// Display course cards
-// ---------------------
-function displayCourses(items) {
-  const resultsSection = document.querySelector(".results");
-  let html = "";
-
-  items.forEach(item => {
-    const meta = item.localizedMetadata?.[0] || {};
-    const title = meta.name || "Untitled";
-    const desc = meta.description || "";
-    const img = item.thumbnailUrl || "https://via.placeholder.com/150";
-
-    html += `
-      <div class="card">
-        <img src="${img}" alt="${title}" class="card-img">
-        <div class="card-content">
-          <h3>${title}</h3>
-          <p>${desc}</p>
-        </div>
-      </div>`;
-  });
-
-  resultsSection.innerHTML = html;
-}
+// Initial load
+fetchResults({});
 </script>
+
 </body>
 </html>
