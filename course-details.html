@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -86,6 +84,23 @@
       font-size: 0.9rem;
       color: #003366;
     }
+
+    /* Minimal styles for expand button (non-intrusive) */
+    .expand-btn {
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      font-size: 1rem;
+      padding: 6px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: #0055cc;
+    }
+    .expand-btn:focus { outline: 2px solid rgba(0,85,204,0.15); border-radius: 6px; }
+    .expand-icon { transition: transform 0.2s ease; display:inline-block; }
+    .expand-icon.open { transform: rotate(180deg); }
+
     @media (max-width: 768px) {
       .card-header { flex-direction: column; align-items: flex-start; }
       .card-header img { width: 100%; height: 220px; }
@@ -154,6 +169,46 @@ function renderDetails(data, type) {
 
   html += "</div></div>";
   content.innerHTML = html;
+
+  // --- ADD: attach expand/collapse handlers for module cards ---
+  // find all expand buttons and toggle their chapter-list
+  document.querySelectorAll('.expand-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation(); // avoid any outer click handling
+      const moduleHeader = btn.closest('.module-header');
+      if (!moduleHeader) return;
+      const moduleCard = moduleHeader.closest('.module-card');
+      const chapterList = moduleCard.querySelector('.chapter-list');
+      const icon = btn.querySelector('.expand-icon');
+      if (!chapterList) return;
+      if (chapterList.style.display === 'none' || chapterList.style.display === '') {
+        chapterList.style.display = 'block';
+        if (icon) icon.classList.add('open');
+      } else {
+        chapterList.style.display = 'none';
+        if (icon) icon.classList.remove('open');
+      }
+    });
+  });
+  // optional: clicking the header text also toggles (keeps UI intuitive)
+  document.querySelectorAll('.module-header').forEach(hdr => {
+    hdr.addEventListener('click', (e) => {
+      // avoid toggling if user clicked the expand button (already handled)
+      if (e.target.closest('.expand-btn')) return;
+      const moduleCard = hdr.closest('.module-card');
+      const chapterList = moduleCard.querySelector('.chapter-list');
+      const icon = hdr.querySelector('.expand-icon');
+      if (!chapterList) return;
+      if (chapterList.style.display === 'none' || chapterList.style.display === '') {
+        chapterList.style.display = 'block';
+        if (icon) icon.classList.add('open');
+      } else {
+        chapterList.style.display = 'none';
+        if (icon) icon.classList.remove('open');
+      }
+    });
+  });
+  // --- END attach handlers ---
 }
 
 function renderCertificationDetails(data) {
@@ -247,9 +302,15 @@ function renderModules(data) {
       <div class="module-card">
         <div class="module-header">
           <span>${name}</span>
-          <span style="font-size:0.9em; color:#6a5acd;">${resourceType}</span>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span style="font-size:0.9em; color:#6a5acd;">${resourceType}</span>
+            <!-- expand button -->
+            <button class="expand-btn" aria-label="Expand module">
+              <i class="fa-solid fa-chevron-down expand-icon"></i>
+            </button>
+          </div>
         </div>
-        <div class="chapter-list">
+        <div class="chapter-list" style="display:none;">
           ${related.map(r => {
             const a = r.attributes || {};
             const t = a.contentType;
@@ -299,11 +360,37 @@ function renderSubLOs(data) {
         const meta = lr.attributes?.localizedMetadata?.[0];
         const moduleName = meta?.name || "Module";
         const resourceType = lr.attributes?.resourceType || "N/A";
+        // gather related resources for this learningObjectResource
+        const resRefs = lr.relationships?.resources?.data || [];
+        const related = res.filter(r => resRefs.some(rr => rr.id === r.id));
         resourceHTML += `
         <div class="module-card">
           <div class="module-header">
             <span>${moduleName}</span>
-            <span style="font-size:0.9em; color:#6a5acd;">${resourceType}</span>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span style="font-size:0.9em; color:#6a5acd;">${resourceType}</span>
+              <button class="expand-btn" aria-label="Expand module">
+                <i class="fa-solid fa-chevron-down expand-icon"></i>
+              </button>
+            </div>
+          </div>
+          <div class="chapter-list" style="display:none;">
+            ${related.map(r => {
+              const a = r.attributes || {};
+              const t = a.contentType;
+              const display = ["CP","SCORM12","SCORM2004"].includes(t) ? "Interactive" : (t || a.resourceType || "N/A");
+              const color = getFormatColor(display);
+              return `
+              <div class="resource-card">
+                <div class="chapter-item">
+                  <i class="fa-solid fa-circle-play"></i>
+                  <span>${a.name}</span>
+                  <small class="format-label" style="color:${color};">
+                    (${a.desiredDuration || 0} mins - ${display})
+                  </small>
+                </div>
+              </div>`;
+            }).join('')}
           </div>
         </div>`;
       });
