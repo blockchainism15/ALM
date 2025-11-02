@@ -140,7 +140,7 @@ overflow-y: auto;
 .no-results { text-align: center; color: #005ecb; font-size: 18px; background: #eef6ff; border-radius: 10px; padding: 20px; margin: 0 0 20px 0; }
 @media (max-width: 900px) { #results { grid-template-columns: 1fr;} }
 
-/* ===== CHATBOT STYLES ===== */
+/* CHATBOT STYLES */
 .chatbot-modal {
 display: none;
 position: fixed;
@@ -514,14 +514,15 @@ tags:[], loSkillNames:[], loSkillLevels:[]
 let currentPage = 0;
 const pageSize = 30;
 let lastResultCount = 0;
+let knowledgeBase = {};
 
-// ===== IMPROVED CHATBOT FUNCTIONS =====
+// ===== ENHANCED CHATBOT FUNCTIONS WITH DETAILED API DATA =====
 
 function openChatbot() {
 document.getElementById('chatbotModal').classList.add('open');
 document.getElementById('chatMessages').innerHTML = '';
 document.getElementById('chatDisplay').innerHTML = '';
-addBotMessage("👋 Hi! I'm your Learning Assistant. Try asking me things like:");
+addBotMessage("👋 Hi! I'm your Learning Assistant powered by detailed AI knowledge. Try asking me things like:");
 showQuerySuggestions();
 }
 
@@ -567,11 +568,91 @@ document.getElementById('chatMessages').appendChild(msgDiv);
 document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
 }
 
+// ===== FETCH DETAILED API DATA FOR KNOWLEDGE BASE =====
+async function fetchDetailedCourseData(lo) {
+try {
+const [type, id] = lo.loId.split(':');
+const detailUrl = `https://cpcontents.adobe.com/eu/public/guest/eu/api/${apiKey}/${accountId}/${type}/${id}.json`;
+const res = await fetch(detailUrl);
+const detail = await res.json();
+const data = detail?.data || {};
+const attr = data?.attributes || {};
+const meta = attr?.localizedMetadata?.[0] || {};
+
+// Extract all available data from the detailed API
+const enrichedData = {
+id: lo.loId,
+name: lo.name,
+type: lo.loType,
+deliveryType: lo.deliveryType,
+duration: lo.duration,
+rating: lo.averageRating,
+ratingCount: lo.ratingsCount,
+imageUrl: attr?.imageUrl || "https://via.placeholder.com/150x100?text=No+Image",
+description: meta?.overview || attr?.description || "",
+learningOutcomes: attr?.learningOutcomes || [],
+prerequisites: attr?.prerequisites || "",
+difficulty: attr?.difficulty || "Intermediate",
+author: meta?.author || "",
+skills: lo.loSkillNames || [],
+tags: attr?.tags || [],
+duration: attr?.duration || lo.duration,
+maxDuration: attr?.maxDuration,
+enrollmentCount: attr?.enrollmentCount,
+language: meta?.language || "English",
+contentUrl: data?.links?.contentUrl || "",
+completionTime: attr?.completionTime,
+createdDate: attr?.createdDate,
+updatedDate: attr?.updatedDate,
+catalogs: attr?.catalogs || [],
+audiences: attr?.audiences || [],
+isPublished: attr?.isPublished,
+registrationDeadline: attr?.registrationDeadline,
+sections: attr?.sections || [],
+modules: attr?.modules || []
+};
+
+// Store in knowledge base
+knowledgeBase[lo.loId] = enrichedData;
+lo.enriched = enrichedData;
+return lo;
+
+} catch (err) {
+console.warn("Failed to fetch detailed data for", lo.loId);
+lo.imageUrl = "https://via.placeholder.com/150x100?text=No+Image";
+return lo;
+}
+}
+
+// ===== INTELLIGENT FILTERING WITH KNOWLEDGE BASE =====
+function filterByInteligentMatch(results, query) {
+const lowerQuery = query.toLowerCase();
+const keywords = query.split(/[\s,;-]+/).filter(w => w.length > 2);
+
+return results.filter(lo => {
+const courseData = knowledgeBase[lo.loId] || lo;
+const searchableText = [
+courseData.name,
+courseData.description,
+courseData.difficulty,
+courseData.author,
+...(courseData.skills || []),
+...(courseData.tags || []),
+...(courseData.learningOutcomes || [])
+].join(" ").toLowerCase();
+
+// Match if any keyword is found in searchable text
+return keywords.some(kw => searchableText.includes(kw));
+});
+}
+
 function parseUserIntent(query) {
 const lowerQuery = query.toLowerCase();
-const intent = { loType: [], deliveryType: [] };
+const intent = { loType: [], deliveryType: [], keywords: [] };
 
-// Better keyword matching for course types
+// Extract keywords
+intent.keywords = query.split(/[\s,;-]+/).filter(w => w.length > 2);
+
 if (lowerQuery.includes('course') && !lowerQuery.includes('certification')) {
 intent.loType.push('course');
 }
@@ -585,8 +666,7 @@ if (lowerQuery.includes('job aid')) {
 intent.loType.push('jobAid');
 }
 
-// Better keyword matching for delivery types
-if (lowerQuery.includes('self-paced') || lowerQuery.includes('self paced') || lowerQuery.includes('self paced')) {
+if (lowerQuery.includes('self-paced') || lowerQuery.includes('self paced')) {
 intent.deliveryType.push('selfPaced');
 }
 if (lowerQuery.includes('virtual') || lowerQuery.includes('online')) {
@@ -599,30 +679,15 @@ if (lowerQuery.includes('activity') || lowerQuery.includes('interactive')) {
 intent.deliveryType.push('instructorLed');
 }
 
-// If no type specified, return all types
-if (intent.loType.length === 0 && !lowerQuery.includes('specific')) {
-// Return empty to show all
-}
-
 return intent;
 }
 
-async function fetchCourseImages(results) {
-const updatedResults = [];
+async function enrichAllCourseData(results) {
+const enrichedResults = [];
 for (let lo of results) {
-try {
-const [type, id] = lo.loId.split(':');
-const detailUrl = `https://cpcontents.adobe.com/eu/public/guest/eu/api/${apiKey}/${accountId}/${type}/${id}.json`;
-const res = await fetch(detailUrl);
-const detail = await res.json();
-lo.imageUrl = detail?.data?.attributes?.imageUrl || "https://via.placeholder.com/150x100?text=No+Image";
-updatedResults.push(lo);
-} catch (err) {
-lo.imageUrl = "https://via.placeholder.com/150x100?text=No+Image";
-updatedResults.push(lo);
+enrichedResults.push(await fetchDetailedCourseData(lo));
 }
-}
-return updatedResults;
+return enrichedResults;
 }
 
 function displayChatResults(results) {
@@ -631,26 +696,30 @@ display.innerHTML = '';
 
 if (!results || results.length === 0) {
 display.innerHTML = '<p style="color:#666;text-align:center;padding:20px;">No courses found. Try different keywords!</p>';
-addBotMessage("❌ No results found. Try using keywords like 'course', 'certification', 'self-paced', or 'virtual classroom'");
+addBotMessage("❌ No results found. Try using keywords like 'Python', 'management', 'advanced', etc.");
 return;
 }
 
 let html = `<div class="chatbot-results">`;
 results.slice(0, 12).forEach(lo => {
-const img = lo.imageUrl || "https://via.placeholder.com/150x100?text=No+Image";
-const name = lo.name || "Untitled";
+const enriched = knowledgeBase[lo.loId] || lo;
+const img = enriched.imageUrl || lo.imageUrl || "https://via.placeholder.com/150x100?text=No+Image";
+const name = enriched.name || lo.name || "Untitled";
+const difficulty = enriched.difficulty || "Intermediate";
 html += `
 <div class="chatbot-card" onclick="window.open('course-details.html?courseId=${lo.loId}', '_blank')">
 <img src="${img}" alt="Course" onerror="this.src='https://via.placeholder.com/150x100?text=No+Image'">
 <h5>${name}</h5>
 <p><strong>${lo.loType}</strong></p>
-<p>${lo.duration || 'N/A'} mins</p>
+<p>⏱️ ${lo.duration || 'N/A'} min</p>
+<p>📊 ${difficulty}</p>
+<p>⭐ ${lo.averageRating || 'N/A'}</p>
 </div>`;
 });
 html += '</div>';
 display.innerHTML = html;
 
-addBotMessage(`✅ Found ${results.length} courses! Click any card to view details.`);
+addBotMessage(`✅ Found ${results.length} courses using AI knowledge base! Results filtered by detailed course data.`);
 }
 
 async function sendChatMessage() {
@@ -663,7 +732,7 @@ input.value = '';
 
 // Show loading state
 const display = document.getElementById('chatDisplay');
-display.innerHTML = `<div style="text-align:center;padding:20px;"><div class="spinner"></div> Searching...</div>`;
+display.innerHTML = `<div style="text-align:center;padding:20px;"><div class="spinner"></div> AI analyzing & enriching data...</div>`;
 
 try {
 // Parse intent
@@ -687,8 +756,11 @@ body: JSON.stringify(body)
 const data = await res.json();
 let results = data.results || [];
 
-// Fetch images for all results
-results = await fetchCourseImages(results);
+// Fetch and enrich all results with detailed data
+results = await enrichAllCourseData(results);
+
+// Apply intelligent filtering with knowledge base
+results = filterByInteligentMatch(results, query);
 
 // Display results
 displayChatResults(results);
@@ -704,7 +776,7 @@ document.getElementById('chatInput').addEventListener('keypress', (e) => {
 if (e.key === 'Enter') sendChatMessage();
 });
 
-// ===== EXISTING FILTER FUNCTIONS =====
+// ===== EXISTING FILTER FUNCTIONS (UNCHANGED) =====
 
 function renderMultiSelect(key) {
 const selectBox = document.getElementById('selectBox-' + key);
