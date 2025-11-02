@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,215 +5,464 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ALM Learning Objects</title>
 <style>
-    body {
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
-        background: #f5f8ff;
-        margin: 0;
-        padding: 0;
-    }
-
-    /* Banner */
-    .banner {
-        background: #001f3f;
-        color: white;
-        text-align: center;
-        padding: 40px 20px;
-    }
-
-    .banner h1 {
-        margin: 0;
-        font-size: 2em;
-        letter-spacing: 1px;
-    }
-
-    .banner button {
-        margin-top: 15px;
-        background: #007bff;
-        border: none;
-        color: white;
-        padding: 10px 20px;
-        border-radius: 8px;
-        font-size: 16px;
-        cursor: pointer;
-        transition: 0.3s;
-    }
-
-    .banner button:hover {
-        background: #005ecb;
-    }
-
-    /* Layout container */
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    background: #f5f8ff;
+    margin: 0;
+    padding: 0;
+}
+/* Banner */
+.banner {
+    background: #001f3f;
+    color: white;
+    text-align: center;
+    padding: 40px 20px;
+}
+.banner h1 {
+    margin: 0;
+    font-size: 2em;
+    letter-spacing: 1px;
+}
+.banner button {
+    margin-top: 15px;
+    background: #007bff;
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+.banner button:hover {
+    background: #005ecb;
+}
+/* Layout container */
+.main-content {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 20px;
+    padding: 30px;
+}
+@media (max-width: 900px) {
     .main-content {
-        display: grid;
-        grid-template-columns: 300px 1fr;
-        gap: 20px;
-        padding: 30px;
+        grid-template-columns: 1fr;
+        padding: 10px;
     }
-
-    /* Filters panel */
     .filters {
-        background: #ffffff;
-        border: 1px solid #ddd;
-        border-radius: 10px;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-        padding: 20px;
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        height: fit-content;
-    }
-
-    .filters h3 {
-        margin-top: 0;
-        color: #001f3f;
-        font-size: 1.2em;
-        text-align: center;
-        margin-bottom: 10px;
-    }
-
-    select, button {
-        padding: 8px 10px;
-        border-radius: 6px;
-        border: 1px solid #ccc;
-        font-size: 14px;
-    }
-
-    button {
-        background: linear-gradient(to right, #007bff, #00c6ff);
-        color: white;
-        border: none;
-        cursor: pointer;
-        transition: 0.3s;
-    }
-
-    button:hover {
-        background: linear-gradient(to right, #005ecb, #00a3d4);
-    }
-
-    /* Results area */
-    #results {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-        gap: 20px;
-    }
-
-    /* Translucent Apple-style Card with Blue Gradient Borders */
-    .card {
-        position: relative;
-        background: rgba(255, 255, 255, 0.7);
-        backdrop-filter: blur(10px);
-        border-radius: 14px;
-        box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-        text-align: center;
-        text-decoration: none;
-        color: #000;
-        padding: 15px;
-        transition: transform 0.2s, box-shadow 0.2s;
-        overflow: hidden;
-    }
-
-    /* Blue gradient borders */
-    .card::before,
-    .card::after {
-        content: "";
-        position: absolute;
+        position: fixed;
         left: 0;
-        width: 100%;
-        height: 4px;
-        background: linear-gradient(to right, #007bff, #00c6ff);
-    }
-
-    .card::before {
         top: 0;
+        width: 80vw;
+        max-width: 350px;
+        height: 100vh;
+        overflow-y: auto;
+        z-index: 1000;
+        background: #fff;
+        box-shadow: 2px 0 15px rgba(0,0,0,0.13);
+        transform: translateX(-100%);
+        transition: transform 0.3s;
     }
-
-    .card::after {
-        bottom: 0;
+    .filters.open {
+        transform: translateX(0);
     }
-
-    .card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 5px 20px rgba(0,0,0,0.2);
-        background: rgba(255, 255, 255, 0.85);
+    .filter-drawer-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.3);
+        z-index: 999;
     }
-
-    .card img {
-        width: 100%;
-        height: 160px;
-        object-fit: cover;
-        border-radius: 10px;
-        margin-bottom: 10px;
+    .filter-drawer-overlay.active {
+        display: block;
     }
-
-    .rating {
-        color: #ff9800;
-        font-weight: bold;
-    }
-
-    .loading {
-        text-align: center;
-        font-size: 18px;
-        color: #007bff;
-        margin-top: 20px;
-    }
-
-    #pagination {
-        text-align: center;
-        margin-top: 20px;
-    }
-
-    @media (max-width: 900px) {
-        .main-content {
-            grid-template-columns: 1fr;
-        }
-    }
+}
+.filters {
+    background: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    height: fit-content;
+    position: sticky;
+    top: 30px;
+    max-height: calc(100vh - 60px);
+    overflow-y: auto;
+}
+.active-filters-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+    margin-bottom: 14px;
+    align-items: center;
+}
+.filter-chip {
+    background: #e6f0ff;
+    color: #007bff;
+    border-radius: 18px;
+    padding: 5px 14px;
+    font-size: 13px;
+    display: inline-flex;
+    align-items: center;
+    box-shadow: 0 1px 4px rgba(0,0,0,.06);
+    margin-bottom: 3px;
+}
+.filter-chip .remove-chip {
+    background: none;
+    border: none;
+    color: #007bff;
+    font-size: 15px;
+    cursor: pointer;
+    margin-left: 6px;
+}
+.clear-all-chips {
+    background: none;
+    border: none;
+    color: #005ecb;
+    font-size: 13px;
+    text-decoration: underline;
+    margin-left: 10px;
+    cursor: pointer;
+}
+.filter-section {
+    padding: 0 0 12px 0;
+    border-bottom: 1px solid #e8e8e8;
+}
+.filter-section:last-child {
+    border-bottom: none;
+}
+.filter-heading {
+    margin: 0;
+    padding: 0;
+    color: #001f3f;
+    font-weight: 600;
+    font-size: 1em;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    user-select: none;
+}
+.filter-toggle {
+    font-size: 1.1em;
+    margin-left: 5px;
+    color: #666;
+    transition: transform 0.2s;
+}
+.filter-content {
+    display: none;
+    margin-top: 10px;
+    animation: fadeIn 0.18s;
+}
+.filter-section.expanded .filter-content {
+    display: block;
+}
+@keyframes fadeIn {
+    from { opacity: 0;}
+    to { opacity: 1;}
+}
+.custom-multiselect {
+    position: relative;
+    margin-bottom: 10px;
+}
+.custom-multiselect .input-search {
+    width: 97%;
+    padding: 6px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+    margin-bottom: 3px;
+    font-size: 14px;
+}
+.custom-multiselect .multi-select-box {
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    background: #f9f9f9;
+    max-height: 140px;
+    overflow-y: auto;
+    position: absolute;
+    left: 0;
+    right: 0;
+    z-index: 2;
+    margin-top: 3px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.08);
+    display: none;
+}
+.custom-multiselect.open .multi-select-box {
+    display: block;
+}
+.custom-multiselect .multi-trigger {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #f4faff;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    padding: 8px 10px;
+    font-size: 14px;
+    cursor: pointer;
+}
+.custom-multiselect .multi-trigger .badge-count {
+    background: #007bff;
+    color: #fff;
+    border-radius: 8px;
+    font-size: 11px;
+    padding: 2px 10px;
+    margin-left: 6px;
+    font-weight: 500;
+}
+.custom-multiselect .multi-trigger .arrow {
+    margin-left: auto;
+    font-size: 13px;
+}
+.multi-select-options label {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    padding: 4px 8px;
+    cursor: pointer;
+}
+.multi-select-options input[type="checkbox"] {
+    margin-right: 7px;
+    accent-color: #007bff;
+}
+.select-all-row {
+    padding: 4px 8px;
+    background: #eef6fb;
+    font-size: 13px;
+    cursor: pointer;
+    border-bottom: 1px solid #e6e6e6;
+}
+.select-all-row:hover { background: #def2ff;}
+/* Apply/Clear buttons */
+.action-buttons-row {
+    display: flex;
+    gap: 12px;
+    margin-top: 14px;
+}
+#applyFilters {
+    background: linear-gradient(to right, #007bff, #00c6ff);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    padding: 10px 24px;
+    cursor: pointer;
+    transition: 0.3s;
+    position: relative;
+}
+#applyFilters .result-count {
+    background: #fff;
+    color: #007bff;
+    border-radius: 9px;
+    font-size: 12px;
+    padding: 2px 8px;
+    margin-left: 8px;
+    font-weight: 600;
+}
+#applyFilters[disabled] {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+#applyFilters:hover {
+    background: linear-gradient(to right, #005ecb, #00a3d4);
+}
+#clearFilters {
+    background: #eee;
+    color: #001f3f;
+    border-radius: 8px;
+    font-size: 15px;
+    padding: 10px 18px;
+    border: none;
+    cursor: pointer;
+}
+#clearFilters:hover {
+    background: #d3eafd;
+}
+/* Results area styles remain as in your code */
+#results {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 20px;
+}
+.card {
+    position: relative;
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(10px);
+    border-radius: 14px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    text-align: center;
+    text-decoration: none;
+    color: #000;
+    padding: 15px;
+    transition: transform 0.2s, box-shadow 0.2s;
+    overflow: hidden;
+}
+.card::before,
+.card::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(to right, #007bff, #00c6ff);
+}
+.card::before { top: 0; }
+.card::after { bottom: 0; }
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+    background: rgba(255, 255, 255, 0.85);
+}
+.card img {
+    width: 100%;
+    height: 160px;
+    object-fit: cover;
+    border-radius: 10px;
+    margin-bottom: 10px;
+}
+.rating { color: #ff9800; font-weight: bold; }
+.loading {
+    text-align: center;
+    font-size: 18px;
+    color: #007bff;
+    margin-top: 20px;
+}
+#pagination {
+    text-align: center;
+    margin-top: 20px;
+}
+.no-results {
+    text-align: center;
+    color: #005ecb;
+    font-size: 18px;
+    background: #eef6ff;
+    border-radius: 10px;
+    padding: 20px;
+    margin: 0 0 20px 0;
+}
+@media (max-width: 900px) {
+    #results { grid-template-columns: 1fr;}
+}
 </style>
 </head>
 <body>
-
-<!-- Banner -->
 <div class="banner">
     <h1>Explore Adobe Learning Manager Courses</h1>
     <button onclick="scrollToContent()">Explore Now</button>
 </div>
-
-<!-- Main content area -->
-<div class="main-content" id="content">
+<div class="filter-drawer-overlay" id="drawerOverlay"></div>
+<div class="main-content">
     <!-- Filters -->
-    <div class="filters">
-        <h3>Filter</h3>
-<h5>Training Type</h5>
-        <select id="loTypeSelect" multiple>
-            Training Type
-            <option value="course">Course</option>
-            <option value="learningProgram">Learning Program</option>
-            <option value="jobAid">Job Aid</option>
-            <option value="certification">Certification</option>
-        </select>
-<h5>Training Delivery</h5>
-        <select id="deliveryTypeSelect" multiple>
-            <option value="selfPaced">Self Paced</option>
-            <option value="instructorLed">Activity</option>
-             <option value="instructorLed">Virtual Classroom</option>
-             <option value="instructorLed">Blended</option>
-            
-        </select>
-<h5>Catalogs</h5>
-        <select id="catalogNamesSelect" multiple></select>
-<h5>Tags</h5>
-        <select id="tagsSelect" multiple></select>
-        <h5>Skills</h5>
-        <select id="loSkillNamesSelect" multiple></select>
-        <select id="loSkillLevelsSelect" multiple>
-            <option value="1">Level 1</option>
-            <option value="2">Level 2</option>
-            <option value="3">Level 3</option>
-        </select>
-
-        <button id="applyFilters">Apply Filters</button>
-        <button id="clearFilters">Clear Filters</button>
+    <div class="filters" id="filtersPanel">
+        <!-- Chips row -->
+        <div class="active-filters-chips" id="activeFiltersChips"></div>
+        <!-- Accordion filter sections -->
+        <div class="filter-section expanded" data-section="type">
+            <div class="filter-heading" onclick="toggleSection(this.parentNode)">
+                Training Type
+                <span class="filter-toggle">&#9660;</span>
+            </div>
+            <div class="filter-content">
+                <div class="custom-multiselect" id="multiSelect-loType">
+                    <div class="multi-trigger" onclick="openMultiSelect('loType')">
+                        <span>Training Type</span>
+                        <span class="badge-count" id="badgeCount-loType">0</span>
+                        <span class="arrow">&#9662;</span>
+                    </div>
+                    <div class="multi-select-box" id="selectBox-loType"></div>
+                </div>
+            </div>
+        </div>
+        <div class="filter-section expanded" data-section="delivery">
+            <div class="filter-heading" onclick="toggleSection(this.parentNode)">
+                Training Delivery
+                <span class="filter-toggle">&#9660;</span>
+            </div>
+            <div class="filter-content">
+                <div class="custom-multiselect" id="multiSelect-deliveryType">
+                    <div class="multi-trigger" onclick="openMultiSelect('deliveryType')">
+                        <span>Delivery Types</span>
+                        <span class="badge-count" id="badgeCount-deliveryType">0</span>
+                        <span class="arrow">&#9662;</span>
+                    </div>
+                    <div class="multi-select-box" id="selectBox-deliveryType"></div>
+                </div>
+            </div>
+        </div>
+        <div class="filter-section expanded" data-section="catalogs">
+            <div class="filter-heading" onclick="toggleSection(this.parentNode)">
+                Catalogs
+                <span class="filter-toggle">&#9660;</span>
+            </div>
+            <div class="filter-content">
+                <div class="custom-multiselect" id="multiSelect-catalogNames">
+                    <div class="multi-trigger" onclick="openMultiSelect('catalogNames')">
+                        <span>Catalogs</span>
+                        <span class="badge-count" id="badgeCount-catalogNames">0</span>
+                        <span class="arrow">&#9662;</span>
+                    </div>
+                    <div class="multi-select-box" id="selectBox-catalogNames"></div>
+                </div>
+            </div>
+        </div>
+        <div class="filter-section expanded" data-section="tags">
+            <div class="filter-heading" onclick="toggleSection(this.parentNode)">
+                Tags
+                <span class="filter-toggle">&#9660;</span>
+            </div>
+            <div class="filter-content">
+                <div class="custom-multiselect" id="multiSelect-tags">
+                    <div class="multi-trigger" onclick="openMultiSelect('tags')">
+                        <span>Tags</span>
+                        <span class="badge-count" id="badgeCount-tags">0</span>
+                        <span class="arrow">&#9662;</span>
+                    </div>
+                    <div class="multi-select-box" id="selectBox-tags"></div>
+                </div>
+            </div>
+        </div>
+        <div class="filter-section expanded" data-section="skills">
+            <div class="filter-heading" onclick="toggleSection(this.parentNode)">
+                Skills
+                <span class="filter-toggle">&#9660;</span>
+            </div>
+            <div class="filter-content">
+                <div class="custom-multiselect" id="multiSelect-loSkillNames">
+                    <div class="multi-trigger" onclick="openMultiSelect('loSkillNames')">
+                        <span>Skills</span>
+                        <span class="badge-count" id="badgeCount-loSkillNames">0</span>
+                        <span class="arrow">&#9662;</span>
+                    </div>
+                    <div class="multi-select-box" id="selectBox-loSkillNames"></div>
+                </div>
+            </div>
+        </div>
+        <div class="filter-section expanded" data-section="levels">
+            <div class="filter-heading" onclick="toggleSection(this.parentNode)">
+                Skill Levels
+                <span class="filter-toggle">&#9660;</span>
+            </div>
+            <div class="filter-content">
+                <div class="custom-multiselect" id="multiSelect-loSkillLevels">
+                    <div class="multi-trigger" onclick="openMultiSelect('loSkillLevels')">
+                        <span>Skill Levels</span>
+                        <span class="badge-count" id="badgeCount-loSkillLevels">0</span>
+                        <span class="arrow">&#9662;</span>
+                    </div>
+                    <div class="multi-select-box" id="selectBox-loSkillLevels"></div>
+                </div>
+            </div>
+        </div>
+        <div class="action-buttons-row">
+            <button id="applyFilters"><span>Apply Filters</span> <span class="result-count" id="resultCount">(0)</span></button>
+            <button id="clearFilters">Clear Filters</button>
+        </div>
     </div>
-
     <!-- Results -->
     <div>
         <div id="results"></div>
@@ -222,24 +470,175 @@
         <div id="loading" class="loading" style="display:none;">Loading results...</div>
     </div>
 </div>
-
 <script>
 const accountId = "9759";
 const apiKey = "5fc01dd5-de45-408d-9b07-b267d40ebef9";
 
-// Catalogs, tags, skills
-const catalogs = ["Default Catalog", "Harvard ManageMentor", "Expertise", "Management"];
-catalogs.forEach(c => document.getElementById("catalogNamesSelect").innerHTML += `<option value="${c}">${c}</option>`);
-
-const tags = ["Online session","quiz","Certification"];
-tags.forEach(t => document.getElementById("tagsSelect").innerHTML += `<option value="${t}">${t}</option>`);
-
-const skills = ["Vector Illustrator","General","Lightroom"];
-skills.forEach(s => document.getElementById("loSkillNamesSelect").innerHTML += `<option value="${s}">${s}</option>`);
-
+// Filter values
+const filterOptions = {
+    loType: [
+        { value: "course", text: "Course" },
+        { value: "learningProgram", text: "Learning Program" },
+        { value: "jobAid", text: "Job Aid" },
+        { value: "certification", text: "Certification" }
+    ],
+    deliveryType: [
+        { value: "selfPaced", text: "Self Paced" },
+        { value: "instructorLed", text: "Activity" },
+        { value: "instructorLed_virtual", text: "Virtual Classroom" },
+        { value: "instructorLed_blended", text: "Blended" }
+    ],
+    catalogNames: [
+        { value: "Default Catalog", text: "Default Catalog" },
+        { value: "Harvard ManageMentor", text: "Harvard ManageMentor" },
+        { value: "Expertise", text: "Expertise" },
+        { value: "Management", text: "Management" }
+    ],
+    tags: [
+        { value: "Online session", text: "Online session" },
+        { value: "quiz", text: "Quiz" },
+        { value: "Certification", text: "Certification" }
+    ],
+    loSkillNames: [
+        { value: "Vector Illustrator", text: "Vector Illustrator" },
+        { value: "General", text: "General" },
+        { value: "Lightroom", text: "Lightroom" }
+    ],
+    loSkillLevels: [
+        { value: "1", text: "Level 1" },
+        { value: "2", text: "Level 2" },
+        { value: "3", text: "Level 3" }
+    ]
+}
+const filtersState = {
+    loType: [], deliveryType:[], catalogNames:[],
+    tags:[], loSkillNames:[], loSkillLevels:[]
+};
 let currentPage = 0;
 const pageSize = 30;
+let lastResultCount = 0;
 
+// ---- Custom MultiSelect Dropdown Rendering ----
+function renderMultiSelect(key) {
+    const selectBox = document.getElementById('selectBox-' + key);
+    selectBox.innerHTML = '';
+    let options = filterOptions[key];
+
+    // Add search input
+    const searchInp = document.createElement('input');
+    searchInp.className = 'input-search';
+    searchInp.placeholder = "Search...";
+    selectBox.appendChild(searchInp);
+
+    // "Select all/deselect all" row
+    const selectAllRow = document.createElement('div');
+    selectAllRow.className = "select-all-row";
+    selectAllRow.innerHTML = '<strong>Select All</strong>';
+    selectAllRow.onclick = function() {
+        const allChecked = filtersState[key].length === options.length;
+        filtersState[key] = allChecked ? [] : options.map(o => o.value);
+        renderMultiSelect(key);
+        updateChips();
+        updateBadgeCounts();
+    };
+    selectBox.appendChild(selectAllRow);
+
+    // Options
+    const optsContainer = document.createElement('div');
+    optsContainer.className = "multi-select-options";
+    const filteredOpts = (searchInp.value ?
+        options.filter(o => o.text.toLowerCase().includes(searchInp.value.toLowerCase()))
+        : options);
+    filteredOpts.forEach(opt => {
+        const label = document.createElement('label');
+        const cbx = document.createElement('input');
+        cbx.type = "checkbox";
+        cbx.value = opt.value;
+        cbx.checked = filtersState[key].includes(opt.value);
+        cbx.onchange = function() {
+            if (cbx.checked) filtersState[key].push(opt.value);
+            else filtersState[key] = filtersState[key].filter(v => v !== opt.value);
+            updateChips();
+            updateBadgeCounts();
+        };
+        label.appendChild(cbx);
+        label.appendChild(document.createTextNode(opt.text));
+        optsContainer.appendChild(label);
+    })
+    selectBox.appendChild(optsContainer);
+
+    searchInp.oninput = () => {
+        renderMultiSelect(key);
+    }
+}
+
+function openMultiSelect(key) {
+    // close all other
+    ['loType','deliveryType','catalogNames','tags','loSkillNames','loSkillLevels']
+        .forEach(k => {
+            document.getElementById('multiSelect-'+k).classList.remove('open');
+        });
+    document.getElementById('multiSelect-'+key).classList.add('open');
+    renderMultiSelect(key);
+    document.body.addEventListener('click', closeMultiSelectBody, true);
+}
+function closeMultiSelectBody(e){
+    if (!e.target.closest('.custom-multiselect')) {
+        ['loType','deliveryType','catalogNames','tags','loSkillNames','loSkillLevels']
+        .forEach(k => document.getElementById('multiSelect-'+k).classList.remove('open'));
+        document.body.removeEventListener('click', closeMultiSelectBody, true);
+    }
+}
+function updateBadgeCounts() {
+    Object.keys(filtersState).forEach(key => {
+        document.getElementById('badgeCount-'+key).innerText = filtersState[key].length;
+    });
+}
+function toggleSection(sectionDiv){
+    sectionDiv.classList.toggle('expanded');
+    const arrow = sectionDiv.querySelector('.filter-toggle');
+    if (sectionDiv.classList.contains('expanded'))
+        arrow.innerHTML = '&#9660;';
+    else
+        arrow.innerHTML = '&#9654;';
+}
+
+// ---- Chips Display ----
+function updateChips() {
+    const chipCont = document.getElementById('activeFiltersChips');
+    chipCont.innerHTML = '';
+    let hasChips = false;
+    Object.keys(filtersState).forEach(key=>{
+        filtersState[key].forEach(val=>{
+            hasChips = true;
+            const opt = filterOptions[key].find(o=>o.value===val);
+            const chipDiv = document.createElement('span');
+            chipDiv.className = "filter-chip";
+            chipDiv.innerHTML = opt.text + ` <button class="remove-chip" title="Remove" onclick="removeChip('${key}','${val}')">&times;</button>`;
+            chipCont.appendChild(chipDiv);
+        });
+    });
+    if (hasChips){
+        const clearAllBtn = document.createElement('button');
+        clearAllBtn.className = "clear-all-chips";
+        clearAllBtn.innerText = "Clear All";
+        clearAllBtn.onclick = clearAllFilters;
+        chipCont.appendChild(clearAllBtn);
+    }
+}
+function removeChip(key, value){
+    filtersState[key] = filtersState[key].filter(v => v !== value);
+    updateChips();
+    updateBadgeCounts();
+    fetchResults(filtersState, currentPage);
+}
+function clearAllFilters(){
+    Object.keys(filtersState).forEach(k=>filtersState[k]=[]);
+    updateChips(); updateBadgeCounts();
+    fetchResults(filtersState,0);
+}
+
+// ---- Results/AJAX ----
 async function fetchResults(filters = {}, page = 0) {
     const container = document.getElementById("results");
     const loadingDiv = document.getElementById("loading");
@@ -247,19 +646,14 @@ async function fetchResults(filters = {}, page = 0) {
     container.innerHTML = "";
     paginationDiv.innerHTML = "";
     loadingDiv.style.display = "block";
+    document.getElementById("applyFilters").disabled = true;
 
     const apiUrl = `https://primeapps.adobe.com/almsearch/api/v1/eu/${accountId}/${apiKey}/search?size=${pageSize}&from=${page * pageSize}`;
-
     let filterTerms = {};
-    if (filters.loType?.length) filterTerms.loType = filters.loType;
-    if (filters.deliveryType?.length) filterTerms.deliveryType = filters.deliveryType;
-    if (filters.loSkillLevels?.length) filterTerms.loSkillLevels = filters.loSkillLevels;
-    if (filters.loSkillNames?.length) filterTerms.loSkillNames = filters.loSkillNames;
-    if (filters.catalogNames?.length) filterTerms.catalogNames = filters.catalogNames;
-    if (filters.tags?.length) filterTerms.tags = filters.tags;
-
+    Object.keys(filters).forEach(key=>{
+        if (filters[key]?.length) filterTerms[key] = filters[key];
+    });
     const body = { query: "", filters: { terms: filterTerms }, size: pageSize };
-
     try {
         const res = await fetch(apiUrl, {
             method: "POST",
@@ -268,41 +662,36 @@ async function fetchResults(filters = {}, page = 0) {
         });
         const data = await res.json();
         loadingDiv.style.display = "none";
+        document.getElementById("applyFilters").disabled = false;
+        lastResultCount = data?.results?.length || 0;
+        document.getElementById('resultCount').innerText = '(' + lastResultCount + ')';
 
         if (!data.results || data.results.length === 0) {
-            container.innerHTML = "<p>No results found.</p>";
+            container.innerHTML = '<div class="no-results">No courses match your filters.<br><button onclick="clearAllFilters()">Clear filters and try again</button></div>';
             return;
         }
-
         data.results.forEach(lo => {
             const card = document.createElement("a");
             card.href = `course-details.html?courseId=${lo.loId}`;
             card.className = "card";
             card.target = "_blank";
-
             const img = document.createElement("img");
             img.src = "https://via.placeholder.com/400x200?text=Loading...";
             img.onerror = () => img.src = "https://cdn.pixabay.com/photo/2023/03/23/04/17/bookkeeper-adelaide-7871094_1280.jpg";
             card.appendChild(img);
-
             const h4 = document.createElement("h4");
             h4.textContent = lo.name;
             card.appendChild(h4);
-
             const typeP = document.createElement("p");
             typeP.textContent = `${lo.loType} | ${lo.deliveryType || "N/A"} | Duration: ${lo.duration || "N/A"} mins`;
             card.appendChild(typeP);
-
             const skillsP = document.createElement("p");
             skillsP.textContent = "Skills: " + (lo.loSkillNames?.join(", ") || "N/A");
             card.appendChild(skillsP);
-
             const ratingP = document.createElement("p");
             ratingP.innerHTML = `Rating: <span class="rating">${lo.averageRating || 0}★</span> (${lo.ratingsCount || 0})`;
             card.appendChild(ratingP);
-
             container.appendChild(card);
-
             const numericId = lo.loId.split(":")[1];
             fetch(`https://cpcontents.adobe.com/eu/public/guest/eu/api/${apiKey}/${accountId}/${lo.loType}/${numericId}.json`)
                 .then(res => res.json())
@@ -313,53 +702,77 @@ async function fetchResults(filters = {}, page = 0) {
                 })
                 .catch(() => {});
         });
-
         paginationDiv.innerHTML = `
             <button ${page === 0 ? "disabled" : ""} onclick="changePage(${page - 1})">Previous</button>
             <button onclick="changePage(${page + 1})">Next</button>
         `;
-
     } catch (err) {
         console.error(err);
         container.innerHTML = "<p>Error fetching results.</p>";
         loadingDiv.style.display = "none";
+        document.getElementById("applyFilters").disabled = false;
     }
 }
-
 function changePage(newPage) {
     currentPage = newPage;
-    fetchResults(getFilters(), currentPage);
+    fetchResults(filtersState, currentPage);
 }
 
-function getFilters() {
-    return {
-        loType: Array.from(document.getElementById("loTypeSelect").selectedOptions).map(o => o.value),
-        deliveryType: Array.from(document.getElementById("deliveryTypeSelect").selectedOptions).map(o => o.value),
-        loSkillLevels: Array.from(document.getElementById("loSkillLevelsSelect").selectedOptions).map(o => o.value),
-        loSkillNames: Array.from(document.getElementById("loSkillNamesSelect").selectedOptions).map(o => o.value),
-        catalogNames: Array.from(document.getElementById("catalogNamesSelect").selectedOptions).map(o => o.value),
-        tags: Array.from(document.getElementById("tagsSelect").selectedOptions).map(o => o.value)
-    };
-}
+// ---- Accordion collapse/expand ----
+document.querySelectorAll('.filter-section').forEach(sec=>{
+    sec.querySelector('.filter-heading').onclick = function(){
+        toggleSection(sec);
+    }
+});
 
+// ---- Button events ----
 document.getElementById("applyFilters").addEventListener("click", () => {
     currentPage = 0;
-    fetchResults(getFilters());
+    fetchResults(filtersState);
 });
-
 document.getElementById("clearFilters").addEventListener("click", () => {
-    document.querySelectorAll("select").forEach(sel => sel.selectedIndex = -1);
-    currentPage = 0;
-    fetchResults({});
+    clearAllFilters();
 });
 
-function scrollToContent() {
-    document.getElementById("content").scrollIntoView({ behavior: "smooth" });
+// ---- Chips init ----
+updateChips(); updateBadgeCounts();
+// ---- Results init ----
+fetchResults(filtersState,0);
+
+// ---- Mobile drawer logic ----
+const filtersPanel = document.getElementById('filtersPanel');
+const drawerOverlay = document.getElementById('drawerOverlay');
+function openDrawerMobile(){
+    filtersPanel.classList.add('open');
+    drawerOverlay.classList.add('active');
+    drawerOverlay.onclick = closeDrawerMobile;
+}
+function closeDrawerMobile(){
+    filtersPanel.classList.remove('open');
+    drawerOverlay.classList.remove('active');
+}
+if(window.innerWidth<900){
+    const filterToggleBtn = document.createElement('button');
+    filterToggleBtn.innerText = 'Filters';
+    filterToggleBtn.style.position = 'fixed';
+    filterToggleBtn.style.bottom = '24px';
+    filterToggleBtn.style.left = '20px';
+    filterToggleBtn.style.zIndex = 9999;
+    filterToggleBtn.style.background = '#007bff';
+    filterToggleBtn.style.color = '#fff';
+    filterToggleBtn.style.border = 'none';
+    filterToggleBtn.style.borderRadius = '18px';
+    filterToggleBtn.style.fontSize = '16px';
+    filterToggleBtn.style.padding = '10px 20px';
+    filterToggleBtn.style.boxShadow = '0 2px 8px rgba(0,0,0,.12)';
+    filterToggleBtn.onclick = openDrawerMobile;
+    document.body.appendChild(filterToggleBtn);
 }
 
-// Initial load
-fetchResults({});
+// scroll to content function unchanged
+function scrollToContent() {
+    document.querySelector(".main-content").scrollIntoView({ behavior: "smooth" });
+}
 </script>
-
 </body>
 </html>
