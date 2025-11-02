@@ -1,319 +1,424 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ALM Learning Object Details</title>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Training Overview</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f9fafb;
+      margin: 0;
+      padding: 0;
+      color: #222;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 2rem auto;
+      padding: 1rem;
+    }
+    .card {
+      background: rgba(255, 255, 255, 0.7);
+      border-radius: 18px;
+      border-top: 3px solid #4da3ff;
+      border-bottom: 3px solid #4da3ff;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      margin-bottom: 1.5rem;
+      overflow: hidden;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .card:hover { transform: translateY(-4px); box-shadow: 0 6px 16px rgba(0,0,0,0.1); }
+    .card-header {
+      display: flex; align-items: center; gap: 1rem;
+      background: rgba(255, 255, 255, 0.5);
+      padding: 1rem 1.5rem; border-bottom: 1px solid #dbe2ef;
+    }
+    .card-header img { width: 130px; height: 130px; border-radius: 14px; object-fit: cover; }
+    .card-header h2 { margin: 0; font-size: 1.5rem; color: #003366; }
+    .card-content { padding: 1.2rem 1.5rem; font-size: 0.95rem; line-height: 1.6; }
+    .module-card, .resource-card, .sublo-card {
+      border: 1px solid #e0e6ef; border-radius: 12px;
+      margin: 1rem 0; background-color: rgba(255,255,255,0.8);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .module-card:hover, .resource-card:hover, .sublo-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+    }
+    .module-header, .sublo-header {
+      background: #f3f5f8;
+      padding: 0.8rem 1rem; border-bottom: 1px solid #e0e6ef;
+      font-weight: 600; display: flex; align-items: center; justify-content: space-between;
+    }
+    .sublo-header {
+      background: linear-gradient(90deg, rgba(0,85,204,0.5), rgba(162,89,255,0.5));
+      border-radius: 8px 8px 0 0;
+    }
+    .chapter-list { padding: 0.8rem 1rem; }
+    .chapter-item {
+      display: flex; align-items: center; gap: 0.6rem;
+      padding: 0.5rem 0; border-bottom: 1px solid #f0f2f7;
+    }
+    .chapter-item:last-child { border-bottom: none; }
+    .chapter-item i { color: #0055cc; font-size: 1rem; width: 18px; text-align: center; }
+    .format-label { font-weight: 600; }
+    .register-btn {
+      display: inline-block; background: transparent;
+      border: 2px solid; border-image: linear-gradient(45deg, #4da3ff, #a259ff) 1;
+      color: #003366; text-decoration: none; font-weight: 600;
+      padding: 0.7rem 1.4rem; border-radius: 8px; margin-top: 1rem;
+      transition: all 0.3s ease;
+    }
+    .register-btn:hover { background: linear-gradient(45deg, #4da3ff, #a259ff); color: white; border-image: none; }
+    .side-info-box {
+      margin-top: 1rem;
+      background: rgba(240, 245, 255, 0.7);
+      border-left: 4px solid #4da3ff;
+      padding: 0.8rem 1rem;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      color: #003366;
+    }
 
-<style>
-  body {
-    font-family: "SF Pro Display", Arial, sans-serif;
-    background: #f4f4f4;
-    margin: 0;
-    padding: 0;
-  }
+    /* Minimal styles for expand button (non-intrusive) */
+    .expand-btn {
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      font-size: 1rem;
+      padding: 6px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: #0055cc;
+    }
+    .expand-btn:focus { outline: 2px solid rgba(0,85,204,0.15); border-radius: 6px; }
+    .expand-icon { transition: transform 0.2s ease; display:inline-block; }
+    .expand-icon.open { transform: rotate(180deg); }
 
-  header, footer {
-    background: #ffffffcc;
-    text-align: center;
-    padding: 12px;
-    box-shadow: 0 1px 5px rgba(0,0,0,0.1);
-    position: sticky;
-    top: 0;
-    z-index: 10;
-  }
-
-  footer {
-    bottom: 0;
-    position: fixed;
-    width: 100%;
-    font-size: 0.85em;
-    color: #666;
-  }
-
-  .container {
-    padding: 20px;
-    max-width: 900px;
-    margin: auto;
-  }
-
-  .card {
-    background: #fff;
-    border-radius: 14px;
-    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-    margin-bottom: 20px;
-    overflow: hidden;
-    position: relative;
-  }
-
-  .card-header {
-    padding: 20px;
-    position: relative;
-    background-size: cover;
-    background-position: center;
-  }
-
-  .card-header::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: rgba(255,255,255,0.75);
-    backdrop-filter: blur(4px);
-  }
-
-  .card-header h2, .card-header p {
-    position: relative;
-    z-index: 2;
-  }
-
-  h2 {
-    margin: 0;
-    font-size: 1.6em;
-  }
-
-  .details {
-    padding: 15px 20px;
-  }
-
-  .module-card {
-    background: #fafafa;
-    border: 1px solid #ddd;
-    border-radius: 10px;
-    margin-top: 10px;
-    padding: 10px;
-    cursor: pointer;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-  }
-
-  .module-card:hover {
-    transform: scale(1.01);
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  }
-
-  .module-header {
-    display: flex;
-    justify-content: space-between;
-    font-weight: 500;
-    color: #333;
-  }
-
-  .chapter-list {
-    padding: 8px 15px;
-  }
-
-  .chapter-item {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 6px 0;
-  }
-
-  .format-label {
-    font-size: 0.85em;
-  }
-
-  /* Modal styles */
-  .modal {
-    display: none;
-    position: fixed;
-    z-index: 1000;
-    inset: 0;
-    background: rgba(0,0,0,0.6);
-    justify-content: center;
-    align-items: center;
-  }
-
-  .modal-content {
-    background: #fff;
-    border-radius: 12px;
-    max-width: 600px;
-    width: 90%;
-    padding: 20px;
-    position: relative;
-    animation: fadeIn 0.3s ease;
-  }
-
-  @keyframes fadeIn {
-    from { opacity: 0; transform: scale(0.9); }
-    to { opacity: 1; transform: scale(1); }
-  }
-
-  .modal-header {
-    font-weight: 600;
-    font-size: 1.3em;
-    margin-bottom: 10px;
-  }
-
-  .close-btn {
-    position: absolute;
-    top: 10px;
-    right: 12px;
-    font-size: 1.3em;
-    cursor: pointer;
-    color: #666;
-  }
-</style>
+    @media (max-width: 768px) {
+      .card-header { flex-direction: column; align-items: flex-start; }
+      .card-header img { width: 100%; height: 220px; }
+    }
+  </style>
 </head>
 
 <body>
-<header>
-  <h2>Adobe Learning Manager - Details</h2>
-</header>
-
-<div class="container">
-  <div id="content"></div>
-</div>
-
-<footer>
-  © 2025 Adobe Learning Manager Integration
-</footer>
-
-<!-- Modal -->
-<div id="resourceModal" class="modal">
-  <div class="modal-content">
-    <span class="close-btn" onclick="closeModal()">&times;</span>
-    <div id="modalHeader" class="modal-header"></div>
-    <div id="modalBody"></div>
-  </div>
-</div>
+<div class="container" id="content"><p>Loading details...</p></div>
 
 <script>
-async function loadDetails() {
+async function fetchDetails() {
+  const content = document.getElementById('content');
   const params = new URLSearchParams(window.location.search);
-  const courseId = params.get("courseId");
-  if (!courseId) return;
+  const courseId = params.get('courseId');
+  if (!courseId) { content.innerHTML = "<p>Invalid course ID.</p>"; return; }
 
-  const type = courseId.split(":")[0];
-  const apiBase = "https://cpcontents.adobe.com/eu/public/guest/eu/api/5fc01dd5-de45-408d-9b07-b267d40ebef9/9759";
-  const url = `${apiBase}/${type}/${courseId.split(":")[1]}.json`;
+  const [type, id] = courseId.split(':');
+  const apiUrl = `https://cpcontents.adobe.com/eu/public/guest/eu/api/5fc01dd5-de45-408d-9b07-b267d40ebef9/9759/${type}/${id}.json`;
 
   try {
-    const res = await fetch(url);
-    if (!res.ok) throw new Error("Network error");
-    const data = await res.json();
+    const response = await fetch(apiUrl);
+    if (!response.ok) throw new Error('Network error');
+    const data = await response.json();
+    renderDetails(data, type);
+  } catch (e) {
+    console.error(e);
+    content.innerHTML = "<p>Failed to load course details.</p>";
+  }
+}
 
-    const lo = data.data;
-    const inc = data.included || [];
-    const attr = lo.attributes?.localizedMetadata?.[0] || {};
-    const desc = attr.description || "No description available.";
-    const bannerURL = lo.attributes?.bannerUrl || "";
+function renderDetails(data, type) {
+  const content = document.getElementById('content');
+  const attr = data.data?.attributes || {};
+  const meta = attr.localizedMetadata?.[0] || {};
+  const title = meta.name || attr.name || "Untitled";
+  const desc = meta.overview || meta.description || attr.description || "No description available.";
+  const image = attr.imageUrl || "https://via.placeholder.com/150x100?text=No+Image";
+  const duration = attr.duration ? formatDuration(attr.duration) : "N/A";
+  const skill = extractSkillInfo(data);
 
-    let html = `
-      <div class="card">
-        <div class="card-header" style="background-image:url('${bannerURL}')">
-          <h2>${attr.name || "Untitled"}</h2>
-          <p>${desc}</p>
-        </div>
-        <div class="details">
-    `;
+  let extraDetails = "";
+  if (type === "certification") {
+    extraDetails = renderCertificationDetails(data);
+  }
 
-    // Certification-specific info
-    if (type === "certification") {
-      const loInstRel = lo.relationships?.instances?.data || [];
-      if (loInstRel.length) {
-        const loInstId = loInstRel[0].id;
-        const instObj = inc.find(i => i.id === loInstId);
-        if (instObj) {
-          const a = instObj.attributes || {};
-          let validity = a.validity || "";
-          if (validity.endsWith("m")) validity = validity.slice(0, -1) + " months";
+  let html = `
+  <div class="card">
+    <div class="card-header">
+      <img src="${image}" alt="Course Image">
+      <div>
+        <h2>${title}</h2>
+        <p>${desc}</p>
+        ${extraDetails}
+        ${type !== "certification" ? `<p><strong>Duration:</strong> ${duration}</p>` : ""}
+        ${skill ? `<p><strong>Skill:</strong> ${skill.name} (Level ${skill.level}, Credits: ${skill.maxCredits})</p>` : ""}
+        <a href="#" class="register-btn">Register</a>
+      </div>
+    </div>
+    <div class="card-content">
+      <h3>Your Learning Journey for this ${type}</h3>
+  `;
 
-          const completionDeadline = a.completionDeadline || "";
-          html += `
-            <div style="margin-top:10px;padding:10px;border-top:1px solid #ddd;background:#fafafa;">
-              <strong>Certification Details:</strong><br>
-              <div>State: ${a.state || "N/A"}</div>
-              <div>Validity: ${validity || "N/A"}</div>
-              <div>Completion Deadline: ${completionDeadline || "N/A"}</div>
-            </div>
-          `;
-        }
+  if (type === "course") html += renderModules(data);
+  else if (type === "learningProgram" || type === "certification") html += renderSubLOs(data);
+
+  html += "</div></div>";
+  content.innerHTML = html;
+
+  // --- ADD: attach expand/collapse handlers for module cards ---
+  // find all expand buttons and toggle their chapter-list
+  document.querySelectorAll('.expand-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation(); // avoid any outer click handling
+      const moduleHeader = btn.closest('.module-header');
+      if (!moduleHeader) return;
+      const moduleCard = moduleHeader.closest('.module-card');
+      const chapterList = moduleCard.querySelector('.chapter-list');
+      const icon = btn.querySelector('.expand-icon');
+      if (!chapterList) return;
+      if (chapterList.style.display === 'none' || chapterList.style.display === '') {
+        chapterList.style.display = 'block';
+        if (icon) icon.classList.add('open');
+      } else {
+        chapterList.style.display = 'none';
+        if (icon) icon.classList.remove('open');
       }
+    });
+  });
+  // optional: clicking the header text also toggles (keeps UI intuitive)
+  document.querySelectorAll('.module-header').forEach(hdr => {
+    hdr.addEventListener('click', (e) => {
+      // avoid toggling if user clicked the expand button (already handled)
+      if (e.target.closest('.expand-btn')) return;
+      const moduleCard = hdr.closest('.module-card');
+      const chapterList = moduleCard.querySelector('.chapter-list');
+      const icon = hdr.querySelector('.expand-icon');
+      if (!chapterList) return;
+      if (chapterList.style.display === 'none' || chapterList.style.display === '') {
+        chapterList.style.display = 'block';
+        if (icon) icon.classList.add('open');
+      } else {
+        chapterList.style.display = 'none';
+        if (icon) icon.classList.remove('open');
+      }
+    });
+  });
+  // --- END attach handlers ---
+}
+
+function renderCertificationDetails(data) {
+  const inc = data.included || [];
+  const mainLO = data.data;
+  const relInstanceId = mainLO.relationships?.instances?.data?.[0]?.id;
+  const instanceObj = inc.find(i => i.id === relInstanceId && i.type === "learningObjectInstance");
+
+  if (!instanceObj) return "";
+  const a = instanceObj.attributes || {};
+  let validity = a.validity || "";
+  const state = a.state || "N/A";
+
+  // ✅ Enhanced Validity Conversion (e.g., 12m → 1 year, 15m → 1 year 3 months)
+  if (validity && validity.endsWith("m")) {
+    const totalMonths = parseInt(validity.replace("m", ""), 10);
+    const years = Math.floor(totalMonths / 12);
+    const months = totalMonths % 12;
+    if (years > 0 && months > 0) {
+      validity = `${years} year${years > 1 ? "s" : ""} ${months} month${months > 1 ? "s" : ""}`;
+    } else if (years > 0) {
+      validity = `${years} year${years > 1 ? "s" : ""}`;
+    } else {
+      validity = `${months} month${months > 1 ? "s" : ""}`;
     }
+  } else if (!validity) {
+    validity = "N/A";
+  }
 
-    // Sub learning objects (courses inside LP or certification)
-    const subLOs = inc.filter(i => i.type === "learningObject" && i.relationships?.parentLo?.data?.id === lo.id);
+  let deadline = "N/A";
+  if (a.completionDeadline) {
+    const val = a.completionDeadline.trim();
+    if (val.endsWith("d")) {
+      const days = parseInt(val.replace("d", ""), 10);
+      if (!isNaN(days)) {
+        const d = new Date();
+        d.setDate(d.getDate() + days);
+        deadline = d.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+      }
+    } else if (!isNaN(Date.parse(val))) {
+      const d = new Date(val);
+      deadline = d.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+    }
+  }
 
-    for (const sub of subLOs.length ? subLOs : [lo]) {
-      const subAttr = sub.attributes?.localizedMetadata?.[0] || {};
-      const subTitle = subAttr.name || "Module";
-      html += `<div class="module-section"><h3>${subTitle}</h3>`;
+  return `
+    <div class="side-info-box">
+      <strong>Certification Details:</strong><br>
+      <span><b>Validity:</b> ${validity}</span><br>
+      <span><b>State:</b> ${state}</span><br>
+      <span><b>Completion Deadline:</b> ${deadline}</span>
+    </div>
+  `;
+}
 
-      const subInc = inc.filter(i => i.relationships?.learningObject?.data?.id === sub.id || i.id === sub.id);
-      const loInst = subInc.filter(i => i.type === "learningObjectInstance");
-      const loRes = subInc.filter(i => i.type === "learningObjectResource");
-      const res = subInc.filter(i => i.type === "resource");
+function extractSkillInfo(data) {
+  const inc = data.included || [];
+  const s = inc.find(i => i.type === "skill");
+  const sl = inc.find(i => i.type === "skillLevel");
+  if (!s || !sl) return null;
+  return { name: s.attributes?.name || "Skill", level: sl.attributes?.level || "N/A", maxCredits: sl.attributes?.maxCredits || "N/A" };
+}
 
-      loInst.forEach(inst => {
-        const refs = inst.relationships?.loResources?.data || [];
-        const matched = loRes.filter(lr => refs.some(r => r.id === lr.id));
+function getFormatColor(type) {
+  const map = {
+    'INTERACTIVE': '#0078ff', 'VIDEO': '#e67e22', 'PDF': '#d32f2f', 'DOC': '#1976d2',
+    'DOCX': '#1976d2', 'AUDIO': '#9c27b0', 'PPT': '#6a1b9a', 'PPTX': '#6a1b9a'
+  };
+  return map[type?.toUpperCase()] || '#2e7d32';
+}
 
-        matched.forEach(lr => {
-          const meta = lr.attributes?.localizedMetadata?.[0];
-          const moduleName = meta?.name || "Module";
-          const resourceType = lr.attributes?.resourceType || "N/A";
-          const resRefs = lr.relationships?.resources?.data || [];
-          const related = res.filter(r => resRefs.some(rr => rr.id === r.id));
+function renderModules(data) {
+  const inc = data.included || [];
+  const loInst = inc.filter(i => i.type === "learningObjectInstance");
+  const loRes = inc.filter(i => i.type === "learningObjectResource");
+  const res = inc.filter(i => i.type === "resource");
+  if (!loInst.length) return "<p>No modules available.</p>";
 
-          // Always allow expand modal for all pages now
-          const clickable = `onclick='showModal("${moduleName}", ${JSON.stringify(related).replace(/'/g,"&apos;")})'`;
+  return loInst.map(inst => {
+    const refs = inst.relationships?.loResources?.data || [];
+    const matched = loRes.filter(lr => refs.some(r => r.id === lr.id));
+    let html = "";
+    matched.forEach(lr => {
+      const m = lr.attributes?.localizedMetadata?.[0];
+      const name = m?.name || "Module";
+      const resourceType = lr.attributes?.resourceType || "N/A";
+      const resRefs = lr.relationships?.resources?.data || [];
+      const related = res.filter(r => resRefs.some(rr => rr.id === r.id));
 
-          html += `
-          <div class="module-card" ${clickable}>
-            <div class="module-header">
-              <span>${moduleName}</span>
+      html += `
+      <div class="module-card">
+        <div class="module-header">
+          <span>${name}</span>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span style="font-size:0.9em; color:#6a5acd;">${resourceType}</span>
+            <!-- expand button -->
+            <button class="expand-btn" aria-label="Expand module">
+              <i class="fa-solid fa-chevron-down expand-icon"></i>
+            </button>
+          </div>
+        </div>
+        <div class="chapter-list" style="display:none;">
+          ${related.map(r => {
+            const a = r.attributes || {};
+            const t = a.contentType;
+            const display = ["CP","SCORM12","SCORM2004"].includes(t) ? "Interactive" : (t || a.resourceType || "N/A");
+            const color = getFormatColor(display);
+            return `
+            <div class="resource-card">
+              <div class="chapter-item">
+                <i class="fa-solid fa-circle-play"></i>
+                <span>${a.name}</span>
+                <small class="format-label" style="color:${color};">
+                  (${a.desiredDuration || 0} mins - ${display})
+                </small>
+              </div>
+            </div>`;
+          }).join('')}
+        </div>
+      </div>`;
+    });
+    return html;
+  }).join('');
+}
+
+function renderSubLOs(data) {
+  const inc = data.included || [];
+  const subCourses = inc.filter(i => i.type === "learningObject" && i.attributes?.loType === "course");
+  if (!subCourses.length) return "<p>No related courses available.</p>";
+
+  return subCourses.map(sub => {
+    const a = sub.attributes || {};
+    const m = a.localizedMetadata?.[0] || {};
+    const name = m.name || a.name || "Untitled Course";
+    const desc = m.overview || a.description || "";
+    const img = a.imageUrl || "https://via.placeholder.com/100x80?text=No+Image";
+    const dur = a.duration ? formatDuration(a.duration) : "N/A";
+
+    const subInc = inc.filter(i => i.relationships?.learningObject?.data?.id === sub.id || i.id === sub.id);
+    const loInst = subInc.filter(i => i.type === "learningObjectInstance");
+    const loRes = subInc.filter(i => i.type === "learningObjectResource");
+    // <<== FIXED: use top-level included resources so related resource objects are found
+    const res = inc.filter(i => i.type === "resource");
+
+    let resourceHTML = "";
+    loInst.forEach(inst => {
+      const refs = inst.relationships?.loResources?.data || [];
+      const matched = loRes.filter(lr => refs.some(r => r.id === lr.id));
+      matched.forEach(lr => {
+        const meta = lr.attributes?.localizedMetadata?.[0];
+        const moduleName = meta?.name || "Module";
+        const resourceType = lr.attributes?.resourceType || "N/A";
+        // gather related resources for this learningObjectResource
+        const resRefs = lr.relationships?.resources?.data || [];
+        const related = res.filter(r => resRefs.some(rr => rr.id === r.id));
+        resourceHTML += `
+        <div class="module-card">
+          <div class="module-header">
+            <span>${moduleName}</span>
+            <div style="display:flex;align-items:center;gap:8px;">
               <span style="font-size:0.9em; color:#6a5acd;">${resourceType}</span>
+              <button class="expand-btn" aria-label="Expand module">
+                <i class="fa-solid fa-chevron-down expand-icon"></i>
+              </button>
             </div>
-          </div>`;
-        });
-      });
-      html += `</div>`;
-    }
-
-    html += `</div></div>`;
-    document.getElementById("content").innerHTML = html;
-
-  } catch (err) {
-    console.error(err);
-    document.getElementById("content").innerHTML = `<p style="color:red;">Failed to load course details.</p>`;
-  }
-}
-
-// Modal functionality
-function showModal(moduleName, resources) {
-  const modal = document.getElementById("resourceModal");
-  const header = document.getElementById("modalHeader");
-  const body = document.getElementById("modalBody");
-
-  header.textContent = moduleName;
-  if (!resources?.length) {
-    body.innerHTML = "<p>No related resources found.</p>";
-  } else {
-    body.innerHTML = resources.map(r => {
-      const a = r.attributes || {};
-      return `
-        <div style="padding:8px 0;border-bottom:1px solid #eee;">
-          <div><strong>Name:</strong> ${a.name || "N/A"}</div>
-          <div><strong>Content Type:</strong> ${a.contentType || "N/A"}</div>
-          <div><strong>Duration:</strong> ${a.desiredDuration || 0} mins</div>
+          </div>
+          <div class="chapter-list" style="display:none;">
+            ${related.map(r => {
+              const a = r.attributes || {};
+              const t = a.contentType;
+              const display = ["CP","SCORM12","SCORM2004"].includes(t) ? "Interactive" : (t || a.resourceType || "N/A");
+              const color = getFormatColor(display);
+              return `
+              <div class="resource-card">
+                <div class="chapter-item">
+                  <i class="fa-solid fa-circle-play"></i>
+                  <span>${a.name}</span>
+                  <small class="format-label" style="color:${color};">
+                    (${a.desiredDuration || 0} mins - ${display})
+                  </small>
+                </div>
+              </div>`;
+            }).join('')}
+          </div>
         </div>`;
-    }).join('');
-  }
+      });
+    });
 
-  modal.style.display = "flex";
+    return `
+    <div class="sublo-card">
+      <div class="sublo-header">
+        <div style="display:flex;align-items:center;gap:0.8rem;">
+          <img src="${img}" style="width:60px;height:60px;border-radius:8px;object-fit:cover;">
+          <span>${name} (${a.loType})</span>
+        </div>
+        <small>${dur}</small>
+      </div>
+      <div class="chapter-list">
+        <p>${desc || "No description available."}</p>
+        ${resourceHTML || "<p>No resources available.</p>"}
+      </div>
+    </div>`;
+  }).join('');
 }
 
-function closeModal() {
-  document.getElementById("resourceModal").style.display = "none";
+function formatDuration(mins) {
+  const d = Math.floor(mins / 1440), m = mins % 1440;
+  return d > 0 ? `${d} day(s) ${m} mins` : `${m} mins`;
 }
-
-window.onclick = function(e) {
-  const modal = document.getElementById("resourceModal");
-  if (e.target === modal) modal.style.display = "none";
-};
-
-loadDetails();
+fetchDetails();
 </script>
 </body>
 </html>
