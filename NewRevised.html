@@ -345,7 +345,7 @@ body {
   color: transparent;
 }
 
-.rating { color: #a400ff; font-weight: bold; }
+.rating { color: #4a46c2; font-weight: bold; }
 .loading {
     text-align: center;
     font-size: 18px;
@@ -709,7 +709,7 @@ async function fetchResults(filters = {}, page = 0) {
             skillsP.textContent = "Skills: " + (lo.loSkillNames?.join(", ") || "N/A");
             card.appendChild(skillsP);
             const ratingP = document.createElement("p");
-            ratingP.innerHTML = `Rating: <span class="rating">${lo.averageRating || 0}★</span> (${lo.ratingsCount || 0})`;
+            ratingP.innerHTML = `<span class="rating">Rating: ${lo.averageRating || 0}★</span> (${lo.ratingsCount || 0})`;
             card.appendChild(ratingP);
             container.appendChild(card);
             const numericId = lo.loId.split(":")[1];
