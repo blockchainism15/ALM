@@ -123,13 +123,8 @@
         background: linear-gradient(to right, #007bff, #00c6ff);
     }
 
-    .card::before {
-        top: 0;
-    }
-
-    .card::after {
-        bottom: 0;
-    }
+    .card::before { top: 0; }
+    .card::after { bottom: 0; }
 
     .card:hover {
         transform: translateY(-5px);
@@ -180,32 +175,8 @@
 <!-- Main content area -->
 <div class="main-content" id="content">
     <!-- Filters -->
-    <div class="filters">
-        <h3>Filter Courses</h3>
-
-        <select id="loTypeSelect" multiple>
-            <option value="course">Course</option>
-            <option value="learningProgram">Learning Program</option>
-            <option value="jobAid">Job Aid</option>
-            <option value="certification">Certification</option>
-        </select>
-
-        <select id="deliveryTypeSelect" multiple>
-            <option value="selfPaced">Self Paced</option>
-            <option value="instructorLed">Instructor Led</option>
-        </select>
-
-        <select id="catalogNamesSelect" multiple></select>
-        <select id="tagsSelect" multiple></select>
-        <select id="loSkillNamesSelect" multiple></select>
-        <select id="loSkillLevelsSelect" multiple>
-            <option value="1">Level 1</option>
-            <option value="2">Level 2</option>
-            <option value="3">Level 3</option>
-        </select>
-
-        <button id="applyFilters">Apply Filters</button>
-        <button id="clearFilters">Clear Filters</button>
+    <div class="filters" id="filters">
+        <h3>Loading Filters...</h3>
     </div>
 
     <!-- Results -->
@@ -219,20 +190,73 @@
 <script>
 const accountId = "9759";
 const apiKey = "5fc01dd5-de45-408d-9b07-b267d40ebef9";
-
-// Catalogs, tags, skills
-const catalogs = ["Default Catalog", "Special Catalog"];
-catalogs.forEach(c => document.getElementById("catalogNamesSelect").innerHTML += `<option value="${c}">${c}</option>`);
-
-const tags = ["anu","anupam","Diagnostic"];
-tags.forEach(t => document.getElementById("tagsSelect").innerHTML += `<option value="${t}">${t}</option>`);
-
-const skills = ["Java Programming","LP SKILLS","Anupam's admin trial"];
-skills.forEach(s => document.getElementById("loSkillNamesSelect").innerHTML += `<option value="${s}">${s}</option>`);
+const filterApiUrl = `https://primeapps.adobe.com/almsearch/api/v1/eu/${accountId}/${apiKey}/filterableData`;
+const searchApiUrl = `https://primeapps.adobe.com/almsearch/api/v1/eu/${accountId}/${apiKey}/search`;
 
 let currentPage = 0;
 const pageSize = 30;
 
+// Dynamically build filters
+async function loadFilters() {
+    const filtersDiv = document.getElementById("filters");
+    try {
+        const res = await fetch(filterApiUrl);
+        const data = await res.json();
+        filtersDiv.innerHTML = "<h3>Filter Courses</h3>";
+
+        for (const [key, value] of Object.entries(data.filters.terms)) {
+            const label = document.createElement("label");
+            label.textContent = key;
+
+            const select = document.createElement("select");
+            select.id = key;
+            select.multiple = true;
+
+            value.forEach(v => {
+                const opt = document.createElement("option");
+                opt.value = v;
+                opt.textContent = v;
+                select.appendChild(opt);
+            });
+
+            filtersDiv.appendChild(label);
+            filtersDiv.appendChild(select);
+        }
+
+        // Filter buttons
+        const applyBtn = document.createElement("button");
+        applyBtn.textContent = "Apply Filters";
+        applyBtn.onclick = () => {
+            currentPage = 0;
+            fetchResults(getFilters());
+        };
+        filtersDiv.appendChild(applyBtn);
+
+        const clearBtn = document.createElement("button");
+        clearBtn.textContent = "Clear Filters";
+        clearBtn.onclick = () => {
+            document.querySelectorAll(".filters select").forEach(s => s.selectedIndex = -1);
+            currentPage = 0;
+            fetchResults({});
+        };
+        filtersDiv.appendChild(clearBtn);
+
+    } catch (err) {
+        console.error("Error loading filters:", err);
+        filtersDiv.innerHTML = "<h3>Failed to load filters</h3>";
+    }
+}
+
+function getFilters() {
+    const filters = {};
+    document.querySelectorAll(".filters select").forEach(select => {
+        const selected = Array.from(select.selectedOptions).map(o => o.value);
+        if (selected.length) filters[select.id] = selected;
+    });
+    return filters;
+}
+
+// Fetch search results
 async function fetchResults(filters = {}, page = 0) {
     const container = document.getElementById("results");
     const loadingDiv = document.getElementById("loading");
@@ -241,28 +265,19 @@ async function fetchResults(filters = {}, page = 0) {
     paginationDiv.innerHTML = "";
     loadingDiv.style.display = "block";
 
-    const apiUrl = `https://primeapps.adobe.com/almsearch/api/v1/eu/${accountId}/${apiKey}/search?size=${pageSize}&from=${page * pageSize}`;
-
-    let filterTerms = {};
-    if (filters.loType?.length) filterTerms.loType = filters.loType;
-    if (filters.deliveryType?.length) filterTerms.deliveryType = filters.deliveryType;
-    if (filters.loSkillLevels?.length) filterTerms.loSkillLevels = filters.loSkillLevels;
-    if (filters.loSkillNames?.length) filterTerms.loSkillNames = filters.loSkillNames;
-    if (filters.catalogNames?.length) filterTerms.catalogNames = filters.catalogNames;
-    if (filters.tags?.length) filterTerms.tags = filters.tags;
-
-    const body = { query: "", filters: { terms: filterTerms }, size: pageSize };
+    const body = { query: "", filters: { terms: filters }, size: pageSize, from: page * pageSize };
 
     try {
-        const res = await fetch(apiUrl, {
+        const res = await fetch(searchApiUrl, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(body)
         });
+
         const data = await res.json();
         loadingDiv.style.display = "none";
 
-        if (!data.results || data.results.length === 0) {
+        if (!data.results || !data.results.length) {
             container.innerHTML = "<p>No results found.</p>";
             return;
         }
@@ -300,9 +315,7 @@ async function fetchResults(filters = {}, page = 0) {
             fetch(`https://cpcontents.adobe.com/eu/public/guest/eu/api/${apiKey}/${accountId}/${lo.loType}/${numericId}.json`)
                 .then(res => res.json())
                 .then(detail => {
-                    if (detail?.data?.attributes?.imageUrl) {
-                        img.src = detail.data.attributes.imageUrl;
-                    }
+                    if (detail?.data?.attributes?.imageUrl) img.src = detail.data.attributes.imageUrl;
                 })
                 .catch(() => {});
         });
@@ -324,34 +337,13 @@ function changePage(newPage) {
     fetchResults(getFilters(), currentPage);
 }
 
-function getFilters() {
-    return {
-        loType: Array.from(document.getElementById("loTypeSelect").selectedOptions).map(o => o.value),
-        deliveryType: Array.from(document.getElementById("deliveryTypeSelect").selectedOptions).map(o => o.value),
-        loSkillLevels: Array.from(document.getElementById("loSkillLevelsSelect").selectedOptions).map(o => o.value),
-        loSkillNames: Array.from(document.getElementById("loSkillNamesSelect").selectedOptions).map(o => o.value),
-        catalogNames: Array.from(document.getElementById("catalogNamesSelect").selectedOptions).map(o => o.value),
-        tags: Array.from(document.getElementById("tagsSelect").selectedOptions).map(o => o.value)
-    };
-}
-
-document.getElementById("applyFilters").addEventListener("click", () => {
-    currentPage = 0;
-    fetchResults(getFilters());
-});
-
-document.getElementById("clearFilters").addEventListener("click", () => {
-    document.querySelectorAll("select").forEach(sel => sel.selectedIndex = -1);
-    currentPage = 0;
-    fetchResults({});
-});
-
 function scrollToContent() {
     document.getElementById("content").scrollIntoView({ behavior: "smooth" });
 }
 
-// Initial load
-fetchResults({});
+// Initialize
+loadFilters();
+fetchResults();
 </script>
 
 </body>
