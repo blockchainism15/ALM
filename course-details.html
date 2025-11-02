@@ -176,8 +176,9 @@ function renderDetails(data, type) {
         <h2>${title}</h2>
         <p>${desc}</p>
         ${extraDetails}
-        ${type !== "certification" ? `<p><strong>Duration:</strong> ${duration}</p>` : ""}
+        
         ${skill ? `<p><strong>Skill:</strong> ${skill.name} (Level ${skill.level}, Credits: ${skill.maxCredits})</p>` : ""}
+        ${type !== "certification" ? `<p><strong>Duration:</strong> ${duration}</p>` : ""}
         <a href="#" class="register-btn">Register</a>
       </div>
     </div>
