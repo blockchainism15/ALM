@@ -92,6 +92,25 @@ body {
     max-height: calc(100vh - 60px);
     overflow-y: auto;
 }
+    /* Scrollbar styling (WebKit browsers: Chrome, Edge, Safari) */
+.filters::-webkit-scrollbar {
+  width: 8px; /* thickness of scrollbar */
+}
+
+.filters::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.2); /* track color */
+  border-radius: 10px;
+}
+
+.filters::-webkit-scrollbar-thumb {
+  background: linear-gradient(317deg, #3b82f6, #8b5cf6); /* blue-purple thumb */
+  border-radius: 10px;
+}
+
+.filters::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(317deg, #2563eb, #7c3aed); /* darker on hover */
+}
+
 .active-filters-chips {
     display: flex;
     flex-wrap: wrap;
