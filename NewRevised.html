@@ -198,54 +198,56 @@ const pageSize = 30;
 
 // Dynamically build filters
 async function loadFilters() {
-    const filtersDiv = document.getElementById("filters");
-    try {
-        const res = await fetch(filterApiUrl);
-        const data = await res.json();
-        filtersDiv.innerHTML = "<h3>Filter Courses</h3>";
+  const filterUrl = "https://cpcontents.adobe.com/eu/public/guest/eu/api/5fc01dd5-de45-408d-9b07-b267d40ebef9/9759/filter.json"; // your working API
+  const filterSection = document.querySelector(".filters");
+  filterSection.innerHTML = "<div>Loading filters...</div>";
 
-        for (const [key, value] of Object.entries(data.filters.terms)) {
-            const label = document.createElement("label");
-            label.textContent = key;
+  try {
+    const response = await fetch(filterUrl);
+    if (!response.ok) throw new Error("Failed to fetch filters");
+    const data = await response.json();
 
-            const select = document.createElement("select");
-            select.id = key;
-            select.multiple = true;
+    const { terms, range } = data;
 
-            value.forEach(v => {
-                const opt = document.createElement("option");
-                opt.value = v;
-                opt.textContent = v;
-                select.appendChild(opt);
-            });
+    if (!terms && !range) throw new Error("No filters found");
 
-            filtersDiv.appendChild(label);
-            filtersDiv.appendChild(select);
-        }
+    let html = "";
 
-        // Filter buttons
-        const applyBtn = document.createElement("button");
-        applyBtn.textContent = "Apply Filters";
-        applyBtn.onclick = () => {
-            currentPage = 0;
-            fetchResults(getFilters());
-        };
-        filtersDiv.appendChild(applyBtn);
-
-        const clearBtn = document.createElement("button");
-        clearBtn.textContent = "Clear Filters";
-        clearBtn.onclick = () => {
-            document.querySelectorAll(".filters select").forEach(s => s.selectedIndex = -1);
-            currentPage = 0;
-            fetchResults({});
-        };
-        filtersDiv.appendChild(clearBtn);
-
-    } catch (err) {
-        console.error("Error loading filters:", err);
-        filtersDiv.innerHTML = "<h3>Failed to load filters</h3>";
+    // --- Terms filters (dropdowns) ---
+    for (const key in terms) {
+      const values = terms[key];
+      if (Array.isArray(values) && values.length > 0) {
+        html += `
+        <div class="filter-group">
+          <label>${key}</label>
+          <select>
+            <option value="">All</option>
+            ${values.map(v => `<option value="${v}">${v}</option>`).join("")}
+          </select>
+        </div>`;
+      }
     }
+
+    // --- Range filters (duration, rating, date etc.) ---
+    for (const key in range) {
+      const values = range[key];
+      if (Array.isArray(values) && values.length > 0) {
+        html += `
+        <div class="filter-group">
+          <label>${key}</label>
+          <small style="display:block; color:#555;">(${values.length} values)</small>
+        </div>`;
+      }
+    }
+
+    filterSection.innerHTML = html;
+
+  } catch (err) {
+    console.error(err);
+    filterSection.innerHTML = `<div style="color:red;">Failed to load filters</div>`;
+  }
 }
+
 
 function getFilters() {
     const filters = {};
