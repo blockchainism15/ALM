@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ALM Learning Objects</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+body {
+font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+background: #f5f8ff;
+margin: 0;
+padding: 0;
+}
+/* Banner */
+.banner {
+background: linear-gradient(317deg, rgb(164 122 197), rgb(31 164 233 / 44%));
+color: white;
+text-align: center;
+padding: 40px 20px;
+}
+.banner h1 {
+margin: 0;
+font-size: 2em;
+letter-spacing: 1px;
+}
+.banner button {
+margin-top: 15px;
+background: linear-gradient(317deg, rgb(21 6 125), rgb(246 92 203 / 44%));
+border: none;
+color: white;
+padding: 10px 20px;
+border-radius: 8px;
+font-size: 16px;
+cursor: pointer;
+transition: 0.3s;
+}
+.banner button:hover {
+background: linear-gradient(317deg, rgb(21 6 125), rgb(246 92 203 / 44%));
+}
+/* Layout container */
+.main-content {
+display: grid;
+grid-template-columns: 300px 1fr;
+gap: 20px;
+padding: 30px;
+}
+@media (max-width: 900px) {
+.main-content {
+grid-template-columns: 1fr;
+padding: 10px;
+}
+.filters {
+position: fixed;
+left: 0;
+top: 0;
+width: 80vw;
+max-width: 350px;
+height: 100vh;
+overflow-y: auto;
+z-index: 1000;
+background: linear-gradient(317deg, rgba(59, 130, 246, 0.3), rgba(139, 92, 246, 0.3));
+box-shadow: 2px 0 15px rgba(0,0,0,0.13);
+transform: translateX(-100%);
+transition: transform 0.3s;
+}
+.filters.open {
+transform: translateX(0);
+}
+.filter-drawer-overlay {
+display: none;
+position: fixed;
+inset: 0;
+background: rgba(0,0,0,0.3);
+z-index: 999;
+}
+.filter-drawer-overlay.active {
+display: block;
+}
+}
+.filters {
+background: linear-gradient(317deg, rgba(59, 130, 246, 0.3), rgba(139, 92, 246, 0.3));
+border: 1px solid #ddd;
+border-radius: 10px;
+box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+padding: 20px;
+display: flex;
+flex-direction: column;
+gap: 24px;
+height: fit-content;
+position: sticky;
+top: 30px;
+max-height: calc(100vh - 60px);
+overflow-y: auto;
+}
+.filters::-webkit-scrollbar { width: 8px; }
+.filters::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.2); border-radius: 10px; }
+.filters::-webkit-scrollbar-thumb { background: linear-gradient(317deg, #3b82f6, #8b5cf6); border-radius: 10px; }
+.filters::-webkit-scrollbar-thumb:hover { background: linear-gradient(317deg, #2563eb, #7c3aed); }
+.active-filters-chips { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 14px; align-items: center; }
+.filter-chip { background: #e6f0ff; color: #007bff; border-radius: 18px; padding: 5px 14px; font-size: 13px; display: inline-flex; align-items: center; box-shadow: 0 1px 4px rgba(0,0,0,.06); margin-bottom: 3px; }
+.filter-chip .remove-chip { background: none; border: none; color: #007bff; font-size: 15px; cursor: pointer; margin-left: 6px; }
+.clear-all-chips { background: none; border: none; color: #005ecb; font-size: 13px; text-decoration: underline; margin-left: 10px; cursor: pointer; }
+.filter-section { padding: 0 0 12px 0; border-bottom: 1px solid #e8e8e8; }
+.filter-section:last-child { border-bottom: none; }
+.filter-heading { margin: 0; padding: 0; color: #001f3f; font-weight: 600; font-size: 1em; text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer; display: flex; align-items: center; justify-content: space-between; user-select: none; }
+.filter-toggle { font-size: 1.1em; margin-left: 5px; color: #666; transition: transform 0.2s; }
+.filter-content { display: none; margin-top: 10px; animation: fadeIn 0.18s; }
+.filter-section.expanded .filter-content { display: block; }
+@keyframes fadeIn { from { opacity: 0;} to { opacity: 1;} }
+.custom-multiselect { position: relative; margin-bottom: 10px; }
+.custom-multiselect .input-search { width: 97%; padding: 6px; border-radius: 4px; border: 1px solid #ddd; margin-bottom: 3px; font-size: 14px; }
+.custom-multiselect .multi-select-box { border: 1px solid #ccc; border-radius: 6px; background: #f9f9f9; max-height: 140px; overflow-y: auto; position: absolute; left: 0; right: 0; z-index: 2; margin-top: 3px; box-shadow: 0 2px 8px rgba(0,0,0,.08); display: none; }
+.custom-multiselect.open .multi-select-box { display: block; }
+.custom-multiselect .multi-trigger { display: flex; align-items: center; justify-content: space-between; background: #f4faff; border: 1px solid #ccc; border-radius: 6px; padding: 8px 10px; font-size: 14px; cursor: pointer; }
+.custom-multiselect .multi-trigger .badge-count { background: #6088b2; color: #fff; border-radius: 8px; font-size: 11px; padding: 2px 10px; margin-left: 6px; font-weight: 500; }
+.custom-multiselect .multi-trigger .arrow { margin-left: auto; font-size: 13px; }
+.multi-select-options label { display: flex; align-items: center; font-size: 14px; padding: 4px 8px; cursor: pointer; }
+.multi-select-options input[type="checkbox"] { margin-right: 7px; accent-color: #007bff; }
+.select-all-row { padding: 4px 8px; background: #eef6fb; font-size: 13px; cursor: pointer; border-bottom: 1px solid #e6e6e6; }
+.select-all-row:hover { background: #def2ff;}
+.action-buttons-row { display: flex; gap: 12px; margin-top: 14px; }
+#applyFilters { background: linear-gradient(to right, #007bff, #00c6ff); color: white; border: none; border-radius: 8px; font-size: 15px; padding: 10px 24px; cursor: pointer; transition: 0.3s; position: relative; }
+#applyFilters .result-count { background: #fff; color: #007bff; border-radius: 9px; font-size: 12px; padding: 2px 8px; margin-left: 8px; font-weight: 600; }
+#applyFilters[disabled] { opacity: 0.6; cursor: not-allowed; }
+#applyFilters:hover { background: linear-gradient(to right, #005ecb, #00a3d4); }
+#clearFilters { background: #eee; color: #001f3f; border-radius: 8px; font-size: 15px; padding: 10px 18px; border: none; cursor: pointer; }
+#clearFilters:hover { background: #d3eafd; }
+#results { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; }
+.card { position: relative; background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(10px); border-radius: 14px; box-shadow: 0 3px 10px rgba(0,0,0,0.1); text-align: center; text-decoration: none; color: #000; padding: 15px; transition: transform 0.2s, box-shadow 0.2s; overflow: hidden; }
+.card::before, .card::after { content: ""; position: absolute; left: 0; width: 100%; height: 4px; background: linear-gradient(to right, #007bff, #a400ff); }
+.card::before { top: 0; }
+.card::after { bottom: 0; }
+.card:hover { transform: translateY(-5px); box-shadow: 0 5px 20px rgba(0,0,0,0.2); background: rgba(255, 255, 255, 0.85); }
+.card img { width: 100%; height: 260px; object-fit: cover; border-radius: 10px; margin-bottom: 10px; }
+.card h4 { background: linear-gradient(135deg, #4287f5, #8c4bc4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; color: transparent; margin: 8px 0; font-size: 1.1em; }
+.card:hover p { background: linear-gradient(135deg, #4287f5, #8c4bc4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; color: transparent; }
+.rating { color: #4a46c2; font-weight: bold; }
+.loading { text-align: center; font-size: 18px; color: #007bff; margin-top: 20px; }
+#pagination { text-align: center; margin-top: 20px; }
+.no-results { text-align: center; color: #005ecb; font-size: 18px; background: #eef6ff; border-radius: 10px; padding: 20px; margin: 0 0 20px 0; }
+@media (max-width: 900px) { #results { grid-template-columns: 1fr;} }
+
+/* ===== CHATBOT STYLES ===== */
+.chatbot-modal {
+display: none;
+position: fixed;
+inset: 0;
+background: rgba(0,0,0,0.5);
+z-index: 10000;
+}
+.chatbot-modal.open {
+display: flex;
+align-items: center;
+justify-content: center;
+}
+.chatbot-container {
+background: white;
+border-radius: 16px;
+box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+width: 90%;
+max-width: 800px;
+height: 80vh;
+display: flex;
+flex-direction: column;
+}
+.chatbot-header {
+background: linear-gradient(135deg, #4287f5, #8c4bc4);
+color: white;
+padding: 16px 20px;
+border-radius: 16px 16px 0 0;
+display: flex;
+justify-content: space-between;
+align-items: center;
+}
+.chatbot-header h2 {
+margin: 0;
+font-size: 1.3rem;
+}
+.chatbot-close {
+background: none;
+border: none;
+color: white;
+font-size: 24px;
+cursor: pointer;
+}
+.chatbot-messages {
+flex: 1;
+overflow-y: auto;
+padding: 16px;
+background: #f9fafb;
+}
+.message {
+margin-bottom: 12px;
+display: flex;
+gap: 8px;
+}
+.message.bot {
+justify-content: flex-start;
+}
+.message.user {
+justify-content: flex-end;
+}
+.message-content {
+max-width: 70%;
+padding: 10px 14px;
+border-radius: 8px;
+font-size: 14px;
+line-height: 1.4;
+}
+.message.bot .message-content {
+background: #e8eef7;
+color: #001f3f;
+}
+.message.user .message-content {
+background: linear-gradient(135deg, #4287f5, #8c4bc4);
+color: white;
+}
+.chatbot-results {
+display: grid;
+grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+gap: 12px;
+margin-top: 10px;
+}
+.chatbot-card {
+background: white;
+border-radius: 10px;
+border-top: 2px solid #4287f5;
+border-bottom: 2px solid #8c4bc4;
+padding: 12px;
+text-align: center;
+box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+cursor: pointer;
+transition: transform 0.2s;
+}
+.chatbot-card:hover {
+transform: translateY(-3px);
+box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+.chatbot-card img {
+width: 100%;
+height: 100px;
+object-fit: cover;
+border-radius: 8px;
+margin-bottom: 8px;
+}
+.chatbot-card h5 {
+background: linear-gradient(135deg, #4287f5, #8c4bc4);
+-webkit-background-clip: text;
+-webkit-text-fill-color: transparent;
+background-clip: text;
+margin: 6px 0;
+font-size: 0.9rem;
+}
+.chatbot-card p {
+font-size: 0.8rem;
+color: #666;
+margin: 4px 0;
+}
+.chatbot-input-area {
+border-top: 1px solid #ddd;
+padding: 12px;
+display: flex;
+gap: 8px;
+}
+.chatbot-input-area input {
+flex: 1;
+padding: 10px 12px;
+border: 1px solid #ddd;
+border-radius: 8px;
+font-size: 14px;
+}
+.chatbot-input-area button {
+padding: 10px 16px;
+background: linear-gradient(135deg, #4287f5, #8c4bc4);
+color: white;
+border: none;
+border-radius: 8px;
+cursor: pointer;
+font-weight: 600;
+}
+.chatbot-input-area button:hover {
+opacity: 0.9;
+}
+</style>
+</head>
+<body>
+<div class="banner">
+<h1>Explore Adobe Learning Manager Courses</h1>
+<button onclick="openChatbot()">Explore Now</button>
+</div>
+<div class="filter-drawer-overlay" id="drawerOverlay"></div>
+<div class="main-content">
+<!-- Filters -->
+<div class="filters" id="filtersPanel">
+<!-- Chips row -->
+<div class="active-filters-chips" id="activeFiltersChips"></div>
+<!-- Accordion filter sections -->
+<div class="filter-section expanded" data-section="type">
+<div class="filter-heading" onclick="toggleSection(this.parentNode)">
+Training Type
+<span class="filter-toggle">☰</span>
+</div>
+<div class="filter-content">
+<div class="custom-multiselect" id="multiSelect-loType">
+<div class="multi-trigger" onclick="openMultiSelect('loType')">
+<span>Training Type</span>
+<span class="badge-count" id="badgeCount-loType">0</span>
+<span class="arrow">☰</span>
+</div>
+<div class="multi-select-box" id="selectBox-loType"></div>
+</div>
+</div>
+</div>
+<div class="filter-section expanded" data-section="delivery">
+<div class="filter-heading" onclick="toggleSection(this.parentNode)">
+Training Delivery
+<span class="filter-toggle">☰</span>
+</div>
+<div class="filter-content">
+<div class="custom-multiselect" id="multiSelect-deliveryType">
+<div class="multi-trigger" onclick="openMultiSelect('deliveryType')">
+<span>Delivery Types</span>
+<span class="badge-count" id="badgeCount-deliveryType">0</span>
+<span class="arrow">☰</span>
+</div>
+<div class="multi-select-box" id="selectBox-deliveryType"></div>
+</div>
+</div>
+</div>
+<div class="filter-section expanded" data-section="catalogs">
+<div class="filter-heading" onclick="toggleSection(this.parentNode)">
+Catalogs
+<span class="filter-toggle">☰</span>
+</div>
+<div class="filter-content">
+<div class="custom-multiselect" id="multiSelect-catalogNames">
+<div class="multi-trigger" onclick="openMultiSelect('catalogNames')">
+<span>Catalogs</span>
+<span class="badge-count" id="badgeCount-catalogNames">0</span>
+<span class="arrow">▾</span>
+</div>
+<div class="multi-select-box" id="selectBox-catalogNames"></div>
+</div>
+</div>
+</div>
+<div class="filter-section expanded" data-section="tags">
+<div class="filter-heading" onclick="toggleSection(this.parentNode)">
+Tags
+<span class="filter-toggle">☰</span>
+</div>
+<div class="filter-content">
+<div class="custom-multiselect" id="multiSelect-tags">
+<div class="multi-trigger" onclick="openMultiSelect('tags')">
+<span>Tags</span>
+<span class="badge-count" id="badgeCount-tags">0</span>
+<span class="arrow">▾</span>
+</div>
+<div class="multi-select-box" id="selectBox-tags"></div>
+</div>
+</div>
+</div>
+<div class="filter-section expanded" data-section="skills">
+<div class="filter-heading" onclick="toggleSection(this.parentNode)">
+Skills
+<span class="filter-toggle">☰</span>
+</div>
+<div class="filter-content">
+<div class="custom-multiselect" id="multiSelect-loSkillNames">
+<div class="multi-trigger" onclick="openMultiSelect('loSkillNames')">
+<span>Skills</span>
+<span class="badge-count" id="badgeCount-loSkillNames">0</span>
+<span class="arrow">▾</span>
+</div>
+<div class="multi-select-box" id="selectBox-loSkillNames"></div>
+</div>
+</div>
+</div>
+<div class="filter-section expanded" data-section="levels">
+<div class="filter-heading" onclick="toggleSection(this.parentNode)">
+Skill Levels
+<span class="filter-toggle">☰</span>
+</div>
+<div class="filter-content">
+<div class="custom-multiselect" id="multiSelect-loSkillLevels">
+<div class="multi-trigger" onclick="openMultiSelect('loSkillLevels')">
+<span>Skill Levels</span>
+<span class="badge-count" id="badgeCount-loSkillLevels">0</span>
+<span class="arrow">▾</span>
+</div>
+<div class="multi-select-box" id="selectBox-loSkillLevels"></div>
+</div>
+</div>
+</div>
+<div class="action-buttons-row">
+<button id="applyFilters"><span>Apply Filters</span> <span class="result-count" id="resultCount">(0)</span></button>
+<button id="clearFilters">Clear Filters</button>
+</div>
+</div>
+<!-- Results -->
+<div>
+<div id="results"></div>
+<div id="pagination"></div>
+<div id="loading" class="loading" style="display:none;">Loading results...</div>
+</div>
+</div>
+
+<!-- CHATBOT MODAL -->
+<div class="chatbot-modal" id="chatbotModal">
+<div class="chatbot-container">
+<div class="chatbot-header">
+<h2>🤖 Learning Assistant</h2>
+<button class="chatbot-close" onclick="closeChatbot()">✕</button>
+</div>
+<div class="chatbot-messages" id="chatMessages"></div>
+<div class="chatbot-input-area">
+<input type="text" id="chatInput" placeholder="Ask me to find courses... e.g., 'Show me all courses'" />
+<button onclick="sendChatMessage()">Send</button>
+</div>
+</div>
+</div>
+
+<script>
+const accountId = "9759";
+const apiKey = "5fc01dd5-de45-408d-9b07-b267d40ebef9";
+const filterOptions = {
+loType: [
+{ value: "course", text: "Course" },
+{ value: "learningProgram", text: "Learning Program" },
+{ value: "jobAid", text: "Job Aid" },
+{ value: "certification", text: "Certification" }
+],
+deliveryType: [
+{ value: "selfPaced", text: "Self Paced" },
+{ value: "instructorLed", text: "Activity" },
+{ value: "instructorLed_virtual", text: "Virtual Classroom" },
+{ value: "instructorLed_blended", text: "Blended" }
+],
+catalogNames: [
+{ value: "Default Catalog", text: "Default Catalog" },
+{ value: "Harvard ManageMentor", text: "Harvard ManageMentor" },
+{ value: "Expertise", text: "Expertise" },
+{ value: "Management", text: "Management" }
+],
+tags: [
+{ value: "Online session", text: "Online session" },
+{ value: "quiz", text: "Quiz" },
+{ value: "Certification", text: "Certification" }
+],
+loSkillNames: [
+{ value: "Vector Illustrator", text: "Vector Illustrator" },
+{ value: "General", text: "General" },
+{ value: "Lightroom", text: "Lightroom" }
+],
+loSkillLevels: [
+{ value: "1", text: "Level 1" },
+{ value: "2", text: "Level 2" },
+{ value: "3", text: "Level 3" }
+]
+};
+const filtersState = {
+loType: [], deliveryType:[], catalogNames:[],
+tags:[], loSkillNames:[], loSkillLevels:[]
+};
+let currentPage = 0;
+const pageSize = 30;
+let lastResultCount = 0;
+let allApiData = [];
+
+// ===== CHATBOT FUNCTIONS =====
+function openChatbot() {
+document.getElementById('chatbotModal').classList.add('open');
+document.getElementById('chatMessages').innerHTML = '';
+addBotMessage("👋 Hi! I'm your Learning Assistant. I can help you find courses, learning programs, certifications, and job aids. Try asking me things like: 'Show me all courses', 'Find certifications', or 'Show me self-paced trainings'");
+}
+
+function closeChatbot() {
+document.getElementById('chatbotModal').classList.remove('open');
+}
+
+function addBotMessage(text) {
+const msgDiv = document.createElement('div');
+msgDiv.className = 'message bot';
+msgDiv.innerHTML = `<div class="message-content">${text}</div>`;
+document.getElementById('chatMessages').appendChild(msgDiv);
+document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
+}
+
+function addUserMessage(text) {
+const msgDiv = document.createElement('div');
+msgDiv.className = 'message user';
+msgDiv.innerHTML = `<div class="message-content">${text}</div>`;
+document.getElementById('chatMessages').appendChild(msgDiv);
+document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
+}
+
+function displayChatResults(results) {
+if (!results || results.length === 0) {
+addBotMessage("Sorry, I couldn't find any courses matching your query. Try adjusting your search.");
+return;
+}
+
+let html = `<div class="chatbot-results">`;
+results.slice(0, 6).forEach(lo => {
+const img = lo.imageUrl || "https://via.placeholder.com/150x100?text=No+Image";
+html += `
+<div class="chatbot-card" onclick="window.open('course-details.html?courseId=${lo.loId}', '_blank')">
+<img src="${img}" alt="Course">
+<h5>${lo.name}</h5>
+<p>${lo.loType}</p>
+<p>${lo.duration || 'N/A'} mins</p>
+</div>`;
+});
+html += '</div>';
+
+const msgDiv = document.createElement('div');
+msgDiv.className = 'message bot';
+msgDiv.innerHTML = `<div class="message-content">I found ${results.length} matching courses! Here are the top results:<br>${html}</div>`;
+document.getElementById('chatMessages').appendChild(msgDiv);
+document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
+}
+
+async function sendChatMessage() {
+const input = document.getElementById('chatInput');
+const query = input.value.trim();
+if (!query) return;
+
+addUserMessage(query);
+input.value = '';
+
+// Parse intent from user message
+const lowerQuery = query.toLowerCase();
+let newFilters = { loType: [], deliveryType:[], catalogNames:[], tags:[], loSkillNames:[], loSkillLevels:[] };
+
+// Intent matching
+if (lowerQuery.includes('course') && !lowerQuery.includes('certification')) {
+newFilters.loType = ['course'];
+}
+if (lowerQuery.includes('certification')) {
+newFilters.loType = ['certification'];
+}
+if (lowerQuery.includes('learning program')) {
+newFilters.loType = ['learningProgram'];
+}
+if (lowerQuery.includes('job aid')) {
+newFilters.loType = ['jobAid'];
+}
+if (lowerQuery.includes('self-paced') || lowerQuery.includes('self paced')) {
+newFilters.deliveryType = ['selfPaced'];
+}
+if (lowerQuery.includes('virtual classroom')) {
+newFilters.deliveryType = ['instructorLed_virtual'];
+}
+if (lowerQuery.includes('blended')) {
+newFilters.deliveryType = ['instructorLed_blended'];
+}
+if (lowerQuery.includes('activity')) {
+newFilters.deliveryType = ['instructorLed'];
+}
+
+// Fetch based on filters
+try {
+const apiUrl = `https://primeapps.adobe.com/almsearch/api/v1/eu/${accountId}/${apiKey}/search?size=50&from=0`;
+let filterTerms = {};
+Object.keys(newFilters).forEach(key => {
+if (newFilters[key]?.length) filterTerms[key] = newFilters[key];
+});
+
+const body = { query: "", filters: { terms: filterTerms }, size: 50 };
+const res = await fetch(apiUrl, {
+method: "POST",
+headers: { "Content-Type": "application/json" },
+body: JSON.stringify(body)
+});
+const data = await res.json();
+allApiData = data.results || [];
+displayChatResults(allApiData);
+} catch (err) {
+console.error(err);
+addBotMessage("Oops! I encountered an error fetching the courses. Please try again.");
+}
+}
+
+document.getElementById('chatInput').addEventListener('keypress', (e) => {
+if (e.key === 'Enter') sendChatMessage();
+});
+
+// ===== EXISTING FILTER FUNCTIONS =====
+function renderMultiSelect(key) {
+const selectBox = document.getElementById('selectBox-' + key);
+selectBox.innerHTML = '';
+let options = filterOptions[key];
+const searchInp = document.createElement('input');
+searchInp.className = 'input-search';
+searchInp.placeholder = "Search...";
+selectBox.appendChild(searchInp);
+const selectAllRow = document.createElement('div');
+selectAllRow.className = "select-all-row";
+selectAllRow.innerHTML = '<strong>Select All</strong>';
+selectAllRow.onclick = function() {
+const allChecked = filtersState[key].length === options.length;
+filtersState[key] = allChecked ? [] : options.map(o => o.value);
+renderMultiSelect(key);
+updateChips();
+updateBadgeCounts();
+};
+selectBox.appendChild(selectAllRow);
+const optsContainer = document.createElement('div');
+optsContainer.className = "multi-select-options";
+const filteredOpts = (searchInp.value ?
+options.filter(o => o.text.toLowerCase().includes(searchInp.value.toLowerCase()))
+: options);
+filteredOpts.forEach(opt => {
+const label = document.createElement('label');
+const cbx = document.createElement('input');
+cbx.type = "checkbox";
+cbx.value = opt.value;
+cbx.checked = filtersState[key].includes(opt.value);
+cbx.onchange = function() {
+if (cbx.checked) filtersState[key].push(opt.value);
+else filtersState[key] = filtersState[key].filter(v => v !== opt.value);
+updateChips();
+updateBadgeCounts();
+};
+label.appendChild(cbx);
+label.appendChild(document.createTextNode(opt.text));
+optsContainer.appendChild(label);
+})
+selectBox.appendChild(optsContainer);
+searchInp.oninput = () => { renderMultiSelect(key); }
+}
+function openMultiSelect(key) {
+['loType','deliveryType','catalogNames','tags','loSkillNames','loSkillLevels']
+.forEach(k => { document.getElementById('multiSelect-'+k).classList.remove('open'); });
+document.getElementById('multiSelect-'+key).classList.add('open');
+renderMultiSelect(key);
+document.body.addEventListener('click', closeMultiSelectBody, true);
+}
+function closeMultiSelectBody(e){
+if (!e.target.closest('.custom-multiselect')) {
+['loType','deliveryType','catalogNames','tags','loSkillNames','loSkillLevels']
+.forEach(k => document.getElementById('multiSelect-'+k).classList.remove('open'));
+document.body.removeEventListener('click', closeMultiSelectBody, true);
+}
+}
+function updateBadgeCounts() {
+Object.keys(filtersState).forEach(key => {
+document.getElementById('badgeCount-'+key).innerText = filtersState[key].length;
+});
+}
+function toggleSection(sectionDiv){
+sectionDiv.classList.toggle('expanded');
+const arrow = sectionDiv.querySelector('.filter-toggle');
+if (sectionDiv.classList.contains('expanded'))
+arrow.innerHTML = '▼';
+else
+arrow.innerHTML = '▶';
+}
+function updateChips() {
+const chipCont = document.getElementById('activeFiltersChips');
+chipCont.innerHTML = '';
+let hasChips = false;
+Object.keys(filtersState).forEach(key=>{
+filtersState[key].forEach(val=>{
+hasChips = true;
+const opt = filterOptions[key].find(o=>o.value===val);
+const chipDiv = document.createElement('span');
+chipDiv.className = "filter-chip";
+chipDiv.innerHTML = opt.text + ` <button class="remove-chip" title="Remove" onclick="removeChip('${key}','${val}')">&times;</button>`;
+chipCont.appendChild(chipDiv);
+});
+});
+if (hasChips){
+const clearAllBtn = document.createElement('button');
+clearAllBtn.className = "clear-all-chips";
+clearAllBtn.innerText = "Clear All";
+clearAllBtn.onclick = clearAllFilters;
+chipCont.appendChild(clearAllBtn);
+}
+}
+function removeChip(key, value){
+filtersState[key] = filtersState[key].filter(v => v !== value);
+updateChips();
+updateBadgeCounts();
+fetchResults(filtersState, currentPage);
+}
+function clearAllFilters(){
+Object.keys(filtersState).forEach(k=>filtersState[k]=[]);
+updateChips(); updateBadgeCounts();
+fetchResults(filtersState,0);
+}
+async function fetchResults(filters = {}, page = 0) {
+const container = document.getElementById("results");
+const loadingDiv = document.getElementById("loading");
+const paginationDiv = document.getElementById("pagination");
+container.innerHTML = "";
+paginationDiv.innerHTML = "";
+loadingDiv.style.display = "block";
+document.getElementById("applyFilters").disabled = true;
+const apiUrl = `https://primeapps.adobe.com/almsearch/api/v1/eu/${accountId}/${apiKey}/search?size=${pageSize}&from=${page * pageSize}`;
+let filterTerms = {};
+Object.keys(filters).forEach(key=>{
+if (filters[key]?.length) filterTerms[key] = filters[key];
+});
+const body = { query: "", filters: { terms: filterTerms }, size: pageSize };
+try {
+const res = await fetch(apiUrl, {
+method: "POST",
+headers: { "Content-Type": "application/json" },
+body: JSON.stringify(body)
+});
+const data = await res.json();
+loadingDiv.style.display = "none";
+document.getElementById("applyFilters").disabled = false;
+lastResultCount = data?.results?.length || 0;
+document.getElementById('resultCount').innerText = '(' + lastResultCount + ')';
+if (!data.results || data.results.length === 0) {
+container.innerHTML = '<div class="no-results">No courses match your filters.<br><button onclick="clearAllFilters()">Clear filters and try again</button></div>';
+return;
+}
+data.results.forEach(lo => {
+const card = document.createElement("a");
+card.href = `course-details.html?courseId=${lo.loId}`;
+card.className = "card";
+card.target = "_blank";
+const img = document.createElement("img");
+img.src = "https://via.placeholder.com/400x200?text=Loading...";
+img.onerror = () => img.src = "https://cdn.pixabay.com/photo/2023/03/23/04/17/bookkeeper-adelaide-7871094_1280.jpg";
+card.appendChild(img);
+const h4 = document.createElement("h4");
+h4.textContent = lo.name;
+card.appendChild(h4);
+const typeP = document.createElement("p");
+typeP.textContent = `${lo.loType} | ${lo.deliveryType || "N/A"} | Duration: ${lo.duration || "N/A"} mins`;
+card.appendChild(typeP);
+const skillsP = document.createElement("p");
+skillsP.textContent = "Skills: " + (lo.loSkillNames?.join(", ") || "N/A");
+card.appendChild(skillsP);
+const ratingP = document.createElement("p");
+ratingP.innerHTML = `<span class="rating">Rating: ${lo.averageRating || 0}★</span> (${lo.ratingsCount || 0})`;
+card.appendChild(ratingP);
+container.appendChild(card);
+const numericId = lo.loId.split(":")[1];
+fetch(`https://cpcontents.adobe.com/eu/public/guest/eu/api/${apiKey}/${accountId}/${lo.loType}/${numericId}.json`)
+.then(res => res.json())
+.then(detail => {
+if (detail?.data?.attributes?.imageUrl) {
+img.src = detail.data.attributes.imageUrl;
+}
+})
+.catch(() => {});
+});
+paginationDiv.innerHTML = `
+<button ${page === 0 ? "disabled" : ""} onclick="changePage(${page - 1})">Previous</button>
+<button onclick="changePage(${page + 1})">Next</button>
+`;
+} catch (err) {
+console.error(err);
+container.innerHTML = "<p>Error fetching results.</p>";
+loadingDiv.style.display = "none";
+document.getElementById("applyFilters").disabled = false;
+}
+}
+function changePage(newPage) {
+currentPage = newPage;
+fetchResults(filtersState, currentPage);
+}
+document.querySelectorAll('.filter-section').forEach(sec=>{
+sec.querySelector('.filter-heading').onclick = function(){
+toggleSection(sec);
+}
+});
+document.getElementById("applyFilters").addEventListener("click", () => {
+currentPage = 0;
+fetchResults(filtersState);
+});
+document.getElementById("clearFilters").addEventListener("click", () => {
+clearAllFilters();
+});
+updateChips(); updateBadgeCounts();
+fetchResults(filtersState,0);
+const filtersPanel = document.getElementById('filtersPanel');
+const drawerOverlay = document.getElementById('drawerOverlay');
+function openDrawerMobile(){
+filtersPanel.classList.add('open');
+drawerOverlay.classList.add('active');
+drawerOverlay.onclick = closeDrawerMobile;
+}
+function closeDrawerMobile(){
+filtersPanel.classList.remove('open');
+drawerOverlay.classList.remove('active');
+}
+if(window.innerWidth<900){
+const filterToggleBtn = document.createElement('button');
+filterToggleBtn.innerText = 'Filters';
+filterToggleBtn.style.position = 'fixed';
+filterToggleBtn.style.bottom = '24px';
+filterToggleBtn.style.left = '20px';
+filterToggleBtn.style.zIndex = 9999;
+filterToggleBtn.style.background = '#007bff';
+filterToggleBtn.style.color = '#fff';
+filterToggleBtn.style.border = 'none';
+filterToggleBtn.style.borderRadius = '18px';
+filterToggleBtn.style.fontSize = '16px';
+filterToggleBtn.style.padding = '10px 20px';
+filterToggleBtn.style.boxShadow = '0 2px 8px rgba(0,0,0,.12)';
+filterToggleBtn.onclick = openDrawerMobile;
+document.body.appendChild(filterToggleBtn);
+}
+
+function scrollToContent() {
+document.querySelector(".main-content").scrollIntoView({ behavior: "smooth" });
+}
+</script>
+</body>
+</html>
