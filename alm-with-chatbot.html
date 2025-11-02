@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -99,6 +100,7 @@ overflow-y: auto;
 .active-filters-chips { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 14px; align-items: center; }
 .filter-chip { background: #e6f0ff; color: #007bff; border-radius: 18px; padding: 5px 14px; font-size: 13px; display: inline-flex; align-items: center; }
 .filter-chip .remove-chip { background: none; border: none; color: #007bff; font-size: 15px; cursor: pointer; margin-left: 6px; }
+.clear-all-chips { background: none; border: none; color: #005ecb; font-size: 13px; text-decoration: underline; cursor: pointer; }
 .filter-section { padding: 0 0 12px 0; border-bottom: 1px solid #e8e8e8; }
 .filter-section:last-child { border-bottom: none; }
 .filter-heading { margin: 0; padding: 0; color: #001f3f; font-weight: 600; font-size: 1em; text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer; display: flex; align-items: center; justify-content: space-between; user-select: none; }
@@ -118,6 +120,7 @@ overflow-y: auto;
 #applyFilters { background: linear-gradient(to right, #007bff, #00c6ff); color: white; border: none; border-radius: 8px; font-size: 15px; padding: 10px 24px; cursor: pointer; transition: 0.3s; }
 #applyFilters:hover { background: linear-gradient(to right, #005ecb, #00a3d4); }
 #clearFilters { background: #eee; color: #001f3f; border-radius: 8px; font-size: 15px; padding: 10px 18px; border: none; cursor: pointer; }
+#clearFilters:hover { background: #d3eafd; }
 #results { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; }
 .card { position: relative; background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(10px); border-radius: 14px; box-shadow: 0 3px 10px rgba(0,0,0,0.1); text-align: center; text-decoration: none; color: #000; padding: 15px; transition: transform 0.2s; }
 .card::before, .card::after { content: ""; position: absolute; left: 0; width: 100%; height: 4px; background: linear-gradient(to right, #007bff, #a400ff); }
@@ -130,7 +133,7 @@ overflow-y: auto;
 .no-results { text-align: center; color: #005ecb; font-size: 18px; background: #eef6ff; border-radius: 10px; padding: 20px; }
 @media (max-width: 900px) { #results { grid-template-columns: 1fr;} }
 
-/* CHATBOT MODAL */
+/* ===== ADVANCED CHATBOT MODAL STYLES ===== */
 .chatbot-modal {
 display: none;
 position: fixed;
@@ -296,6 +299,14 @@ background: linear-gradient(135deg, #4287f5, #8c4bc4);
 color: white;
 border-bottom-right-radius: 4px;
 }
+.message.system .message-content {
+background: #fff3cd;
+color: #856404;
+font-size: 12px;
+justify-content: center;
+text-align: center;
+border-radius: 8px;
+}
 .chatbot-results-panel {
 flex: 1;
 overflow-y: auto;
@@ -414,6 +425,9 @@ outline: none;
 border-color: #4287f5;
 box-shadow: 0 0 0 3px rgba(66, 135, 245, 0.1);
 }
+.chat-input-wrapper input::placeholder {
+color: #999;
+}
 .send-btn {
 padding: 12px 20px;
 background: linear-gradient(135deg, #4287f5, #8c4bc4);
@@ -431,6 +445,9 @@ gap: 6px;
 transform: translateY(-2px);
 box-shadow: 0 4px 12px rgba(66, 135, 245, 0.3);
 }
+.send-btn:active {
+transform: translateY(0);
+}
 .spinner {
 display: inline-block;
 width: 14px;
@@ -442,6 +459,15 @@ animation: spin 0.6s linear infinite;
 }
 @keyframes spin {
 to { transform: rotate(360deg); }
+}
+.info-badge {
+background: #e3f2fd;
+color: #1976d2;
+padding: 8px 12px;
+border-radius: 8px;
+font-size: 12px;
+margin-bottom: 12px;
+border-left: 3px solid #1976d2;
 }
 .suggestion-chips {
 display: flex;
@@ -463,15 +489,6 @@ transition: all 0.2s;
 background: #e8eef7;
 border-color: #4287f5;
 color: #4287f5;
-}
-.info-badge {
-background: #e3f2fd;
-color: #1976d2;
-padding: 8px 12px;
-border-radius: 8px;
-font-size: 11px;
-margin-bottom: 8px;
-border-left: 3px solid #1976d2;
 }
 @media (max-width: 1200px) {
 .chatbot-container {
@@ -499,6 +516,7 @@ max-height: 150px;
 <h1>Explore Adobe Learning Manager Courses</h1>
 <button onclick="openChatbot()">Explore Now</button>
 </div>
+<div class="filter-drawer-overlay" id="drawerOverlay"></div>
 <div class="main-content">
 <div class="filters" id="filtersPanel">
 <div class="active-filters-chips" id="activeFiltersChips"></div>
@@ -531,17 +549,19 @@ max-height: 150px;
 </div>
 </div>
 
-<!-- CHATBOT MODAL -->
+<!-- ADVANCED CHATBOT MODAL -->
 <div class="chatbot-modal" id="chatbotModal">
 <div class="chatbot-container">
 <div class="chatbot-header">
 <h2><i class="fas fa-robot"></i> Learning Assistant</h2>
 <div class="chatbot-header-actions">
 <button class="chatbot-icon-btn" title="Clear chat" onclick="clearChatHistory()"><i class="fas fa-trash"></i></button>
+<button class="chatbot-icon-btn" title="Settings" onclick="toggleSettings()"><i class="fas fa-cog"></i></button>
 <button class="chatbot-icon-btn" onclick="closeChatbot()"><i class="fas fa-times"></i></button>
 </div>
 </div>
 <div class="chatbot-content">
+<!-- Sidebar with quick filters -->
 <div class="chatbot-sidebar">
 <div class="sidebar-section">
 <div class="sidebar-title">Quick Filters</div>
@@ -562,6 +582,7 @@ max-height: 150px;
 <div id="recentQueries"></div>
 </div>
 </div>
+<!-- Main chat and results area -->
 <div class="chatbot-main">
 <div class="chatbot-messages" id="chatMessages"></div>
 <div class="chatbot-results-panel" id="chatResults"></div>
@@ -569,7 +590,7 @@ max-height: 150px;
 </div>
 <div class="chatbot-input-area">
 <div class="chat-input-wrapper">
-<input type="text" id="chatInput" placeholder="Ask anything... e.g., 'Show me courses' or 'Find certifications'" />
+<input type="text" id="chatInput" placeholder="Ask anything... e.g., 'Show me advanced courses' or 'Find blended trainings'" />
 </div>
 <button class="send-btn" onclick="sendChatMessage()"><i class="fas fa-paper-plane"></i></button>
 </div>
@@ -602,59 +623,7 @@ let allResults = [];
 let chatHistory = [];
 let currentSortBy = 'name';
 let activeQuickFilter = 'all';
-let knowledgeBase = {};
 
-// ===== KNOWLEDGE BASE FUNCTIONS =====
-async function enrichCourseData(lo) {
-try {
-const [type, id] = lo.loId.split(':');
-const detailUrl = `https://cpcontents.adobe.com/eu/public/guest/eu/api/${apiKey}/${accountId}/${type}/${id}.json`;
-const res = await fetch(detailUrl);
-const detail = await res.json();
-const attr = detail?.data?.attributes || {};
-const meta = attr.localizedMetadata?.[0] || {};
-
-lo.imageUrl = attr.imageUrl || "https://via.placeholder.com/150x100?text=No+Image";
-lo.description = meta.overview || attr.description || "";
-lo.skills = lo.loSkillNames || [];
-lo.difficulty = attr.difficulty || "Intermediate";
-lo.author = meta.author || "";
-
-// Store in knowledge base
-knowledgeBase[lo.loId] = lo;
-} catch (err) {
-console.warn("Failed to enrich:", lo.loId);
-lo.imageUrl = "https://via.placeholder.com/150x100?text=No+Image";
-lo.description = "";
-lo.skills = [];
-}
-return lo;
-}
-
-async function enrichAllResults(results) {
-const enriched = [];
-for (let lo of results) {
-enriched.push(await enrichCourseData(lo));
-}
-return enriched;
-}
-
-function filterByKeywords(results, keywords) {
-if (keywords.length === 0) return results;
-
-return results.filter(lo => {
-const searchText = [
-lo.name,
-lo.description,
-...(lo.skills || []),
-lo.difficulty
-].join(" ").toLowerCase();
-
-return keywords.some(kw => searchText.includes(kw.toLowerCase()));
-});
-}
-
-// ===== CHATBOT FUNCTIONS =====
 function openChatbot() {
 document.getElementById('chatbotModal').classList.add('open');
 if (chatHistory.length === 0) {
@@ -676,10 +645,14 @@ initializeChatbot();
 }
 }
 
+function toggleSettings() {
+alert('Settings: Advanced filtering, language preferences, and more coming soon!');
+}
+
 function initializeChatbot() {
-addBotMessage("👋 Welcome! I'm your AI Learning Assistant, powered by detailed course data.");
-addBotMessage("Try asking: 'Show me Python courses', 'Find certifications', or 'Self-paced trainings'");
-const suggestions = ['Show all courses', 'Find certifications', 'Self-paced trainings', 'Virtual sessions'];
+addBotMessage("👋 Welcome to your Learning Assistant! I can help you find the perfect course.");
+addBotMessage("Try asking: 'Show me Python courses' or 'Find self-paced certifications'");
+const suggestions = ['Show all courses', 'Find certifications', 'Self-paced trainings', 'Virtual classroom sessions'];
 let html = '<div class="suggestion-chips">';
 suggestions.forEach(s => {
 html += `<div class="suggestion-chip" onclick="populateAndSend('${s}')">${s}</div>`;
@@ -719,7 +692,9 @@ event.target.classList.add('active');
 activeQuickFilter = filter;
 
 let intent = { loType: [], deliveryType: [] };
-if (filter === 'course') {
+if (filter === 'all') {
+addBotMessage('Showing all courses...');
+} else if (filter === 'course') {
 intent.loType = ['course'];
 populateAndSend('Show me courses');
 } else if (filter === 'certification') {
@@ -745,10 +720,7 @@ populateAndSend('Show me blended trainings');
 
 function parseUserIntent(query) {
 const lowerQuery = query.toLowerCase();
-const intent = { loType: [], deliveryType: [], keywords: [] };
-
-// Extract keywords
-intent.keywords = query.split(/[\s,;]+/).filter(w => w.length > 2);
+const intent = { loType: [], deliveryType: [] };
 
 if (lowerQuery.includes('course') && !lowerQuery.includes('certification')) intent.loType.push('course');
 if (lowerQuery.includes('certification')) intent.loType.push('certification');
@@ -762,13 +734,30 @@ if (lowerQuery.includes('activity')) intent.deliveryType.push('instructorLed');
 return intent;
 }
 
+async function fetchCourseImages(results) {
+const updated = [];
+for (let lo of results) {
+try {
+const [type, id] = lo.loId.split(':');
+const res = await fetch(`https://cpcontents.adobe.com/eu/public/guest/eu/api/${apiKey}/${accountId}/${type}/${id}.json`);
+const detail = await res.json();
+lo.imageUrl = detail?.data?.attributes?.imageUrl || "https://via.placeholder.com/150x100?text=No+Image";
+updated.push(lo);
+} catch {
+lo.imageUrl = "https://via.placeholder.com/150x100?text=No+Image";
+updated.push(lo);
+}
+}
+return updated;
+}
+
 function displayChatResults(results) {
 const display = document.getElementById('chatResults');
 display.classList.add('active');
 
 if (!results || results.length === 0) {
-display.innerHTML = '<p style="color:#999;text-align:center;padding:20px;">No courses found. Try different keywords!</p>';
-addBotMessage("❌ No results found. Try different search terms.");
+display.innerHTML = '<p style="color:#999;text-align:center;padding:20px;">No courses found</p>';
+addBotMessage("❌ No results found. Try different keywords!");
 return;
 }
 
@@ -781,7 +770,6 @@ let html = `<div class="results-header">
 <button class="sort-btn ${currentSortBy==='rating'?'active':''}" onclick="sortResults('rating')">Rating</button>
 </div>
 </div>
-<div class="info-badge">🧠 AI Enhanced: Using detailed course knowledge base</div>
 <div class="chatbot-results-grid">`;
 
 results.slice(0, 15).forEach(lo => {
@@ -791,16 +779,16 @@ html += `
 <img src="${img}" class="chatbot-card-img" onerror="this.src='https://via.placeholder.com/150x100?text=No+Image'">
 <div class="chatbot-card-content">
 <h5>${lo.name}</h5>
-<p><strong>${lo.loType}</strong></p>
-<p>⏱️ ${lo.duration || 'N/A'} min</p>
+<p>${lo.loType}</p>
+<p>⏱️ ${lo.duration || 'N/A'} mins</p>
 <p>⭐ ${lo.averageRating || 'N/A'}</p>
-<span class="chatbot-card-badge">${lo.difficulty || 'Medium'}</span>
+<span class="chatbot-card-badge">${lo.deliveryType || 'Self'}</span>
 </div>
 </div>`;
 });
 html += '</div>';
 display.innerHTML = html;
-addBotMessage(`✅ Found ${results.length} courses! Using AI knowledge base for smart matching.`);
+addBotMessage(`✅ Found ${results.length} courses! Click any to view details.`);
 }
 
 function sortResults(by) {
@@ -825,7 +813,7 @@ addUserMessage(query);
 input.value = '';
 
 const display = document.getElementById('chatResults');
-display.innerHTML = '<div style="text-align:center;padding:20px;"><div class="spinner"></div> AI is analyzing your request...</div>';
+display.innerHTML = '<div style="text-align:center;padding:20px;"><div class="spinner"></div> Searching...</div>';
 display.classList.add('active');
 
 try {
@@ -834,7 +822,6 @@ let filterTerms = {};
 if (intent.loType.length > 0) filterTerms.loType = intent.loType;
 if (intent.deliveryType.length > 0) filterTerms.deliveryType = intent.deliveryType;
 
-// FIXED API URL
 const apiUrl = `https://primeapps.adobe.com/almsearch/api/v1/eu/${accountId}/${apiKey}/search?size=50&from=0`;
 const body = { query: "", filters: { terms: filterTerms }, size: 50 };
 
@@ -846,42 +833,36 @@ body: JSON.stringify(body)
 
 const data = await res.json();
 let results = data.results || [];
-
-// Enrich results with detailed data
-results = await enrichAllResults(results);
-
-// Filter by keywords from knowledge base
-results = filterByKeywords(results, intent.keywords);
+results = await fetchCourseImages(results);
 
 displayChatResults(results);
-addRecentQuery(query);
 
+// Add to recent queries
+addRecentQuery(query);
 } catch (err) {
-console.error("Error:", err);
-display.innerHTML = '<p style="color:#d32f2f;padding:20px;">Error fetching courses. Please try again.</p>';
+console.error(err);
+display.innerHTML = '<p style="color:#d32f2f;padding:20px;">Error fetching courses</p>';
 addBotMessage("⚠️ Error occurred. Please try again.");
 }
 }
 
 function addRecentQuery(query) {
 const recent = document.getElementById('recentQueries');
+const queries = recent.innerHTML.split('<div').length - 1;
+if (queries < 5) {
 const div = document.createElement('div');
 div.className = 'quick-filter';
-div.textContent = query.substring(0, 18) + (query.length > 18 ? '...' : '');
+div.textContent = query.substring(0, 20) + (query.length > 20 ? '...' : '');
 div.onclick = () => populateAndSend(query);
-recent.insertBefore(div, recent.firstChild);
-if (recent.children.length > 5) recent.removeChild(recent.lastChild);
+recent.appendChild(div);
+}
 }
 
 document.getElementById('chatInput').addEventListener('keypress', (e) => {
 if (e.key === 'Enter') sendChatMessage();
 });
 
-// ===== FILTER FUNCTIONS =====
-function toggleSection(sectionDiv) {
-sectionDiv.classList.toggle('expanded');
-}
-
+// Existing filter functions (abbreviated)
 function renderMultiSelect(key) {
 const selectBox = document.getElementById('selectBox-' + key);
 selectBox.innerHTML = '';
@@ -889,35 +870,76 @@ const searchInp = document.createElement('input');
 searchInp.className = 'input-search';
 searchInp.placeholder = "Search...";
 selectBox.appendChild(searchInp);
+const selectAllRow = document.createElement('div');
+selectAllRow.className = "select-all-row";
+selectAllRow.innerHTML = '<strong>Select All</strong>';
+selectAllRow.onclick = function() {
+const allChecked = filtersState[key].length === filterOptions[key].length;
+filtersState[key] = allChecked ? [] : filterOptions[key].map(o => o.value);
+renderMultiSelect(key);
+updateChips();
+updateBadgeCounts();
+};
+selectBox.appendChild(selectAllRow);
+const optsContainer = document.createElement('div');
+optsContainer.className = "multi-select-options";
+const filteredOpts = searchInp.value ? filterOptions[key].filter(o => o.text.toLowerCase().includes(searchInp.value.toLowerCase())) : filterOptions[key];
+filteredOpts.forEach(opt => {
+const label = document.createElement('label');
+const cbx = document.createElement('input');
+cbx.type = "checkbox";
+cbx.value = opt.value;
+cbx.checked = filtersState[key].includes(opt.value);
+cbx.onchange = function() {
+if (cbx.checked) filtersState[key].push(opt.value);
+else filtersState[key] = filtersState[key].filter(v => v !== opt.value);
+updateChips();
+updateBadgeCounts();
+};
+label.appendChild(cbx);
+label.appendChild(document.createTextNode(opt.text));
+optsContainer.appendChild(label);
+});
+selectBox.appendChild(optsContainer);
+searchInp.oninput = () => { renderMultiSelect(key); }
 }
-
 function openMultiSelect(key) {
-document.getElementById('multiSelect-'+key)?.classList.toggle('open');
+['loType','deliveryType'].forEach(k => { document.getElementById('multiSelect-'+k)?.classList.remove('open'); });
+document.getElementById('multiSelect-'+key)?.classList.add('open');
 renderMultiSelect(key);
 }
-
 function updateBadgeCounts() {
 Object.keys(filtersState).forEach(key => {
 const badge = document.getElementById('badgeCount-'+key);
 if (badge) badge.innerText = filtersState[key].length;
 });
 }
-
+function toggleSection(sectionDiv){
+sectionDiv.classList.toggle('expanded');
+}
 function updateChips() {
 const chipCont = document.getElementById('activeFiltersChips');
 chipCont.innerHTML = '';
+let hasChips = false;
+Object.keys(filtersState).forEach(key=>{
+filtersState[key].forEach(val=>{
+hasChips = true;
+const opt = filterOptions[key].find(o=>o.value===val);
+const chipDiv = document.createElement('span');
+chipDiv.className = "filter-chip";
+chipDiv.innerHTML = opt.text + ` <button class="remove-chip" onclick="removeChip('${key}','${val}')">&times;</button>`;
+chipCont.appendChild(chipDiv);
+});
+});
 }
-
-function removeChip(key, value) {
+function removeChip(key, value){
 filtersState[key] = filtersState[key].filter(v => v !== value);
 updateChips();
 updateBadgeCounts();
 }
-
 document.getElementById("applyFilters")?.addEventListener("click", () => {
 console.log("Filters applied");
 });
-
 </script>
 </body>
-</html>s
+</html>
