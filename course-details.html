@@ -334,15 +334,33 @@
         const data = await response.json();
         renderDetails(data, type);
 
-        // fetch all learning objects for search (await and handle)
+        // --- FIX: POST search requires a JSON payload. send the expected payload and headers.
+        const searchUrl = `https://primeapps.adobe.com/almsearch/api/v1/eu/9759/5fc01dd5-de45-408d-9b07-b267d40ebef9/search?size=500&from=0`;
         try {
-          const searchRes = await fetch(`https://primeapps.adobe.com/almsearch/api/v1/eu/9759/5fc01dd5-de45-408d-9b07-b267d40ebef9/search?size=500&from=0`, { method: 'POST' });
-          const allData = await searchRes.json();
-          window.allLearningObjects = allData.results || [];
-        } catch (e) {
-          console.warn('Failed to fetch all learning objects for search', e);
+          const searchPayload = {
+            query: "",
+            filters: { terms: {} },
+            size: 500
+          };
+          const searchRes = await fetch(searchUrl, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(searchPayload)
+          });
+          if (!searchRes.ok) {
+            console.warn('Search API returned non-OK:', searchRes.status, await searchRes.text().catch(()=>''));
+            window.allLearningObjects = [];
+          } else {
+            const allData = await searchRes.json();
+            window.allLearningObjects = allData.results || [];
+          }
+        } catch (se) {
+          console.warn('Failed to fetch all learning objects for search', se);
           window.allLearningObjects = [];
         }
+        // --- END FIX
 
         insertUtilityButtons();
         insertSearchInput();
