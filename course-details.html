@@ -296,7 +296,7 @@
       headerDiv.appendChild(btnContainer);
     }
 
-    // Replaced naive exportToPDF with a robust html2canvas + jsPDF implementation
+    // Export to PDF: create a clean (black-on-white) clone of the container, render it with html2canvas, then build a multi-page PDF
     async function exportToPDF() {
       const exportBtn = document.querySelector('.export-pdf-btn');
       if (exportBtn) {
@@ -318,46 +318,135 @@
           });
         }));
 
-        // Use html2canvas to render the container as a canvas
-        // scale:2 provides better resolution for the exported PDF
-        const canvas = await html2canvas(container, {
+        // Clone container so we can remove colors/backgrounds without affecting the live UI
+        const clone = container.cloneNode(true);
+
+        // Inject a clean style that forces black text and white background, removes borders, shadows and decorative elements
+        const cleanStyle = document.createElement('style');
+        cleanStyle.textContent = `
+          /* Make everything black text on white background for PDF */
+          :root, * {
+            color: #000 !important;
+            background: transparent !important;
+            background-color: #fff !important;
+            background-image: none !important;
+            border-color: transparent !important;
+            box-shadow: none !important;
+            text-shadow: none !important;
+            -webkit-text-fill-color: #000 !important;
+            -webkit-background-clip: unset !important;
+            -webkit-text-fill-color: #000 !important;
+          }
+          body, .container { background: #fff !important; }
+          /* Remove card decorations */
+          .card, .card-header, .module-card, .sublo-card, .resource-card, .card-content, .chapter-list, .side-info-box {
+            background: transparent !important;
+            background-color: #fff !important;
+            border: none !important;
+            box-shadow: none !important;
+          }
+          /* Remove visual-only elements */
+          .register-btn, .button-container, .expand-btn, .fa-chevron-down, .fa-chevron-up, .expand-icon {
+            display: none !important;
+          }
+          /* Force text colors to black */
+          h1,h2,h3,h4,h5,h6, p, span, li, small, a, div {
+            color: #000 !important;
+            background: transparent !important;
+          }
+          /* Remove borders from chapter items */
+          .chapter-item { border-bottom: none !important; }
+          /* Make images keep their sizes but no visual filters */
+          img { max-width: 100% !important; height: auto !important; filter: none !important; }
+          /* Remove dashed color borders around headings */
+          .card-header h2 { border: none !important; -webkit-background-clip: unset !important; -webkit-text-fill-color: #000 !important; background: none !important; }
+        `;
+        clone.insertBefore(cleanStyle, clone.firstChild);
+
+        // Wrap clone in a white wrapper
+        const wrapper = document.createElement('div');
+        wrapper.style.background = '#fff';
+        wrapper.style.padding = '16px';
+        wrapper.style.boxSizing = 'border-box';
+        wrapper.appendChild(clone);
+
+        // Place wrapper off-screen so rendering doesn't affect the viewport
+        wrapper.style.position = 'fixed';
+        wrapper.style.left = '-9999px';
+        wrapper.style.top = '0';
+        wrapper.style.zIndex = '-1000';
+        document.body.appendChild(wrapper);
+
+        // Wait for images in the clone to load (they are likely cached but we still wait)
+        const imgsClone = Array.from(wrapper.querySelectorAll('img'));
+        await Promise.all(imgsClone.map(img => {
+          if (img.complete) return Promise.resolve();
+          return new Promise((resolve) => {
+            img.addEventListener('load', resolve);
+            img.addEventListener('error', resolve);
+          });
+        }));
+
+        // Use html2canvas to render the wrapper. backgroundColor set to white to ensure white pages.
+        const canvas = await html2canvas(wrapper, {
           scale: 2,
           useCORS: true,
           allowTaint: false,
           logging: false,
+          backgroundColor: '#ffffff',
           windowWidth: document.documentElement.scrollWidth,
           windowHeight: document.documentElement.scrollHeight
         });
 
-        const imgData = canvas.toDataURL('image/png');
-
-        // Create a PDF (A4 size in mm)
+        // Create PDF and paginate
         const pdf = new jsPDF('p', 'mm', 'a4');
         const pdfWidth = pdf.internal.pageSize.getWidth();
         const pdfHeight = pdf.internal.pageSize.getHeight();
 
-        // Calculate the image height in PDF units to preserve aspect ratio
-        const imgProps = pdf.getImageProperties(imgData);
-        const imgWidth = pdfWidth;
-        const imgHeight = (imgProps.height * imgWidth) / imgProps.width;
+        // Calculate page height in canvas pixels
+        const canvasWidth = canvas.width;
+        const canvasHeight = canvas.height;
+        const pxPerMm = canvasWidth / (pdfWidth * (96 / 25.4)); // not exact but we will compute based on ratio
+        // Simpler approach: compute pageHeight in px based on canvas ratio
+        const pageHeightPx = Math.floor(canvasWidth * (pdfHeight / pdfWidth));
 
-        let heightLeft = imgHeight;
-        let position = 0;
+        let remainingHeight = canvasHeight;
+        let page = 0;
+        while (remainingHeight > 0) {
+          const sourceY = page * pageHeightPx;
+          const fragmentHeight = Math.min(pageHeightPx, canvasHeight - sourceY);
 
-        // Add the first page
-        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-        heightLeft -= pdfHeight;
+          // create a canvas for this page slice
+          const pageCanvas = document.createElement('canvas');
+          pageCanvas.width = canvasWidth;
+          pageCanvas.height = fragmentHeight;
+          const ctx = pageCanvas.getContext('2d');
 
-        // Add extra pages if the content is long
-        while (heightLeft > 0) {
-          position = heightLeft - imgHeight;
-          pdf.addPage();
-          pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-          heightLeft -= pdfHeight;
+          // draw the relevant slice from the full canvas
+          ctx.drawImage(canvas, 0, sourceY, canvasWidth, fragmentHeight, 0, 0, canvasWidth, fragmentHeight);
+
+          const imgData = pageCanvas.toDataURL('image/png');
+          const imgProps = pdf.getImageProperties(imgData);
+          const imgWidth = pdfWidth;
+          const imgHeight = (imgProps.height * imgWidth) / imgProps.width;
+
+          if (page === 0) {
+            pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+          } else {
+            pdf.addPage();
+            pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+          }
+
+          remainingHeight -= fragmentHeight;
+          page++;
         }
 
         const safeTitle = (document.querySelector('.card-header h2')?.textContent || 'course-details').replace(/[^\w\-_\s]/g, '').trim().replace(/\s+/g, '_');
         pdf.save(`${safeTitle || 'course-details'}.pdf`);
+
+        // Clean up clone wrapper
+        document.body.removeChild(wrapper);
+
       } catch (err) {
         console.error('Error generating PDF', err);
         alert('Failed to generate PDF. See console for details.');
