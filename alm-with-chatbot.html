@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -776,7 +775,7 @@ display.innerHTML = '';
 
 if (!results || results.length === 0) {
 display.innerHTML = '<p style="color:#666;text-align:center;padding:20px;">No courses found. Try different keywords!</p>';
-addBotMessage("❌ No results found. Try using keywords like 'Python', 'management', 'advanced', etc.");
+addBotMessage("&#10006; No results found. Try using keywords like 'Python', 'management', 'advanced', etc.");
 return;
 }
 
@@ -799,7 +798,7 @@ html += `
 html += '</div>';
 display.innerHTML = html;
 
-addBotMessage(`✅ Found ${results.length} courses! Using AI training for smart matching.`);
+addBotMessage(`&#10004; Found ${results.length} courses! Using AI training for smart matching.`);
 }
 
 async function sendChatMessage() {
