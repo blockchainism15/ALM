@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -139,13 +140,19 @@ overflow-y: auto;
 .no-results { text-align: center; color: #005ecb; font-size: 18px; background: #eef6ff; border-radius: 10px; padding: 20px; margin: 0 0 20px 0; }
 @media (max-width: 900px) { #results { grid-template-columns: 1fr;} }
 
-/* CHATBOT STYLES */
+/* ===== MODERN CHATBOT STYLES ===== */
 .chatbot-modal {
 display: none;
 position: fixed;
 inset: 0;
-background: rgba(0,0,0,0.5);
+background: rgba(0,0,0,0.6);
+backdrop-filter: blur(5px);
 z-index: 10000;
+animation: fadeInModal 0.3s ease;
+}
+@keyframes fadeInModal {
+from { opacity: 0; backdrop-filter: blur(0px); }
+to { opacity: 1; backdrop-filter: blur(5px); }
 }
 .chatbot-modal.open {
 display: flex;
@@ -154,117 +161,176 @@ justify-content: center;
 }
 .chatbot-container {
 background: white;
-border-radius: 16px;
-box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-width: 90%;
-max-width: 1700px;
-height: 85vh;
+border-radius: 20px;
+box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+width: 95%;
+max-width: 1400px;
+height: 90vh;
 display: flex;
 flex-direction: column;
+overflow: hidden;
+animation: slideUp 0.4s ease;
+}
+@keyframes slideUp {
+from { transform: translateY(30px); opacity: 0; }
+to { transform: translateY(0); opacity: 1; }
 }
 .chatbot-header {
-background: linear-gradient(135deg, #4287f5, #8c4bc4);
+background: linear-gradient(135deg, #4287f5 0%, #8c4bc4 100%);
 color: white;
-padding: 16px 20px;
-border-radius: 16px 16px 0 0;
+padding: 18px 24px;
+border-bottom: 1px solid rgba(255,255,255,0.1);
 display: flex;
 justify-content: space-between;
 align-items: center;
+flex-shrink: 0;
 }
 .chatbot-header h2 {
 margin: 0;
-font-size: 1.3rem;
+font-size: 1.5rem;
+font-weight: 700;
+display: flex;
+align-items: center;
+gap: 10px;
 }
 .chatbot-close {
-background: none;
+background: rgba(255,255,255,0.2);
 border: none;
 color: white;
-font-size: 24px;
+font-size: 26px;
 cursor: pointer;
+width: 40px;
+height: 40px;
+border-radius: 50%;
+display: flex;
+align-items: center;
+justify-content: center;
+transition: all 0.2s;
+}
+.chatbot-close:hover {
+background: rgba(255,255,255,0.3);
+transform: scale(1.1);
 }
 .chatbot-content {
-display: flex;
+display: grid;
+grid-template-columns: 1fr 1fr;
 flex: 1;
-gap: 12px;
-padding: 12px;
+gap: 0;
+overflow: hidden;
+}
+@media (max-width: 1200px) {
+.chatbot-content {
+grid-template-columns: 1fr;
 }
 .chatbot-messages {
-flex: 0 0 35%;
-overflow-y: auto;
-padding: 12px;
-background: #f9fafb;
-border-radius: 10px;
-border: 1px solid #e0e0e0;
+display: none !important;
 }
 .chatbot-display {
+border-radius: 0 !important;
+}
+}
+.chatbot-messages {
+display: flex;
+flex-direction: column;
+overflow: hidden;
+border-right: 1px solid #e8e8e8;
+background: #ffffff;
+}
+.chatbot-messages-header {
+padding: 12px 16px;
+background: #f5f7fa;
+border-bottom: 1px solid #e8e8e8;
+font-size: 13px;
+font-weight: 600;
+color: #555;
+}
+.chatbot-messages-list {
 flex: 1;
 overflow-y: auto;
-padding: 12px;
-background: #f9fafb;
-border-radius: 10px;
-border: 1px solid #e0e0e0;
-}
-.message {
-margin-bottom: 10px;
+padding: 16px;
 display: flex;
-gap: 8px;
+flex-direction: column;
+gap: 12px;
+}
+.chatbot-messages-list::-webkit-scrollbar {
+width: 6px;
+}
+.chatbot-messages-list::-webkit-scrollbar-track {
+background: #f0f0f0;
+}
+.chatbot-messages-list::-webkit-scrollbar-thumb {
+background: #d0d0d0;
+border-radius: 3px;
+}
+.chatbot-messages-list::-webkit-scrollbar-thumb:hover {
+background: #b0b0b0;
+}
+.chatbot-display {
+display: flex;
+flex-direction: column;
+overflow: hidden;
+background: #fafbfc;
+border-radius: 0;
+}
+.chatbot-display-header {
+padding: 12px 16px;
+background: #f5f7fa;
+border-bottom: 1px solid #e8e8e8;
 font-size: 13px;
+font-weight: 600;
+color: #555;
 }
-.message.bot {
-justify-content: flex-start;
+.chatbot-results-container {
+flex: 1;
+overflow-y: auto;
+padding: 16px;
 }
-.message.user {
-justify-content: flex-end;
+.chatbot-results-container::-webkit-scrollbar {
+width: 6px;
 }
-.message-content {
-max-width: 95%;
-padding: 8px 12px;
-border-radius: 8px;
-line-height: 1.4;
+.chatbot-results-container::-webkit-scrollbar-track {
+background: #f0f0f0;
 }
-.message.bot .message-content {
-background: #e8eef7;
-color: #001f3f;
-}
-.message.user .message-content {
-background: linear-gradient(135deg, #4287f5, #8c4bc4);
-color: white;
+.chatbot-results-container::-webkit-scrollbar-thumb {
+background: #d0d0d0;
+border-radius: 3px;
 }
 .chatbot-results {
 display: grid;
-grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
 gap: 12px;
 }
 .chatbot-card {
 background: white;
-border-radius: 10px;
-border-top: 2px solid #4287f5;
-border-bottom: 2px solid #8c4bc4;
-padding: 10px;
-text-align: center;
-box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+border-radius: 12px;
+border: 1px solid #e8e8e8;
+overflow: hidden;
+box-shadow: 0 2px 8px rgba(0,0,0,0.06);
 cursor: pointer;
-transition: transform 0.2s;
+transition: all 0.2s;
 }
 .chatbot-card:hover {
-transform: translateY(-3px);
-box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+transform: translateY(-4px);
+box-shadow: 0 8px 16px rgba(0,0,0,0.12);
+border-color: #4287f5;
 }
 .chatbot-card img {
 width: 100%;
-height: 90px;
+height: 100px;
 object-fit: cover;
-border-radius: 6px;
-margin-bottom: 6px;
-background: #f0f0f0;
+background: linear-gradient(135deg, #f0f0f0, #e0e0e0);
+}
+.chatbot-card-content {
+padding: 10px;
 }
 .chatbot-card h5 {
 background: linear-gradient(135deg, #4287f5, #8c4bc4);
 -webkit-background-clip: text;
 -webkit-text-fill-color: transparent;
 background-clip: text;
-margin: 4px 0;
-font-size: 0.85rem;
+margin: 0 0 4px 0;
+font-size: 0.9rem;
+font-weight: 600;
 overflow: hidden;
 text-overflow: ellipsis;
 white-space: nowrap;
@@ -274,48 +340,106 @@ font-size: 0.75rem;
 color: #666;
 margin: 2px 0;
 }
-.chatbot-input-area {
-border-top: 1px solid #ddd;
-padding: 12px;
+.message {
+margin: 0;
 display: flex;
 gap: 8px;
+font-size: 14px;
+animation: fadeIn 0.3s ease;
+}
+@keyframes fadeIn {
+from { opacity: 0; transform: translateY(10px); }
+to { opacity: 1; transform: translateY(0); }
+}
+.message.bot {
+justify-content: flex-start;
+}
+.message.user {
+justify-content: flex-end;
+}
+.message-content {
+max-width: 90%;
+padding: 10px 14px;
+border-radius: 12px;
+line-height: 1.4;
+word-wrap: break-word;
+}
+.message.bot .message-content {
+background: #e8eef7;
+color: #001f3f;
+border-bottom-left-radius: 4px;
+}
+.message.user .message-content {
+background: linear-gradient(135deg, #4287f5, #8c4bc4);
+color: white;
+border-bottom-right-radius: 4px;
+}
+.query-suggestion {
+background: white;
+padding: 10px 12px;
+border-radius: 8px;
+font-size: 12px;
+color: #4287f5;
+cursor: pointer;
+border: 1px solid #e8e8e8;
+transition: all 0.2s;
+font-weight: 500;
+}
+.query-suggestion:hover {
+background: #e8eef7;
+border-color: #4287f5;
+transform: translateX(2px);
+}
+.chatbot-input-area {
+border-top: 1px solid #e8e8e8;
+padding: 14px 16px;
+background: white;
+display: flex;
+gap: 10px;
+flex-shrink: 0;
 }
 .chatbot-input-area input {
 flex: 1;
-padding: 10px 12px;
-border: 1px solid #ddd;
-border-radius: 8px;
+padding: 12px 14px;
+border: 1px solid #e0e0e0;
+border-radius: 10px;
 font-size: 14px;
+transition: all 0.2s;
+}
+.chatbot-input-area input:focus {
+outline: none;
+border-color: #4287f5;
+box-shadow: 0 0 0 3px rgba(66, 135, 245, 0.1);
+}
+.chatbot-input-area input::placeholder {
+color: #999;
 }
 .chatbot-input-area button {
-padding: 10px 16px;
+padding: 12px 24px;
 background: linear-gradient(135deg, #4287f5, #8c4bc4);
 color: white;
 border: none;
-border-radius: 8px;
+border-radius: 10px;
 cursor: pointer;
 font-weight: 600;
+font-size: 14px;
+transition: all 0.2s;
+display: flex;
+align-items: center;
+gap: 6px;
+white-space: nowrap;
 }
 .chatbot-input-area button:hover {
-opacity: 0.9;
+transform: translateY(-2px);
+box-shadow: 0 4px 12px rgba(66, 135, 245, 0.3);
 }
-.query-suggestion {
-background: #e8eef7;
-padding: 8px 12px;
-border-radius: 6px;
-font-size: 12px;
-color: #0055cc;
-cursor: pointer;
-margin-bottom: 8px;
-border-left: 3px solid #0055cc;
-}
-.query-suggestion:hover {
-background: #d3e3f7;
+.chatbot-input-area button:active {
+transform: translateY(0);
 }
 .spinner {
 display: inline-block;
-width: 12px;
-height: 12px;
+width: 14px;
+height: 14px;
 border: 2px solid #ddd;
 border-top-color: #4287f5;
 border-radius: 50%;
@@ -323,6 +447,19 @@ animation: spin 0.6s linear infinite;
 }
 @keyframes spin {
 to { transform: rotate(360deg); }
+}
+@media (max-width: 768px) {
+.chatbot-container {
+width: 98%;
+height: 95vh;
+border-radius: 16px;
+}
+.chatbot-header h2 {
+font-size: 1.2rem;
+}
+.chatbot-results {
+grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+}
 }
 </style>
 </head>
@@ -451,16 +588,22 @@ Skill Levels
 <div class="chatbot-modal" id="chatbotModal">
 <div class="chatbot-container">
 <div class="chatbot-header">
-<h2>🤖 Learning Assistant (AI Trained)</h2>
-<button class="chatbot-close" onclick="closeChatbot()">✕</button>
+<h2><i class="fas fa-robot"></i> Learning Assistant (AI Trained)</h2>
+<button class="chatbot-close" onclick="closeChatbot()" title="Close"><i class="fas fa-times"></i></button>
 </div>
 <div class="chatbot-content">
-<div class="chatbot-messages" id="chatMessages"></div>
-<div class="chatbot-display" id="chatDisplay"></div>
+<div class="chatbot-messages">
+<div class="chatbot-messages-header">💬 Conversation</div>
+<div class="chatbot-messages-list" id="chatMessages"></div>
+</div>
+<div class="chatbot-display">
+<div class="chatbot-display-header">🎓 Results</div>
+<div class="chatbot-results-container" id="chatDisplay"></div>
+</div>
 </div>
 <div class="chatbot-input-area">
-<input type="text" id="chatInput" placeholder="Ask me to find courses... e.g., 'Python courses'" />
-<button onclick="sendChatMessage()">Send</button>
+<input type="text" id="chatInput" placeholder="Ask me... e.g., 'Python courses', 'beginner training'" />
+<button onclick="sendChatMessage()"><i class="fas fa-paper-plane"></i> Send</button>
 </div>
 </div>
 </div>
@@ -704,7 +847,7 @@ const msgDiv = document.createElement('div');
 msgDiv.className = 'message bot';
 msgDiv.innerHTML = `<div class="message-content">${text}</div>`;
 document.getElementById('chatMessages').appendChild(msgDiv);
-document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
+document.getElementById('chatMessages').scrollTop = document.querySelector('.chatbot-messages-list').scrollHeight;
 }
 
 function addUserMessage(text) {
@@ -712,7 +855,7 @@ const msgDiv = document.createElement('div');
 msgDiv.className = 'message user';
 msgDiv.innerHTML = `<div class="message-content">${text}</div>`;
 document.getElementById('chatMessages').appendChild(msgDiv);
-document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
+document.querySelector('.chatbot-messages-list').scrollTop = document.querySelector('.chatbot-messages-list').scrollHeight;
 }
 
 async function fetchDetailedCourseData(lo) {
@@ -775,7 +918,7 @@ display.innerHTML = '';
 
 if (!results || results.length === 0) {
 display.innerHTML = '<p style="color:#666;text-align:center;padding:20px;">No courses found. Try different keywords!</p>';
-addBotMessage("&#10006; No results found. Try using keywords like 'Python', 'management', 'advanced', etc.");
+addBotMessage("✖ No results found. Try using keywords like 'Python', 'management', 'advanced', etc.");
 return;
 }
 
@@ -788,17 +931,19 @@ const difficulty = enriched.difficulty || "Intermediate";
 html += `
 <div class="chatbot-card" onclick="window.open('course-details.html?courseId=${lo.loId}', '_blank')">
 <img src="${img}" alt="Course" onerror="this.src='https://via.placeholder.com/150x100?text=No+Image'">
+<div class="chatbot-card-content">
 <h5>${name}</h5>
 <p><strong>${lo.loType}</strong></p>
 <p>⏱️ ${lo.duration || 'N/A'} min</p>
 <p>📊 ${difficulty}</p>
 <p>⭐ ${lo.averageRating || 'N/A'}</p>
+</div>
 </div>`;
 });
 html += '</div>';
 display.innerHTML = html;
 
-addBotMessage(`&#10004; Found ${results.length} courses! Using AI training for smart matching.`);
+addBotMessage(`✔ Found ${results.length} courses! Using AI training for smart matching.`);
 }
 
 async function sendChatMessage() {
