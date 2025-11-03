@@ -442,7 +442,9 @@ END:VCALENDAR
         ${extraDetails}
         ${skill ? `<p><strong>Skill:</strong> ${skill.name} (Level ${skill.level}, Credits: ${skill.maxCredits})</p>` : ''}
         ${type !== 'certification' ? `<p><strong>Duration:</strong> ${duration}</p>` : ''}
+        <div style="width: 500px;height: 100px;font-size: 20px;">
         <a href="#" class="register-btn">Register</a>
+        </div>
       </div>
     </div>
     <div class="card-content">
