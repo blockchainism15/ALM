@@ -4,13 +4,13 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Training Overview</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
   <style>
-    /* (Your existing styles as before) */
+    /* YOUR EXISTING STYLES (UNCHANGED) */
     body {
       font-family: "Libre Franklin", sans-serif;
       font-style: normal;
@@ -19,117 +19,306 @@
       padding: 0;
       color: #222;
     }
-    /* ... all your previous CSS, unchanged ... */
-    .container { max-width: 1200px; margin: 2rem auto; padding: 1rem; }
-    .card { background: rgba(255, 255, 255, 0.7); border-radius: 18px; border-top: 3px solid #4da3ff; border-bottom: 3px solid #4da3ff; box-shadow: 0 4px 12px rgba(0,0,0,0.08); margin-bottom: 1.5rem; overflow: hidden; transition: transform 0.2s ease, box-shadow 0.2s ease; }
-    .card:hover { transform: translateY(-4px); box-shadow: 0 6px 16px rgba(0,0,0,0.1); }
-    .card-header { display: flex; align-items: center; gap: 1rem; background: rgba(255, 255, 255, 0.5); padding: 1rem 1.5rem; border-bottom: 1px solid #dbe2ef; }
-    .card-header img { width: 530px; height: 330px; border-radius: 14px; object-fit: cover; }
-    .card-header h2 { margin: 0; font-size: 1.8rem; color: #003366; }
-    .card-content { padding: 1.2rem 1.5rem; font-size: 0.95rem; line-height: 1.6; }
-    .register-btn { display: inline-block; background: transparent; border: 2px solid; border-image: linear-gradient(45deg, #4da3ff, #a259ff) 1; color: #003366; text-decoration: none; font-weight: 600; padding: 0.7rem 1.4rem; border-radius: 8px; margin-top: 1rem; transition: all 0.3s ease; cursor: pointer; }
-    .register-btn:hover { background: linear-gradient(45deg, #4da3ff, #a259ff); color: white; border-image: none; }
-    /* Include rest of your CSS unchanged... */
+    .container {
+      max-width: 1200px;
+      margin: 2rem auto;
+      padding: 1rem;
+    }
+    .card {
+      background: rgba(255, 255, 255, 0.7);
+      border-radius: 18px;
+      border-top: 3px solid #4da3ff;
+      border-bottom: 3px solid #4da3ff;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      margin-bottom: 1.5rem;
+      overflow: hidden;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+    }
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      background: rgba(255, 255, 255, 0.5);
+      padding: 1rem 1.5rem;
+      border-bottom: 1px solid #dbe2ef;
+      flex-wrap: wrap;
+    }
+    .card-header img {
+      width: 530px;
+      height: 330px;
+      border-radius: 14px;
+      object-fit: cover;
+    }
+    .card-header h2 {
+      margin: 0;
+      font-size: 1.8rem;
+      color: #003366;
+      flex: 1 1 100%;
+    }
+    .button-container {
+      flex: 1 1 100%;
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .card-content {
+      padding: 1.2rem 1.5rem;
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+    .module-card,
+    .resource-card,
+    .sublo-card {
+      border: 1px solid #e0e6ef;
+      border-radius: 12px;
+      margin: 1rem 0;
+      background-color: rgba(255, 255, 255, 0.8);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .module-card:hover,
+    .resource-card:hover,
+    .sublo-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+    }
+    .module-header,
+    .sublo-header {
+      background: #f3f5f8;
+      padding: 0.8rem 1rem;
+      border-bottom: 1px solid #e0e6ef;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .sublo-header {
+      background: linear-gradient(90deg, rgba(0, 85, 204, 0.5), rgba(162, 89, 255, 0.5));
+      border-radius: 8px 8px 0 0;
+    }
+    .chapter-list {
+      padding: 0.8rem 1rem;
+    }
+    .chapter-item {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid #f0f2f7;
+    }
+    .chapter-item:last-child {
+      border-bottom: none;
+    }
+    .chapter-item i {
+      color: #0055cc;
+      font-size: 1rem;
+      width: 18px;
+      text-align: center;
+    }
+    .format-label {
+      font-weight: 600;
+    }
+    .register-btn {
+      display: inline-block;
+      background: transparent;
+      border: 2px solid;
+      border-image: linear-gradient(45deg, #4da3ff, #a259ff) 1;
+      color: #003366;
+      text-decoration: none;
+      font-weight: 600;
+      padding: 0.7rem 1.4rem;
+      border-radius: 8px;
+      margin-top: 1rem;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+    .register-btn:hover {
+      background: linear-gradient(45deg, #4da3ff, #a259ff);
+      color: white;
+      border-image: none;
+    }
+    .side-info-box {
+      margin-top: 1rem;
+      background: rgba(240, 245, 255, 0.7);
+      border-left: 4px solid #4da3ff;
+      padding: 0.8rem 1rem;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      color: #003366;
+    }
+    .expand-btn {
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      font-size: 1rem;
+      padding: 6px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: #0055cc;
+    }
+    .expand-btn:focus {
+      outline: 2px solid rgba(0, 85, 204, 0.15);
+      border-radius: 6px;
+    }
+    .expand-icon {
+      transition: transform 0.2s ease;
+      display: inline-block;
+    }
+    .expand-icon.open {
+      transform: rotate(180deg);
+    }
+    @media (max-width: 768px) {
+      .card-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .card-header img {
+        width: 100%;
+        height: 220px;
+      }
+    }
+    .card-header h2 {
+      margin: 0;
+      font-size: 1.5rem;
+      background: linear-gradient(360deg, #3d9de1 0%, #8c24bf 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      display: inline-block;
+      border: 1px dashed #8b5cf6;
+      border-radius: 6px;
+      padding: 3px 6px;
+    }
+    .card-header p {
+      background: linear-gradient(135deg, #2a24bf 0%, #2a24bf 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-size: 19px;
+    }
+    .card-header p1 {
+      background: black;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-size: 19px;
+    }
+    h3 {
+      background: #18181a87;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-weight: bold;
+    }
   </style>
 </head>
 
 <body>
-<div class="container" id="content">
-  <p>Loading details...</p>
-</div>
+  <div class="container" id="content">
+    <p>Loading details...</p>
+  </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
-<script>
-async function fetchDetails() {
-  const content = document.getElementById('content');
-  const params = new URLSearchParams(window.location.search);
-  const courseId = params.get('courseId');
-  if (!courseId) { content.innerHTML = "<p>Invalid course ID.</p>"; return; }
+  <script>
+    async function fetchDetails() {
+      const content = document.getElementById('content');
+      const params = new URLSearchParams(window.location.search);
+      const courseId = params.get('courseId');
+      if (!courseId) {
+        content.innerHTML = "<p>Invalid course ID.</p>";
+        return;
+      }
 
-  const [type, id] = courseId.split(':');
-  const apiUrl = `https://cpcontents.adobe.com/eu/public/guest/eu/api/5fc01dd5-de45-408d-9b07-b267d40ebef9/9759/${type}/${id}.json`;
+      const [type, id] = courseId.split(':');
+      const apiUrl = `https://cpcontents.adobe.com/eu/public/guest/eu/api/5fc01dd5-de45-408d-9b07-b267d40ebef9/9759/${type}/${id}.json`;
 
-  try {
-    const response = await fetch(apiUrl);
-    if (!response.ok) throw new Error('Network error');
-    const data = await response.json();
-    renderDetails(data, type);
+      try {
+        const response = await fetch(apiUrl);
+        if (!response.ok) throw new Error('Network error');
+        const data = await response.json();
+        renderDetails(data, type);
 
-    fetch(`https://primeapps.adobe.com/almsearch/api/v1/eu/9759/5fc01dd5-de45-408d-9b07-b267d40ebef9/search?size=500&from=0`, {
-      method: 'POST',
-    })
-    .then(r => r.json())
-    .then(allData => {
-      window.allLearningObjects = allData.results || [];
-      const relatedHtml = renderRelatedCourses(data, window.allLearningObjects);
-      if (relatedHtml) content.insertAdjacentHTML('beforeend', relatedHtml);
-    });
+        fetch(
+          `https://primeapps.adobe.com/almsearch/api/v1/eu/9759/5fc01dd5-de45-408d-9b07-b267d40ebef9/search?size=500&from=0`,
+          {
+            method: 'POST',
+          }
+        )
+          .then((r) => r.json())
+          .then((allData) => {
+            window.allLearningObjects = allData.results || [];
+            const relatedHtml = renderRelatedCourses(data, window.allLearningObjects);
+            if (relatedHtml) content.insertAdjacentHTML('beforeend', relatedHtml);
+          });
 
-    insertUtilityButtons();
-    insertSearchInput();
-  } catch (e) {
-    console.error(e);
-    content.innerHTML = "<p>Failed to load course details.</p>";
-  }
-}
+        insertUtilityButtons();
+        insertSearchInput();
+      } catch (e) {
+        console.error(e);
+        content.innerHTML = "<p>Failed to load course details.</p>";
+      }
+    }
 
-function insertUtilityButtons() {
-  const container = document.querySelector('.card-header div');
-  if (!container) return;
+    function insertUtilityButtons() {
+      const headerDiv = document.querySelector('.card-header div');
+      if (!headerDiv) return;
 
-  // PDF export button
-  const exportBtn = document.createElement('button');
-  exportBtn.textContent = 'Download as PDF';
-  exportBtn.className = 'register-btn';
-  exportBtn.style.marginLeft = '10px';
-  exportBtn.onclick = exportToPDF;
+      const btnContainer = document.createElement('div');
+      btnContainer.className = "button-container";
 
-  // Bookmark button
-  const bookmarkBtn = document.createElement('button');
-  bookmarkBtn.textContent = 'Bookmark This Page';
-  bookmarkBtn.className = 'register-btn';
-  bookmarkBtn.style.marginLeft = '10px';
-  bookmarkBtn.onclick = bookmarkPage;
+      const exportBtn = document.createElement('button');
+      exportBtn.textContent = 'Download as PDF';
+      exportBtn.className = 'register-btn';
+      exportBtn.onclick = exportToPDF;
 
-  // Calendar reminder button
-  const calendarBtn = document.createElement('button');
-  calendarBtn.textContent = 'Add Reminder to Calendar';
-  calendarBtn.className = 'register-btn';
-  calendarBtn.style.marginLeft = '10px';
-  calendarBtn.onclick = () => generateCalendarReminder();
+      const bookmarkBtn = document.createElement('button');
+      bookmarkBtn.textContent = 'Bookmark This Page';
+      bookmarkBtn.className = 'register-btn';
+      bookmarkBtn.onclick = bookmarkPage;
 
-  container.appendChild(exportBtn);
-  container.appendChild(bookmarkBtn);
-  container.appendChild(calendarBtn);
-}
+      const calendarBtn = document.createElement('button');
+      calendarBtn.textContent = 'Add Reminder to Calendar';
+      calendarBtn.className = 'register-btn';
+      calendarBtn.onclick = () => generateCalendarReminder();
 
-function exportToPDF() {
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF();
-  const contentElement = document.querySelector('.container');
-  doc.text(contentElement.innerText, 10, 10);
-  doc.save('course-details.pdf');
-}
+      btnContainer.appendChild(exportBtn);
+      btnContainer.appendChild(bookmarkBtn);
+      btnContainer.appendChild(calendarBtn);
 
-function bookmarkPage() {
-  if (window.sidebar && window.sidebar.addPanel) {
-    window.sidebar.addPanel(document.title, window.location.href, '');
-  } else if (window.external && ('AddFavorite' in window.external)) {
-    window.external.AddFavorite(window.location.href, document.title);
-  } else {
-    alert('Press Ctrl+D (Cmd+D for Mac) to bookmark this page.');
-  }
-}
+      headerDiv.appendChild(btnContainer);
+    }
 
-function generateCalendarReminder() {
-  const titleElem = document.querySelector('.card-header h2');
-  if (!titleElem) {
-    alert('Course title not found for reminder.');
-    return;
-  }
-  const courseName = titleElem.textContent;
-  const icsContent = `
+    function exportToPDF() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      const contentElement = document.querySelector('.container');
+      doc.text(contentElement.innerText, 10, 10);
+      doc.save('course-details.pdf');
+    }
+
+    function bookmarkPage() {
+      if (window.sidebar && window.sidebar.addPanel) {
+        window.sidebar.addPanel(document.title, window.location.href, '');
+      } else if (window.external && 'AddFavorite' in window.external) {
+        window.external.AddFavorite(window.location.href, document.title);
+      } else {
+        alert('Press Ctrl+D (Cmd+D for Mac) to bookmark this page.');
+      }
+    }
+
+    function generateCalendarReminder() {
+      const titleElem = document.querySelector('.card-header h2');
+      if (!titleElem) {
+        alert('Course title not found for reminder.');
+        return;
+      }
+      const courseName = titleElem.textContent;
+      const icsContent = `
 BEGIN:VCALENDAR
 VERSION:2.0
 BEGIN:VEVENT
@@ -141,113 +330,118 @@ END:VEVENT
 END:VCALENDAR
 `.trim();
 
-  const blob = new Blob([icsContent], { type: 'text/calendar' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `${courseName.replace(/\s+/g, '_')}_Enrollment_Reminder.ics`;
-  document.body.appendChild(a);
-  a.click();
-  setTimeout(() => {
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  }, 0);
-}
+      const blob = new Blob([icsContent], { type: 'text/calendar' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${courseName.replace(/\s+/g, '_')}_Enrollment_Reminder.ics`;
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(() => {
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }, 0);
+    }
 
-function icsDateString(daysOffset) {
-  const d = new Date();
-  d.setDate(d.getDate() + daysOffset);
-  return d.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
-}
+    function icsDateString(daysOffset) {
+      const d = new Date();
+      d.setDate(d.getDate() + daysOffset);
+      return d.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+    }
 
-function renderRelatedCourses(currentData, allCourses) {
-  const currentTags = (currentData.data.attributes.tags || []).map(t => t.toLowerCase());
-  const currentSkills = (currentData.included || []).filter(i => i.type === 'skill').map(s => (s.attributes?.name || '').toLowerCase());
+    function renderRelatedCourses(currentData, allCourses) {
+      const currentTags = (currentData.data.attributes.tags || []).map((t) => t.toLowerCase());
+      const currentSkills = (currentData.included || [])
+        .filter((i) => i.type === 'skill')
+        .map((s) => (s.attributes?.name || '').toLowerCase());
 
-  const related = allCourses.filter(course => {
-    if (course.id === currentData.data.id) return false;
-    const tags = (course.attributes?.tags || []).map(t => t.toLowerCase());
-    const skills = (course.included?.filter(i => i.type === 'skill').map(s => s.attributes?.name.toLowerCase())) || [];
-    return tags.some(t => currentTags.includes(t)) || skills.some(s => currentSkills.includes(s));
-  });
+      const related = allCourses.filter((course) => {
+        if (course.id === currentData.data.id) return false;
+        const tags = (course.attributes?.tags || []).map((t) => t.toLowerCase());
+        const skills =
+          (course.included?.filter((i) => i.type === 'skill').map((s) => s.attributes?.name.toLowerCase())) || [];
+        return tags.some((t) => currentTags.includes(t)) || skills.some((s) => currentSkills.includes(s));
+      });
 
-  if (!related.length) return '';
+      if (!related.length) return '';
 
-  return `
+      return `
     <div class="card">
       <h3>Recommended Courses</h3>
       <div style="display:flex;gap:15px;flex-wrap:wrap;">
-        ${related.map(course => {
-          const name = course.attributes.localizedMetadata?.[0]?.name || course.attributes.name || "Course";
-          const img = course.attributes.imageUrl || 'https://via.placeholder.com/100x80?text=No+Image';
-          const id = course.id || '';
-          return `
+        ${related
+          .map((course) => {
+            const name = course.attributes.localizedMetadata?.[0]?.name || course.attributes.name || 'Course';
+            const img = course.attributes.imageUrl || 'https://via.placeholder.com/100x80?text=No+Image';
+            const id = course.id || '';
+            return `
             <div style="border:1px solid #ddd; border-radius:8px; padding:10px; width:180px; background:white;">
               <a href="?courseId=${id}">
-                <img src="${img}" style="width:100%;height:auto; border-radius:6px;" alt="Course"/>
+                <img src="${img}" style="width:100%;height:auto; border-radius:6px;" alt="Course" />
                 <p style="font-weight:600; margin:5px 0;color:#445;">${name}</p>
               </a>
             </div>
           `;
-        }).join('')}
+          })
+          .join('')}
       </div>
     </div>
   `;
-}
+    }
 
-function insertSearchInput() {
-  const container = document.querySelector('.card-content');
-  if (!container) return;
+    function insertSearchInput() {
+      const container = document.querySelector('.card-content');
+      if (!container) return;
 
-  const searchInput = document.createElement('input');
-  searchInput.type = 'search';
-  searchInput.id = 'searchInContent';
-  searchInput.placeholder = 'Search within course content...';
-  searchInput.style.width = '100%';
-  searchInput.style.padding = '8px';
-  searchInput.style.margin = '10px 0 20px 0';
-  searchInput.style.fontSize = '1rem';
-  container.prepend(searchInput);
+      const searchInput = document.createElement('input');
+      searchInput.type = 'search';
+      searchInput.id = 'searchInContent';
+      searchInput.placeholder = 'Search within course content...';
+      searchInput.style.width = '100%';
+      searchInput.style.padding = '8px';
+      searchInput.style.margin = '10px 0 20px 0';
+      searchInput.style.fontSize = '1rem';
+      container.prepend(searchInput);
 
-  searchInput.addEventListener('input', (e) => {
-    const filter = e.target.value.toLowerCase();
-    document.querySelectorAll('.module-card, .sublo-card').forEach(card => {
-      const name = card.querySelector('.module-header span, .sublo-header div span')?.textContent.toLowerCase() || '';
-      if (name.includes(filter)) {
-        card.style.display = '';
-      } else {
-        card.style.display = 'none';
+      searchInput.addEventListener('input', (e) => {
+        const filter = e.target.value.toLowerCase();
+        document.querySelectorAll('.module-card, .sublo-card').forEach((card) => {
+          const name = card.querySelector('.module-header span, .sublo-header div span')?.textContent.toLowerCase() || '';
+          if (name.includes(filter)) {
+            card.style.display = '';
+          } else {
+            card.style.display = 'none';
+          }
+        });
+      });
+    }
+
+    async function renderDetails(data, type) {
+      const content = document.getElementById('content');
+      const attr = data.data?.attributes || {};
+      const meta = attr.localizedMetadata?.[0] || {};
+      const title = meta.name || attr.name || 'Untitled';
+      const desc = meta.overview || meta.description || attr.description || 'No description available.';
+      const image = attr.imageUrl || 'https://www.shutterstock.com/image-vector/business-infographic-template-card-design-260nw-1376121077.jpg';
+      const duration = attr.duration ? formatDuration(attr.duration) : 'N/A';
+      const skill = extractSkillInfo(data);
+
+      let extraDetails = '';
+      if (type === 'certification') {
+        extraDetails = renderCertificationDetails(data);
       }
-    });
-  });
-}
 
-async function renderDetails(data, type) {
-  const content = document.getElementById('content');
-  const attr = data.data?.attributes || {};
-  const meta = attr.localizedMetadata?.[0] || {};
-  const title = meta.name || attr.name || "Untitled";
-  const desc = meta.overview || meta.description || attr.description || "No description available.";
-  const image = attr.imageUrl || "https://www.shutterstock.com/image-vector/business-infographic-template-card-design-260nw-1376121077.jpg";
-  const duration = attr.duration ? formatDuration(attr.duration) : "N/A";
-  const skill = extractSkillInfo(data);
-
-  let extraDetails = "";
-  if (type === "certification") {
-    extraDetails = renderCertificationDetails(data);
-  }
-
-  let html = `
+      let html = `
   <div class="card">
     <div class="card-header">
       <img src="${image}" alt="Course Image" />
       <div>
-      <br/>
-        <h2>${title}</h2><br/><br/>
+      <br />
+        <h2>${title}</h2><br /><br />
         <p1>${desc}</p1>
         ${extraDetails}
-        ${skill ? `<p><strong>Skill:</strong> ${skill.name} (Level ${skill.level}, Credits: ${skill.maxCredits})</p>` : ""}
-        ${type !== "certification" ? `<p><strong>Duration:</strong> ${duration}</p>` : ""}
+        ${skill ? `<p><strong>Skill:</strong> ${skill.name} (Level ${skill.level}, Credits: ${skill.maxCredits})</p>` : ''}
+        ${type !== 'certification' ? `<p><strong>Duration:</strong> ${duration}</p>` : ''}
         <a href="#" class="register-btn">Register</a>
       </div>
     </div>
@@ -255,138 +449,149 @@ async function renderDetails(data, type) {
       <h3>Your Learning Journey for this ${type}</h3>
   `;
 
-  if (type === "course") html += renderModules(data);
-  else if (type === "learningProgram" || type === "certification") html += renderSubLOs(data);
+      if (type === 'course') html += renderModules(data);
+      else if (type === 'learningProgram' || type === 'certification') html += renderSubLOs(data);
 
-  html += '</div></div>';
-  content.innerHTML = html;
+      html += '</div></div>';
+      content.innerHTML = html;
 
-  // --- ADD: attach expand/collapse handlers for module cards ---
-  document.querySelectorAll('.expand-btn').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      const moduleHeader = btn.closest('.module-header');
-      if (!moduleHeader) return;
-      const moduleCard = moduleHeader.closest('.module-card');
-      const chapterList = moduleCard.querySelector('.chapter-list');
-      const icon = btn.querySelector('.expand-icon');
-      if (!chapterList) return;
-      if (chapterList.style.display === 'none' || chapterList.style.display === '') {
-        chapterList.style.display = 'block';
-        if (icon) icon.classList.add('open');
-      } else {
-        chapterList.style.display = 'none';
-        if (icon) icon.classList.remove('open');
-      }
-    });
-  });
-  document.querySelectorAll('.module-header').forEach(hdr => {
-    hdr.addEventListener('click', (e) => {
-      if (e.target.closest('.expand-btn')) return;
-      const moduleCard = hdr.closest('.module-card');
-      const chapterList = moduleCard.querySelector('.chapter-list');
-      const icon = hdr.querySelector('.expand-icon');
-      if (!chapterList) return;
-      if (chapterList.style.display === 'none' || chapterList.style.display === '') {
-        chapterList.style.display = 'block';
-        if (icon) icon.classList.add('open');
-      } else {
-        chapterList.style.display = 'none';
-        if (icon) icon.classList.remove('open');
-      }
-    });
-  });
-  // --- END attach handlers ---
-}
-
-function renderCertificationDetails(data) {
-  const inc = data.included || [];
-  const mainLO = data.data;
-  const relInstanceId = mainLO.relationships?.instances?.data?.[0]?.id;
-  const instanceObj = inc.find(i => i.id === relInstanceId && i.type === "learningObjectInstance");
-
-  if (!instanceObj) return "";
-  const a = instanceObj.attributes || {};
-  let validity = a.validity || "";
-  const state = a.state || "N/A";
-
-  // Convert validity (e.g., "12m" to years and months)
-  if (validity && validity.endsWith("m")) {
-    const totalMonths = parseInt(validity.replace("m", ""), 10);
-    const years = Math.floor(totalMonths / 12);
-    const months = totalMonths % 12;
-    if (years > 0 && months > 0) {
-      validity = `${years} year${years > 1 ? "s" : ""} ${months} month${months > 1 ? "s" : ""}`;
-    } else if (years > 0) {
-      validity = `${years} year${years > 1 ? "s" : ""}`;
-    } else {
-      validity = `${months} month${months > 1 ? "s" : ""}`;
+      // --- ADD: attach expand/collapse handlers for module cards ---
+      document.querySelectorAll('.expand-btn').forEach((btn) => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const moduleHeader = btn.closest('.module-header');
+          if (!moduleHeader) return;
+          const moduleCard = moduleHeader.closest('.module-card');
+          const chapterList = moduleCard.querySelector('.chapter-list');
+          const icon = btn.querySelector('.expand-icon');
+          if (!chapterList) return;
+          if (chapterList.style.display === 'none' || chapterList.style.display === '') {
+            chapterList.style.display = 'block';
+            if (icon) icon.classList.add('open');
+          } else {
+            chapterList.style.display = 'none';
+            if (icon) icon.classList.remove('open');
+          }
+        });
+      });
+      document.querySelectorAll('.module-header').forEach((hdr) => {
+        hdr.addEventListener('click', (e) => {
+          if (e.target.closest('.expand-btn')) return;
+          const moduleCard = hdr.closest('.module-card');
+          const chapterList = moduleCard.querySelector('.chapter-list');
+          const icon = hdr.querySelector('.expand-icon');
+          if (!chapterList) return;
+          if (chapterList.style.display === 'none' || chapterList.style.display === '') {
+            chapterList.style.display = 'block';
+            if (icon) icon.classList.add('open');
+          } else {
+            chapterList.style.display = 'none';
+            if (icon) icon.classList.remove('open');
+          }
+        });
+      });
+      // --- END attach handlers ---
     }
-  } else if (!validity) {
-    validity = "N/A";
-  }
 
-  let deadline = "N/A";
-  if (a.completionDeadline) {
-    const val = a.completionDeadline.trim();
-    if (val.endsWith("d")) {
-      const days = parseInt(val.replace("d", ""), 10);
-      if (!isNaN(days)) {
-        const d = new Date();
-        d.setDate(d.getDate() + days);
-        deadline = d.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+    function renderCertificationDetails(data) {
+      const inc = data.included || [];
+      const mainLO = data.data;
+      const relInstanceId = mainLO.relationships?.instances?.data?.[0]?.id;
+      const instanceObj = inc.find((i) => i.id === relInstanceId && i.type === 'learningObjectInstance');
+
+      if (!instanceObj) return '';
+      const a = instanceObj.attributes || {};
+      let validity = a.validity || '';
+      const state = a.state || 'N/A';
+
+      // Convert validity (e.g., "12m" to years and months)
+      if (validity && validity.endsWith('m')) {
+        const totalMonths = parseInt(validity.replace('m', ''), 10);
+        const years = Math.floor(totalMonths / 12);
+        const months = totalMonths % 12;
+        if (years > 0 && months > 0) {
+          validity = `${years} year${years > 1 ? 's' : ''} ${months} month${months > 1 ? 's' : ''}`;
+        } else if (years > 0) {
+          validity = `${years} year${years > 1 ? 's' : ''}`;
+        } else {
+          validity = `${months} month${months > 1 ? 's' : ''}`;
+        }
+      } else if (!validity) {
+        validity = 'N/A';
       }
-    } else if (!isNaN(Date.parse(val))) {
-      const d = new Date(val);
-      deadline = d.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
-    }
-  }
 
-  return `
+      let deadline = 'N/A';
+      if (a.completionDeadline) {
+        const val = a.completionDeadline.trim();
+        if (val.endsWith('d')) {
+          const days = parseInt(val.replace('d', ''), 10);
+          if (!isNaN(days)) {
+            const d = new Date();
+            d.setDate(d.getDate() + days);
+            deadline = d.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+          }
+        } else if (!isNaN(Date.parse(val))) {
+          const d = new Date(val);
+          deadline = d.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+        }
+      }
+
+      return `
     <div class="side-info-box">
-      <strong>Certification Details:</strong><br/>
-      <span><b>Validity:</b> ${validity}</span><br/>
-      <span><b>State:</b> ${state}</span><br/>
+      <strong>Certification Details:</strong><br />
+      <span><b>Validity:</b> ${validity}</span><br />
+      <span><b>State:</b> ${state}</span><br />
       <span><b>Completion Deadline:</b> ${deadline}</span>
     </div>
   `;
-}
+    }
 
-function extractSkillInfo(data) {
-  const inc = data.included || [];
-  const s = inc.find(i => i.type === "skill");
-  const sl = inc.find(i => i.type === "skillLevel");
-  if (!s || !sl) return null;
-  return { name: s.attributes?.name || "Skill", level: sl.attributes?.level || "N/A", maxCredits: sl.attributes?.maxCredits || "N/A" };
-}
+    function extractSkillInfo(data) {
+      const inc = data.included || [];
+      const s = inc.find((i) => i.type === 'skill');
+      const sl = inc.find((i) => i.type === 'skillLevel');
+      if (!s || !sl) return null;
+      return {
+        name: s.attributes?.name || 'Skill',
+        level: sl.attributes?.level || 'N/A',
+        maxCredits: sl.attributes?.maxCredits || 'N/A',
+      };
+    }
 
-function getFormatColor(type) {
-  const map = {
-    'INTERACTIVE': '#0078ff', 'VIDEO': '#e67e22', 'PDF': '#d32f2f', 'DOC': '#1976d2',
-    'DOCX': '#1976d2', 'AUDIO': '#9c27b0', 'PPT': '#6a1b9a', 'PPTX': '#6a1b9a'
-  };
-  return map[type?.toUpperCase()] || '#2e7d32';
-}
+    function getFormatColor(type) {
+      const map = {
+        INTERACTIVE: '#0078ff',
+        VIDEO: '#e67e22',
+        PDF: '#d32f2f',
+        DOC: '#1976d2',
+        DOCX: '#1976d2',
+        AUDIO: '#9c27b0',
+        PPT: '#6a1b9a',
+        PPTX: '#6a1b9a',
+      };
+      return map[type?.toUpperCase()] || '#2e7d32';
+    }
 
-function renderModules(data) {
-  const inc = data.included || [];
-  const loInst = inc.filter(i => i.type === "learningObjectInstance");
-  const loRes = inc.filter(i => i.type === "learningObjectResource");
-  const res = inc.filter(i => i.type === "resource");
-  if (!loInst.length) return "<p>No modules available.</p>";
+    function renderModules(data) {
+      const inc = data.included || [];
+      const loInst = inc.filter((i) => i.type === 'learningObjectInstance');
+      const loRes = inc.filter((i) => i.type === 'learningObjectResource');
+      const res = inc.filter((i) => i.type === 'resource');
+      if (!loInst.length) return '<p>No modules available.</p>';
 
-  return loInst.map(inst => {
-    const refs = inst.relationships?.loResources?.data || [];
-    const matched = loRes.filter(lr => refs.some(r => r.id === lr.id));
-    let html = "";
-    matched.forEach(lr => {
-      const m = lr.attributes?.localizedMetadata?.[0];
-      const name = m?.name || "Module";
-      const resourceType = lr.attributes?.resourceType || "N/A";
-      const resRefs = lr.relationships?.resources?.data || [];
-      const related = res.filter(r => resRefs.some(rr => rr.id === r.id));
+      return loInst
+        .map((inst) => {
+          const refs = inst.relationships?.loResources?.data || [];
+          const matched = loRes.filter((lr) => refs.some((r) => r.id === lr.id));
+          let html = '';
+          matched.forEach((lr) => {
+            const m = lr.attributes?.localizedMetadata?.[0];
+            const name = m?.name || 'Module';
+            const resourceType = lr.attributes?.resourceType || 'N/A';
+            const resRefs = lr.relationships?.resources?.data || [];
+            const related = res.filter((r) => resRefs.some((rr) => rr.id === r.id));
 
-      html += `
+            html += `
       <div class="module-card">
         <div class="module-header">
           <span>${name}</span>
@@ -399,12 +604,15 @@ function renderModules(data) {
           </div>
         </div>
         <div class="chapter-list" style="display:none;">
-          ${related.map(r => {
-            const a = r.attributes || {};
-            const t = a.contentType;
-            const display = ["CP","SCORM12","SCORM2004"].includes(t) ? "Interactive" : (t || a.resourceType || "N/A");
-            const color = getFormatColor(display);
-            return `
+          ${related
+            .map((r) => {
+              const a = r.attributes || {};
+              const t = a.contentType;
+              const display = ['CP', 'SCORM12', 'SCORM2004'].includes(t)
+                ? 'Interactive'
+                : t || a.resourceType || 'N/A';
+              const color = getFormatColor(display);
+              return `
             <div class="resource-card">
               <div class="chapter-item">
                 <i class="fa-solid fa-circle-play"></i>
@@ -414,45 +622,48 @@ function renderModules(data) {
                 </small>
               </div>
             </div>`;
-          }).join('')}
+            })
+            .join('')}
         </div>
       </div>`;
-    });
-    return html;
-  }).join('');
-}
+          });
+          return html;
+        })
+        .join('');
+    }
 
-function renderSubLOs(data) {
-  const inc = data.included || [];
-  const subCourses = inc.filter(i => i.type === "learningObject" && i.attributes?.loType === "course");
-  if (!subCourses.length) return "<p>No related courses available.</p>";
+    function renderSubLOs(data) {
+      const inc = data.included || [];
+      const subCourses = inc.filter((i) => i.type === 'learningObject' && i.attributes?.loType === 'course');
+      if (!subCourses.length) return '<p>No related courses available.</p>';
 
-  return subCourses.map(sub => {
-    const a = sub.attributes || {};
-    const m = a.localizedMetadata?.[0] || {};
-    const name = m.name || a.name || "Untitled Course";
-    const desc = m.overview || a.description || "";
-    const img = a.imageUrl || "https://via.placeholder.com/100x80?text=No+Image";
-    const dur = a.duration ? formatDuration(a.duration) : "N/A";
+      return subCourses
+        .map((sub) => {
+          const a = sub.attributes || {};
+          const m = a.localizedMetadata?.[0] || {};
+          const name = m.name || a.name || 'Untitled Course';
+          const desc = m.overview || a.description || '';
+          const img = a.imageUrl || 'https://via.placeholder.com/100x80?text=No+Image';
+          const dur = a.duration ? formatDuration(a.duration) : 'N/A';
 
-    const subInc = inc.filter(i => i.relationships?.learningObject?.data?.id === sub.id || i.id === sub.id);
-    const loInst = subInc.filter(i => i.type === "learningObjectInstance");
-    const loRes = subInc.filter(i => i.type === "learningObjectResource");
-    // <<== FIXED: use top-level included resources so related resource objects are found
-    const res = inc.filter(i => i.type === "resource");
+          const subInc = inc.filter((i) => i.relationships?.learningObject?.data?.id === sub.id || i.id === sub.id);
+          const loInst = subInc.filter((i) => i.type === 'learningObjectInstance');
+          const loRes = subInc.filter((i) => i.type === 'learningObjectResource');
+          // <<== FIXED: use top-level included resources so related resource objects are found
+          const res = inc.filter((i) => i.type === 'resource');
 
-    let resourceHTML = "";
-    loInst.forEach(inst => {
-      const refs = inst.relationships?.loResources?.data || [];
-      const matched = loRes.filter(lr => refs.some(r => r.id === lr.id));
-      matched.forEach(lr => {
-        const meta = lr.attributes?.localizedMetadata?.[0];
-        const moduleName = meta?.name || "Module";
-        const resourceType = lr.attributes?.resourceType || "N/A";
-        // gather related resources for this learningObjectResource
-        const resRefs = lr.relationships?.resources?.data || [];
-        const related = res.filter(r => resRefs.some(rr => rr.id === r.id));
-        resourceHTML += `
+          let resourceHTML = '';
+          loInst.forEach((inst) => {
+            const refs = inst.relationships?.loResources?.data || [];
+            const matched = loRes.filter((lr) => refs.some((r) => r.id === lr.id));
+            matched.forEach((lr) => {
+              const meta = lr.attributes?.localizedMetadata?.[0];
+              const moduleName = meta?.name || 'Module';
+              const resourceType = lr.attributes?.resourceType || 'N/A';
+              // gather related resources for this learningObjectResource
+              const resRefs = lr.relationships?.resources?.data || [];
+              const related = res.filter((r) => resRefs.some((rr) => rr.id === r.id));
+              resourceHTML += `
         <div class="module-card">
           <div class="module-header">
             <span>${moduleName}</span>
@@ -464,12 +675,15 @@ function renderSubLOs(data) {
             </div>
           </div>
           <div class="chapter-list" style="display:none;">
-            ${related.map(r => {
-              const a = r.attributes || {};
-              const t = a.contentType;
-              const display = ["CP","SCORM12","SCORM2004"].includes(t) ? "Interactive" : (t || a.resourceType || "N/A");
-              const color = getFormatColor(display);
-              return `
+            ${related
+              .map((r) => {
+                const a = r.attributes || {};
+                const t = a.contentType;
+                const display = ['CP', 'SCORM12', 'SCORM2004'].includes(t)
+                  ? 'Interactive'
+                  : t || a.resourceType || 'N/A';
+                const color = getFormatColor(display);
+                return `
               <div class="resource-card">
                 <div class="chapter-item">
                   <i class="fa-solid fa-circle-play"></i>
@@ -479,35 +693,38 @@ function renderSubLOs(data) {
                   </small>
                 </div>
               </div>`;
-            }).join('')}
+              })
+              .join('')}
           </div>
         </div>`;
-      });
-    });
+            });
+          });
 
-    return `
+          return `
     <div class="sublo-card">
       <div class="sublo-header">
         <div style="display:flex;align-items:center;gap:0.8rem;">
-          <img src="${img}" style="width:60px;height:60px;border-radius:8px;object-fit:cover;" alt="Course Image"/>
+          <img src="${img}" style="width:60px;height:60px;border-radius:8px;object-fit:cover;" alt="Course Image" />
           <span>${name} (${a.loType})</span>
         </div>
         <small>${dur}</small>
       </div>
       <div class="chapter-list">
-        <p>${desc || "No description available."}</p>
-        ${resourceHTML || "<p>No resources available.</p>"}
+        <p>${desc || 'No description available.'}</p>
+        ${resourceHTML || '<p>No resources available.</p>'}
       </div>
     </div>`;
-  }).join('');
-}
+        })
+        .join('');
+    }
 
-function formatDuration(mins) {
-  const d = Math.floor(mins / 1440), m = mins % 1440;
-  return d > 0 ? `${d} day(s) ${m} mins` : `${m} mins`;
-}
+    function formatDuration(mins) {
+      const d = Math.floor(mins / 1440),
+        m = mins % 1440;
+      return d > 0 ? `${d} day(s) ${m} mins` : `${m} mins`;
+    }
 
-fetchDetails();
-</script>
+    fetchDetails();
+  </script>
 </body>
 </html>
