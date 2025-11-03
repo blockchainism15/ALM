@@ -223,6 +223,8 @@
   </div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <!-- html2canvas is required to capture the rendered UI as an image for the PDF -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
   <script>
     async function fetchDetails() {
@@ -273,7 +275,8 @@
 
       const exportBtn = document.createElement('button');
       exportBtn.textContent = 'Download as PDF';
-      exportBtn.className = 'register-btn';
+      // add a class so the export function can disable/enable during generation
+      exportBtn.className = 'register-btn export-pdf-btn';
       exportBtn.onclick = exportToPDF;
 
       const bookmarkBtn = document.createElement('button');
@@ -293,12 +296,77 @@
       headerDiv.appendChild(btnContainer);
     }
 
-    function exportToPDF() {
-      const { jsPDF } = window.jspdf;
-      const doc = new jsPDF();
-      const contentElement = document.querySelector('.container');
-      doc.text(contentElement.innerText, 10, 10);
-      doc.save('course-details.pdf');
+    // Replaced naive exportToPDF with a robust html2canvas + jsPDF implementation
+    async function exportToPDF() {
+      const exportBtn = document.querySelector('.export-pdf-btn');
+      if (exportBtn) {
+        exportBtn.disabled = true;
+        exportBtn.textContent = 'Generating PDF...';
+      }
+
+      try {
+        const { jsPDF } = window.jspdf;
+        const container = document.querySelector('.container');
+
+        // Wait for images inside the container to finish loading to ensure they are captured
+        const imgs = Array.from(container.querySelectorAll('img'));
+        await Promise.all(imgs.map(img => {
+          if (img.complete) return Promise.resolve();
+          return new Promise((resolve) => {
+            img.addEventListener('load', resolve);
+            img.addEventListener('error', resolve);
+          });
+        }));
+
+        // Use html2canvas to render the container as a canvas
+        // scale:2 provides better resolution for the exported PDF
+        const canvas = await html2canvas(container, {
+          scale: 2,
+          useCORS: true,
+          allowTaint: false,
+          logging: false,
+          windowWidth: document.documentElement.scrollWidth,
+          windowHeight: document.documentElement.scrollHeight
+        });
+
+        const imgData = canvas.toDataURL('image/png');
+
+        // Create a PDF (A4 size in mm)
+        const pdf = new jsPDF('p', 'mm', 'a4');
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = pdf.internal.pageSize.getHeight();
+
+        // Calculate the image height in PDF units to preserve aspect ratio
+        const imgProps = pdf.getImageProperties(imgData);
+        const imgWidth = pdfWidth;
+        const imgHeight = (imgProps.height * imgWidth) / imgProps.width;
+
+        let heightLeft = imgHeight;
+        let position = 0;
+
+        // Add the first page
+        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+        heightLeft -= pdfHeight;
+
+        // Add extra pages if the content is long
+        while (heightLeft > 0) {
+          position = heightLeft - imgHeight;
+          pdf.addPage();
+          pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+          heightLeft -= pdfHeight;
+        }
+
+        const safeTitle = (document.querySelector('.card-header h2')?.textContent || 'course-details').replace(/[^\w\-_\s]/g, '').trim().replace(/\s+/g, '_');
+        pdf.save(`${safeTitle || 'course-details'}.pdf`);
+      } catch (err) {
+        console.error('Error generating PDF', err);
+        alert('Failed to generate PDF. See console for details.');
+      } finally {
+        if (exportBtn) {
+          exportBtn.disabled = false;
+          exportBtn.textContent = 'Download as PDF';
+        }
+      }
     }
 
     function bookmarkPage() {
