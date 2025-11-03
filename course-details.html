@@ -10,6 +10,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
+    /* Your existing styles */
     body {
       font-family: "Libre Franklin", sans-serif;
       font-style: normal;
@@ -40,11 +41,21 @@
       padding: 1rem 1.5rem; border-bottom: 1px solid #dbe2ef;
     }
     .card-header img { width: 530px; height: 330px; border-radius: 14px; object-fit: cover; }
-    .card-header h2 { margin: 0; font-size: 1.8rem; color: #003366; }
-    .card-content { padding: 1.2rem 1.5rem; font-size: 0.95rem; line-height: 1.6; }
+    .card-header h2 {
+      margin: 0;
+      font-size: 1.8rem;
+      color: #003366;
+    }
+    .card-content {
+      padding: 1.2rem 1.5rem;
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
     .module-card, .resource-card, .sublo-card {
-      border: 1px solid #e0e6ef; border-radius: 12px;
-      margin: 1rem 0; background-color: rgba(255,255,255,0.8);
+      border: 1px solid #e0e6ef;
+      border-radius: 12px;
+      margin: 1rem 0;
+      background-color: rgba(255,255,255,0.8);
       box-shadow: 0 2px 6px rgba(0,0,0,0.05);
       transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
@@ -54,29 +65,58 @@
     }
     .module-header, .sublo-header {
       background: #f3f5f8;
-      padding: 0.8rem 1rem; border-bottom: 1px solid #e0e6ef;
-      font-weight: 600; display: flex; align-items: center; justify-content: space-between;
+      padding: 0.8rem 1rem;
+      border-bottom: 1px solid #e0e6ef;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
     }
     .sublo-header {
       background: linear-gradient(90deg, rgba(0,85,204,0.5), rgba(162,89,255,0.5));
       border-radius: 8px 8px 0 0;
     }
-    .chapter-list { padding: 0.8rem 1rem; }
+    .chapter-list {
+      padding: 0.8rem 1rem;
+    }
     .chapter-item {
-      display: flex; align-items: center; gap: 0.6rem;
-      padding: 0.5rem 0; border-bottom: 1px solid #f0f2f7;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid #f0f2f7;
     }
-    .chapter-item:last-child { border-bottom: none; }
-    .chapter-item i { color: #0055cc; font-size: 1rem; width: 18px; text-align: center; }
-    .format-label { font-weight: 600; }
+    .chapter-item:last-child {
+      border-bottom: none;
+    }
+    .chapter-item i {
+      color: #0055cc;
+      font-size: 1rem;
+      width: 18px;
+      text-align: center;
+    }
+    .format-label {
+      font-weight: 600;
+    }
     .register-btn {
-      display: inline-block; background: transparent;
-      border: 2px solid; border-image: linear-gradient(45deg, #4da3ff, #a259ff) 1;
-      color: #003366; text-decoration: none; font-weight: 600;
-      padding: 0.7rem 1.4rem; border-radius: 8px; margin-top: 1rem;
+      display: inline-block;
+      background: transparent;
+      border: 2px solid;
+      border-image: linear-gradient(45deg, #4da3ff, #a259ff) 1;
+      color: #003366;
+      text-decoration: none;
+      font-weight: 600;
+      padding: 0.7rem 1.4rem;
+      border-radius: 8px;
+      margin-top: 1rem;
       transition: all 0.3s ease;
+      cursor: pointer;
     }
-    .register-btn:hover { background: linear-gradient(45deg, #4da3ff, #a259ff); color: white; border-image: none; }
+    .register-btn:hover {
+      background: linear-gradient(45deg, #4da3ff, #a259ff);
+      color: white;
+      border-image: none;
+    }
     .side-info-box {
       margin-top: 1rem;
       background: rgba(240, 245, 255, 0.7);
@@ -86,8 +126,6 @@
       font-size: 0.9rem;
       color: #003366;
     }
-
-    /* Minimal styles for expand button (non-intrusive) */
     .expand-btn {
       background: transparent;
       border: none;
@@ -99,53 +137,68 @@
       gap: 6px;
       color: #0055cc;
     }
-    .expand-btn:focus { outline: 2px solid rgba(0,85,204,0.15); border-radius: 6px; }
-    .expand-icon { transition: transform 0.2s ease; display:inline-block; }
-    .expand-icon.open { transform: rotate(180deg); }
-
-    @media (max-width: 768px) {
-      .card-header { flex-direction: column; align-items: flex-start; }
-      .card-header img { width: 100%; height: 220px; }
+    .expand-btn:focus {
+      outline: 2px solid rgba(0,85,204,0.15);
+      border-radius: 6px;
     }
-.card-header h2 { 
-  margin: 0; 
-  font-size: 1.5rem;
-  background: linear-gradient(360deg, #3d9de1 0%, #8c24bf 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  display: inline-block;             /* so the border wraps tightly around text */
-  border: 1px dashed #8b5cf6;        /* dashed purple border */
-  border-radius: 6px;                /* optional: rounded corners */
-  padding: 3px 6px;  
-}
-
-.card-header p {
-  background: linear-gradient(135deg, #2a24bf 0%, #2a24bf 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  font-size: 19px;
-}
+    .expand-icon {
+      transition: transform 0.2s ease;
+      display:inline-block;
+    }
+    .expand-icon.open {
+      transform: rotate(180deg);
+    }
+    @media (max-width: 768px) {
+      .card-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .card-header img {
+        width: 100%;
+        height: 220px;
+      }
+    }
+    .card-header h2 {
+      margin: 0;
+      font-size: 1.5rem;
+      background: linear-gradient(360deg, #3d9de1 0%, #8c24bf 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      display: inline-block;
+      border: 1px dashed #8b5cf6;
+      border-radius: 6px;
+      padding: 3px 6px;
+    }
+    .card-header p {
+      background: linear-gradient(135deg, #2a24bf 0%, #2a24bf 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-size: 19px;
+    }
     .card-header p1 {
-  background: black;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  font-size: 19px;
-}
-h3 {
-  background: #18181a87;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  font-weight: bold;
-}
-
+      background: black;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-size: 19px;
+    }
+    h3 {
+      background: #18181a87;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-weight: bold;
+    }
   </style>
 </head>
 
 <body>
-<div class="container" id="content"><p>Loading details...</p></div>
+<div class="container" id="content">
+  <p>Loading details...</p>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <script>
 async function fetchDetails() {
@@ -162,13 +215,133 @@ async function fetchDetails() {
     if (!response.ok) throw new Error('Network error');
     const data = await response.json();
     renderDetails(data, type);
+
+    // Fetch all courses, programs, certifications for recommendations and search
+    fetch(`https://primeapps.adobe.com/almsearch/api/v1/eu/9759/5fc01dd5-de45-408d-9b07-b267d40ebef9/search?size=500&from=0`, {
+      method: 'POST',
+    })
+    .then(r => r.json())
+    .then(allData => {
+      window.allLearningObjects = allData.results || [];
+      // Render related courses with this data
+      const relatedHtml = renderRelatedCourses(data, window.allLearningObjects);
+      if(relatedHtml) content.insertAdjacentHTML('beforeend', relatedHtml);
+    });
+
+    // Insert downloadable/export bookmark/search UI
+    insertUtilityButtons();
+    insertSearchInput();
   } catch (e) {
     console.error(e);
     content.innerHTML = "<p>Failed to load course details.</p>";
   }
 }
 
-function renderDetails(data, type) {
+function insertUtilityButtons() {
+  const container = document.querySelector('.card-header div');
+  if (!container) return;
+
+  // Download as PDF button
+  const exportBtn = document.createElement('button');
+  exportBtn.textContent = 'Download as PDF';
+  exportBtn.className = 'register-btn';
+  exportBtn.style.marginLeft = '10px';
+  exportBtn.onclick = exportToPDF;
+
+  // Bookmark button
+  const bookmarkBtn = document.createElement('button');
+  bookmarkBtn.textContent = 'Bookmark This Page';
+  bookmarkBtn.className = 'register-btn';
+  bookmarkBtn.style.marginLeft = '10px';
+  bookmarkBtn.onclick = bookmarkPage;
+
+  container.appendChild(exportBtn);
+  container.appendChild(bookmarkBtn);
+}
+
+function exportToPDF() {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+  const contentElement = document.querySelector('.container');
+  doc.text(contentElement.innerText, 10, 10);
+  doc.save('course-details.pdf');
+}
+
+function bookmarkPage() {
+  if (window.sidebar && window.sidebar.addPanel) {
+    window.sidebar.addPanel(document.title, window.location.href, '');
+  } else if (window.external && ('AddFavorite' in window.external)) {
+    window.external.AddFavorite(window.location.href, document.title);
+  } else {
+    alert('Press Ctrl+D (Cmd+D for Mac) to bookmark this page.');
+  }
+}
+
+// Related courses based on tag or skill overlap
+function renderRelatedCourses(currentData, allCourses) {
+  const currentTags = (currentData.data.attributes.tags || []).map(t => t.toLowerCase());
+  const currentSkills = (currentData.included || []).filter(i => i.type === 'skill').map(s => (s.attributes?.name || '').toLowerCase());
+
+  const related = allCourses.filter(course => {
+    if (course.id === currentData.data.id) return false;
+    const tags = (course.attributes?.tags || []).map(t => t.toLowerCase());
+    const skills = (course.included?.filter(i => i.type === 'skill').map(s => s.attributes?.name.toLowerCase())) || [];
+    return tags.some(t => currentTags.includes(t)) || skills.some(s => currentSkills.includes(s));
+  });
+
+  if (!related.length) return '';
+
+  return `
+    <div class="card">
+      <h3>Recommended Courses</h3>
+      <div style="display:flex;gap:15px;flex-wrap:wrap;">
+        ${related.map(course => {
+          const name = course.attributes.localizedMetadata?.[0]?.name || course.attributes.name || "Course";
+          const img = course.attributes.imageUrl || 'https://via.placeholder.com/100x80?text=No+Image';
+          const id = course.id || '';
+          return `
+            <div style="border:1px solid #ddd; border-radius:8px; padding:10px; width:180px; background:white;">
+              <a href="?courseId=${id}">
+                <img src="${img}" style="width:100%;height:auto; border-radius:6px;" alt="Course"/>
+                <p style="font-weight:600; margin:5px 0;color:#445;">${name}</p>
+              </a>
+            </div>
+          `;
+        }).join('')}
+      </div>
+    </div>
+  `;
+}
+
+// Search within course content input insertion
+function insertSearchInput() {
+  const container = document.querySelector('.card-content');
+  if (!container) return;
+
+  const searchInput = document.createElement('input');
+  searchInput.type = 'search';
+  searchInput.id = 'searchInContent';
+  searchInput.placeholder = 'Search within course content...';
+  searchInput.style.width = '100%';
+  searchInput.style.padding = '8px';
+  searchInput.style.margin = '10px 0 20px 0';
+  searchInput.style.fontSize = '1rem';
+  container.prepend(searchInput);
+
+  searchInput.addEventListener('input', (e) => {
+    const filter = e.target.value.toLowerCase();
+    document.querySelectorAll('.module-card, .sublo-card').forEach(card => {
+      const name = card.querySelector('.module-header span, .sublo-header div span')?.textContent.toLowerCase() || '';
+      if (name.includes(filter)) {
+        card.style.display = '';
+      } else {
+        card.style.display = 'none';
+      }
+    });
+  });
+}
+
+async function renderDetails(data, type) {
   const content = document.getElementById('content');
   const attr = data.data?.attributes || {};
   const meta = attr.localizedMetadata?.[0] || {};
@@ -186,13 +359,12 @@ function renderDetails(data, type) {
   let html = `
   <div class="card">
     <div class="card-header">
-      <img src="${image}" alt="Course Image">
+      <img src="${image}" alt="Course Image" />
       <div>
-      <br>
-        <h2>${title}</h2><br><br>
+      <br/>
+        <h2>${title}</h2><br/><br/>
         <p1>${desc}</p1>
         ${extraDetails}
-        
         ${skill ? `<p><strong>Skill:</strong> ${skill.name} (Level ${skill.level}, Credits: ${skill.maxCredits})</p>` : ""}
         ${type !== "certification" ? `<p><strong>Duration:</strong> ${duration}</p>` : ""}
         <a href="#" class="register-btn">Register</a>
@@ -205,14 +377,13 @@ function renderDetails(data, type) {
   if (type === "course") html += renderModules(data);
   else if (type === "learningProgram" || type === "certification") html += renderSubLOs(data);
 
-  html += "</div></div>";
+  html += '</div></div>';
   content.innerHTML = html;
 
   // --- ADD: attach expand/collapse handlers for module cards ---
-  // find all expand buttons and toggle their chapter-list
   document.querySelectorAll('.expand-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
-      e.stopPropagation(); // avoid any outer click handling
+      e.stopPropagation();
       const moduleHeader = btn.closest('.module-header');
       if (!moduleHeader) return;
       const moduleCard = moduleHeader.closest('.module-card');
@@ -228,10 +399,8 @@ function renderDetails(data, type) {
       }
     });
   });
-  // optional: clicking the header text also toggles (keeps UI intuitive)
   document.querySelectorAll('.module-header').forEach(hdr => {
     hdr.addEventListener('click', (e) => {
-      // avoid toggling if user clicked the expand button (already handled)
       if (e.target.closest('.expand-btn')) return;
       const moduleCard = hdr.closest('.module-card');
       const chapterList = moduleCard.querySelector('.chapter-list');
@@ -260,7 +429,7 @@ function renderCertificationDetails(data) {
   let validity = a.validity || "";
   const state = a.state || "N/A";
 
-  // ✅ Enhanced Validity Conversion (e.g., 12m → 1 year, 15m → 1 year 3 months)
+  // Convert validity (e.g., "12m" to years and months)
   if (validity && validity.endsWith("m")) {
     const totalMonths = parseInt(validity.replace("m", ""), 10);
     const years = Math.floor(totalMonths / 12);
@@ -294,9 +463,9 @@ function renderCertificationDetails(data) {
 
   return `
     <div class="side-info-box">
-      <strong>Certification Details:</strong><br>
-      <span><b>Validity:</b> ${validity}</span><br>
-      <span><b>State:</b> ${state}</span><br>
+      <strong>Certification Details:</strong><br/>
+      <span><b>Validity:</b> ${validity}</span><br/>
+      <span><b>State:</b> ${state}</span><br/>
       <span><b>Completion Deadline:</b> ${deadline}</span>
     </div>
   `;
@@ -439,7 +608,7 @@ function renderSubLOs(data) {
     <div class="sublo-card">
       <div class="sublo-header">
         <div style="display:flex;align-items:center;gap:0.8rem;">
-          <img src="${img}" style="width:60px;height:60px;border-radius:8px;object-fit:cover;">
+          <img src="${img}" style="width:60px;height:60px;border-radius:8px;object-fit:cover;" alt="Course Image"/>
           <span>${name} (${a.loType})</span>
         </div>
         <small>${dur}</small>
@@ -456,6 +625,7 @@ function formatDuration(mins) {
   const d = Math.floor(mins / 1440), m = mins % 1440;
   return d > 0 ? `${d} day(s) ${m} mins` : `${m} mins`;
 }
+
 fetchDetails();
 </script>
 </body>
