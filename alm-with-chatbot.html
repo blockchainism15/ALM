@@ -596,7 +596,6 @@ difficulty: attr?.difficulty || "Intermediate",
 author: meta?.author || "",
 skills: lo.loSkillNames || [],
 tags: attr?.tags || [],
-duration: attr?.duration || lo.duration,
 maxDuration: attr?.maxDuration,
 enrollmentCount: attr?.enrollmentCount,
 language: meta?.language || "English",
@@ -618,32 +617,53 @@ lo.enriched = enrichedData;
 return lo;
 
 } catch (err) {
-console.warn("Failed to fetch detailed data for", lo.loId);
+console.warn("Failed to fetch detailed data for", lo.loId, err);
 lo.imageUrl = "https://via.placeholder.com/150x100?text=No+Image";
+lo.enriched = { name: lo.name, type: lo.loType };
 return lo;
 }
 }
 
-// ===== INTELLIGENT FILTERING WITH KNOWLEDGE BASE =====
-function filterByInteligentMatch(results, query) {
-const lowerQuery = query.toLowerCase();
-const keywords = query.split(/[\s,;-]+/).filter(w => w.length > 2);
+// ===== INTELLIGENT FILTERING - FIXED TO SHOW ALL RESULTS IF NO KEYWORDS =====
+function filterByInteligentMatch(results, query, intent) {
+console.log("Filtering results. Total:", results.length, "Query:", query, "Intent:", intent);
 
-return results.filter(lo => {
+// If user specified a type (course/certification/etc), show all of that type
+if (intent.loType.length > 0) {
+console.log("Type-based filter active, returning all results of specified type");
+return results;
+}
+
+// If no specific keywords to match, return all results
+const keywords = query.split(/[\s,;-]+/).filter(w => w.length > 2 && !['show', 'find', 'me', 'all', 'the', 'and'].includes(w.toLowerCase()));
+console.log("Keywords extracted:", keywords);
+
+if (keywords.length === 0) {
+console.log("No keywords to filter on, returning all results");
+return results;
+}
+
+// Filter by keywords if they exist
+const filtered = results.filter(lo => {
 const courseData = knowledgeBase[lo.loId] || lo;
 const searchableText = [
-courseData.name,
-courseData.description,
-courseData.difficulty,
-courseData.author,
+courseData.name || "",
+courseData.description || "",
+courseData.difficulty || "",
+courseData.author || "",
 ...(courseData.skills || []),
 ...(courseData.tags || []),
 ...(courseData.learningOutcomes || [])
 ].join(" ").toLowerCase();
 
-// Match if any keyword is found in searchable text
-return keywords.some(kw => searchableText.includes(kw));
+// Match if ANY keyword is found
+const matches = keywords.some(kw => searchableText.includes(kw.toLowerCase()));
+console.log("Course:", courseData.name, "Matches:", matches);
+return matches;
 });
+
+console.log("After keyword filtering:", filtered.length, "results");
+return filtered;
 }
 
 function parseUserIntent(query) {
@@ -702,7 +722,7 @@ return;
 
 let html = `<div class="chatbot-results">`;
 results.slice(0, 12).forEach(lo => {
-const enriched = knowledgeBase[lo.loId] || lo;
+const enriched = knowledgeBase[lo.loId] || lo.enriched || lo;
 const img = enriched.imageUrl || lo.imageUrl || "https://via.placeholder.com/150x100?text=No+Image";
 const name = enriched.name || lo.name || "Untitled";
 const difficulty = enriched.difficulty || "Intermediate";
@@ -719,7 +739,7 @@ html += `
 html += '</div>';
 display.innerHTML = html;
 
-addBotMessage(`✅ Found ${results.length} courses using AI knowledge base! Results filtered by detailed course data.`);
+addBotMessage(`✅ Found ${results.length} courses! Enriched with detailed data from API.`);
 }
 
 async function sendChatMessage() {
@@ -737,6 +757,7 @@ display.innerHTML = `<div style="text-align:center;padding:20px;"><div class="sp
 try {
 // Parse intent
 const intent = parseUserIntent(query);
+console.log("Intent parsed:", intent);
 
 // Build filters
 let filterTerms = {};
@@ -747,6 +768,7 @@ if (intent.deliveryType.length > 0) filterTerms.deliveryType = intent.deliveryTy
 const apiUrl = `https://primeapps.adobe.com/almsearch/api/v1/eu/${accountId}/${apiKey}/search?size=50&from=0`;
 const body = { query: "", filters: { terms: filterTerms }, size: 50 };
 
+console.log("Fetching from API with body:", body);
 const res = await fetch(apiUrl, {
 method: "POST",
 headers: { "Content-Type": "application/json" },
@@ -755,18 +777,21 @@ body: JSON.stringify(body)
 
 const data = await res.json();
 let results = data.results || [];
+console.log("API returned:", results.length, "results");
 
 // Fetch and enrich all results with detailed data
 results = await enrichAllCourseData(results);
+console.log("After enrichment:", results.length, "results");
 
 // Apply intelligent filtering with knowledge base
-results = filterByInteligentMatch(results, query);
+results = filterByInteligentMatch(results, query, intent);
+console.log("After filtering:", results.length, "results");
 
 // Display results
 displayChatResults(results);
 
 } catch (err) {
-console.error(err);
+console.error("Error in sendChatMessage:", err);
 display.innerHTML = '<p style="color:#d32f2f;padding:20px;">Error fetching courses. Please try again.</p>';
 addBotMessage("⚠️ Error: Could not fetch courses. Please try again.");
 }
