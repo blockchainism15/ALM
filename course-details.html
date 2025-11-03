@@ -321,6 +321,22 @@
         // Clone container so we can remove colors/backgrounds without affecting the live UI
         const clone = container.cloneNode(true);
 
+        // Insert page URL at the top and bottom of the clone (these will appear in PDF)
+        const pageUrl = window.location.href;
+        const topUrlDiv = document.createElement('div');
+        topUrlDiv.style.fontSize = '12px';
+        topUrlDiv.style.marginBottom = '8px';
+        topUrlDiv.style.wordBreak = 'break-all';
+        topUrlDiv.textContent = pageUrl;
+        clone.insertBefore(topUrlDiv, clone.firstChild);
+
+        const bottomUrlDiv = document.createElement('div');
+        bottomUrlDiv.style.fontSize = '12px';
+        bottomUrlDiv.style.marginTop = '8px';
+        bottomUrlDiv.style.wordBreak = 'break-all';
+        bottomUrlDiv.textContent = pageUrl;
+        clone.appendChild(bottomUrlDiv);
+
         // Inject a clean style that forces black text and white background, removes borders, shadows and decorative elements
         const cleanStyle = document.createElement('style');
         cleanStyle.textContent = `
@@ -335,7 +351,6 @@
             text-shadow: none !important;
             -webkit-text-fill-color: #000 !important;
             -webkit-background-clip: unset !important;
-            -webkit-text-fill-color: #000 !important;
           }
           body, .container { background: #fff !important; }
           /* Remove card decorations */
@@ -360,6 +375,8 @@
           img { max-width: 100% !important; height: auto !important; filter: none !important; }
           /* Remove dashed color borders around headings */
           .card-header h2 { border: none !important; -webkit-background-clip: unset !important; -webkit-text-fill-color: #000 !important; background: none !important; }
+          /* Small URL styles (top/bottom) */
+          .pdf-url { font-size: 10px; color: #000 !important; margin: 4px 0; word-break: break-all; }
         `;
         clone.insertBefore(cleanStyle, clone.firstChild);
 
@@ -403,11 +420,9 @@
         const pdfWidth = pdf.internal.pageSize.getWidth();
         const pdfHeight = pdf.internal.pageSize.getHeight();
 
-        // Calculate page height in canvas pixels
+        // Work out page slicing in px based on canvas aspect ratio
         const canvasWidth = canvas.width;
         const canvasHeight = canvas.height;
-        const pxPerMm = canvasWidth / (pdfWidth * (96 / 25.4)); // not exact but we will compute based on ratio
-        // Simpler approach: compute pageHeight in px based on canvas ratio
         const pageHeightPx = Math.floor(canvasWidth * (pdfHeight / pdfWidth));
 
         let remainingHeight = canvasHeight;
@@ -468,26 +483,62 @@
       }
     }
 
+    // Enhanced ICS generation: includes LearningObject name, image URL in the description, and page link in LOCATION
     function generateCalendarReminder() {
       const titleElem = document.querySelector('.card-header h2');
+      const imgElem = document.querySelector('.card-header img');
       if (!titleElem) {
         alert('Course title not found for reminder.');
         return;
       }
-      const courseName = titleElem.textContent;
-      const icsContent = `
-BEGIN:VCALENDAR
-VERSION:2.0
-BEGIN:VEVENT
-SUMMARY:Reminder to Enroll ${courseName}
-DTSTART:${icsDateString(7)}
-DTEND:${icsDateString(7)}
-DESCRIPTION:Don't forget to enroll in ${courseName}!
-END:VEVENT
-END:VCALENDAR
-`.trim();
+      const courseName = titleElem.textContent.trim();
+      const imageUrl = imgElem?.src || '';
+      const pageUrl = window.location.href;
 
-      const blob = new Blob([icsContent], { type: 'text/calendar' });
+      // helper to format ICS datetime (UTC) with optional hour offset
+      function icsDateTime(daysOffset = 0, hoursOffset = 0) {
+        const d = new Date();
+        d.setDate(d.getDate() + daysOffset);
+        d.setHours(d.getHours() + hoursOffset, 0, 0, 0);
+        return d.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+      }
+
+      const dtstamp = icsDateTime(0, 0);
+      const dtstart = icsDateTime(7, 9); // default: 7 days from now at 09:00 (local -> converted by toISOString to UTC)
+      const dtend = icsDateTime(7, 10);  // +1 hour
+      const uid = `${Date.now()}@exported.course`;
+
+      // Build description including learning object name and image URL (text) so clients show the info.
+      // Also include ATTACH for the image if available (many clients will show it).
+      let description = `Don't forget to enroll in ${courseName}!`;
+      if (imageUrl) {
+        description += `\\nImage: ${imageUrl}`;
+      }
+      description += `\\nPage: ${pageUrl}`;
+
+      let icsContent = [
+        'BEGIN:VCALENDAR',
+        'VERSION:2.0',
+        'PRODID:-//YourOrganization//Course Reminder//EN',
+        'BEGIN:VEVENT',
+        `UID:${uid}`,
+        `DTSTAMP:${dtstamp}`,
+        `SUMMARY:Reminder to Enroll - ${escapeICSText(courseName)}`,
+        `DTSTART:${dtstart}`,
+        `DTEND:${dtend}`,
+        `LOCATION:${escapeICSText(pageUrl)}`,
+        `DESCRIPTION:${escapeICSText(description)}`
+      ];
+
+      // If we have an image URL, add an ATTACH line (some calendar clients support this)
+      if (imageUrl) {
+        icsContent.push(`ATTACH;FMTTYPE=image/jpeg:${imageUrl}`);
+        icsContent.push(`X-ALT-DESC;FMTTYPE=text/html:<html><body><p>Don't forget to enroll in <b>${escapeICSText(courseName)}</b></p><img src="${imageUrl}" alt="Course Image" /></body></html>`);
+      }
+
+      icsContent.push('END:VEVENT', 'END:VCALENDAR');
+
+      const blob = new Blob([icsContent.join('\r\n')], { type: 'text/calendar' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
@@ -500,10 +551,14 @@ END:VCALENDAR
       }, 0);
     }
 
-    function icsDateString(daysOffset) {
-      const d = new Date();
-      d.setDate(d.getDate() + daysOffset);
-      return d.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+    // Escape text for ICS (simple)
+    function escapeICSText(text) {
+      if (!text) return '';
+      return String(text)
+        .replace(/\\/g, '\\\\')
+        .replace(/\n/g, '\\n')
+        .replace(/,/g, '\\,')
+        .replace(/;/g, '\\;');
     }
 
     function renderRelatedCourses(currentData, allCourses) {
