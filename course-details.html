@@ -214,6 +214,86 @@
       -webkit-text-fill-color: transparent;
       font-weight: bold;
     }
+
+    /* New styles for big transparent search bar and results */
+    .big-search-wrap {
+      display: flex;
+      justify-content: center;
+      margin: 0.5rem auto 1.2rem;
+      padding: 0 1rem;
+    }
+    .big-search {
+      width: 100%;
+      max-width: 1100px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(255,255,255,0.18); /* transparent look */
+      border-radius: 14px;
+      padding: 12px 16px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+      border: 1px solid rgba(0,0,0,0.06);
+      backdrop-filter: blur(4px);
+    }
+    .big-search input[type="search"] {
+      width: 100%;
+      border: none;
+      outline: none;
+      padding: 14px 12px;
+      font-size: 18px;
+      background: transparent;
+      color: #111;
+    }
+    .big-search .clear-btn {
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      font-size: 18px;
+      color: #333;
+    }
+    .search-results {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 16px;
+      margin-top: 12px;
+    }
+    .lo-card {
+      background: #fff;
+      border: 1px solid #e6eef7;
+      border-radius: 12px;
+      padding: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+    }
+    .lo-card img {
+      width: 100%;
+      height: 140px;
+      object-fit: cover;
+      border-radius: 8px;
+    }
+    .lo-card h4 {
+      margin: 8px 0 6px;
+      font-size: 1rem;
+      color: #111;
+    }
+    .lo-card p {
+      margin: 0;
+      font-size: 0.9rem;
+      color: #222;
+    }
+    .lo-type {
+      display: inline-block;
+      font-size: 12px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: #f3f4f6;
+      color: #111;
+      margin-top: 8px;
+    }
+    .no-results {
+      padding: 20px;
+      color: #666;
+      text-align: center;
+    }
   </style>
 </head>
 
@@ -227,6 +307,15 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
   <script>
+    // debounce helper
+    function debounce(fn, wait = 250) {
+      let t;
+      return function(...args) {
+        clearTimeout(t);
+        t = setTimeout(() => fn.apply(this, args), wait);
+      };
+    }
+
     async function fetchDetails() {
       const content = document.getElementById('content');
       const params = new URLSearchParams(window.location.search);
@@ -245,21 +334,19 @@
         const data = await response.json();
         renderDetails(data, type);
 
-        fetch(
-          `https://primeapps.adobe.com/almsearch/api/v1/eu/9759/5fc01dd5-de45-408d-9b07-b267d40ebef9/search?size=500&from=0`,
-          {
-            method: 'POST',
-          }
-        )
-          .then((r) => r.json())
-          .then((allData) => {
-            window.allLearningObjects = allData.results || [];
-            const relatedHtml = renderRelatedCourses(data, window.allLearningObjects);
-            if (relatedHtml) content.insertAdjacentHTML('beforeend', relatedHtml);
-          });
+        // fetch all learning objects for search (await and handle)
+        try {
+          const searchRes = await fetch(`https://primeapps.adobe.com/almsearch/api/v1/eu/9759/5fc01dd5-de45-408d-9b07-b267d40ebef9/search?size=500&from=0`, { method: 'POST' });
+          const allData = await searchRes.json();
+          window.allLearningObjects = allData.results || [];
+        } catch (e) {
+          console.warn('Failed to fetch all learning objects for search', e);
+          window.allLearningObjects = [];
+        }
 
         insertUtilityButtons();
         insertSearchInput();
+        insertBigSearchBar(); // new: big search bar for LO-level search
       } catch (e) {
         console.error(e);
         content.innerHTML = "<p>Failed to load course details.</p>";
@@ -327,6 +414,7 @@
         topUrlDiv.style.fontSize = '12px';
         topUrlDiv.style.marginBottom = '8px';
         topUrlDiv.style.wordBreak = 'break-all';
+        topUrlDiv.className = 'pdf-url';
         topUrlDiv.textContent = pageUrl;
         clone.insertBefore(topUrlDiv, clone.firstChild);
 
@@ -334,6 +422,7 @@
         bottomUrlDiv.style.fontSize = '12px';
         bottomUrlDiv.style.marginTop = '8px';
         bottomUrlDiv.style.wordBreak = 'break-all';
+        bottomUrlDiv.className = 'pdf-url';
         bottomUrlDiv.textContent = pageUrl;
         clone.appendChild(bottomUrlDiv);
 
@@ -361,7 +450,7 @@
             box-shadow: none !important;
           }
           /* Remove visual-only elements */
-          .register-btn, .button-container, .expand-btn, .fa-chevron-down, .fa-chevron-up, .expand-icon {
+          .register-btn, .button-container, .expand-btn, .fa-chevron-down, .fa-chevron-up, .expand-icon, .big-search, .big-search-wrap {
             display: none !important;
           }
           /* Force text colors to black */
@@ -504,12 +593,11 @@
       }
 
       const dtstamp = icsDateTime(0, 0);
-      const dtstart = icsDateTime(7, 9); // default: 7 days from now at 09:00 (local -> converted by toISOString to UTC)
+      const dtstart = icsDateTime(7, 9); // default: 7 days from now at 09:00
       const dtend = icsDateTime(7, 10);  // +1 hour
       const uid = `${Date.now()}@exported.course`;
 
       // Build description including learning object name and image URL (text) so clients show the info.
-      // Also include ATTACH for the image if available (many clients will show it).
       let description = `Don't forget to enroll in ${courseName}!`;
       if (imageUrl) {
         description += `\\nImage: ${imageUrl}`;
@@ -588,7 +676,7 @@
             const id = course.id || '';
             return `
             <div style="border:1px solid #ddd; border-radius:8px; padding:10px; width:180px; background:white;">
-              <a href="?courseId=${id}">
+              <a href="?courseId=${encodeURIComponent((course.type || 'learningObject') + ':' + id)}">
                 <img src="${img}" style="width:100%;height:auto; border-radius:6px;" alt="Course" />
                 <p style="font-weight:600; margin:5px 0;color:#445;">${name}</p>
               </a>
@@ -625,6 +713,150 @@
             card.style.display = 'none';
           }
         });
+      });
+    }
+
+    // New: big transparent search bar for searching learning objects by name or loType keywords
+    function insertBigSearchBar() {
+      const content = document.getElementById('content');
+      // Create wrapper that will host the big search and results
+      const wrapper = document.createElement('div');
+      wrapper.className = 'big-search-wrap';
+
+      const searchBox = document.createElement('div');
+      searchBox.className = 'big-search';
+
+      const input = document.createElement('input');
+      input.type = 'search';
+      input.placeholder = 'Search learning objects by name (or type "courses", "learning programs", "paths", "certifications")';
+      input.setAttribute('aria-label', 'Search learning objects');
+      input.autocomplete = 'off';
+
+      const clearBtn = document.createElement('button');
+      clearBtn.className = 'clear-btn';
+      clearBtn.title = 'Clear';
+      clearBtn.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+      clearBtn.onclick = () => {
+        input.value = '';
+        renderSearchResults([]);
+      };
+
+      searchBox.appendChild(input);
+      searchBox.appendChild(clearBtn);
+      wrapper.appendChild(searchBox);
+
+      // Results container
+      const resultsContainer = document.createElement('div');
+      resultsContainer.className = 'search-results';
+      resultsContainer.id = 'bigSearchResults';
+
+      // Insert big search above the current content
+      const contentParent = content.parentNode;
+      contentParent.insertBefore(wrapper, content);
+      contentParent.insertBefore(resultsContainer, content.nextSibling);
+
+      // If allLearningObjects not ready, show a small hint
+      if (!window.allLearningObjects || !window.allLearningObjects.length) {
+        const hint = document.createElement('div');
+        hint.className = 'no-results';
+        hint.textContent = 'Loading searchable learning objects...';
+        resultsContainer.appendChild(hint);
+      }
+
+      // Attach debounced search handler
+      input.addEventListener('input', debounce(() => {
+        const q = input.value.trim();
+        if (!q) {
+          renderSearchResults([], resultsContainer);
+          return;
+        }
+        const results = performLOSearch(q, window.allLearningObjects || []);
+        renderSearchResults(results, resultsContainer);
+      }, 250));
+    }
+
+    // determine if query is a type query (courses, programs, paths, certifications)
+    function detectTypeQuery(q) {
+      const s = q.toLowerCase().trim();
+      // Normalize words
+      if (s.length === 0) return null;
+      // simple checks
+      if (s.includes('course')) return 'course';
+      if (s.includes('program')) return 'learningProgram';
+      if (s.includes('path')) return 'path';
+      if (s.includes('cert')) return 'certification';
+      return null;
+    }
+
+    // Perform LO search: either by loType keyword or by matching name
+    function performLOSearch(query, allLOs = []) {
+      if (!query) return [];
+      const type = detectTypeQuery(query);
+      if (type) {
+        // return all LOs that match the loType
+        return allLOs.filter((lo) => {
+          const loType = (lo.attributes?.loType || lo.attributes?.type || '').toString().toLowerCase();
+          return loType === type.toLowerCase();
+        });
+      }
+      const q = query.toLowerCase();
+      // match on localizedMetadata[0].name or attributes.name
+      return allLOs.filter((lo) => {
+        const name = (lo.attributes?.localizedMetadata?.[0]?.name || lo.attributes?.name || '').toString().toLowerCase();
+        return name.includes(q);
+      });
+    }
+
+    // Render search results as cards; if results empty, clear or show "no results"
+    function renderSearchResults(results = [], containerEl) {
+      const container = containerEl || document.getElementById('bigSearchResults');
+      if (!container) return;
+      container.innerHTML = '';
+      if (!results || !results.length) {
+        const el = document.createElement('div');
+        el.className = 'no-results';
+        el.textContent = 'No results found.';
+        container.appendChild(el);
+        return;
+      }
+
+      results.forEach((lo) => {
+        const a = lo.attributes || {};
+        const m = a.localizedMetadata?.[0] || {};
+        const name = m.name || a.name || 'Untitled';
+        const desc = m.overview || m.description || a.description || '';
+        const img = a.imageUrl || 'https://via.placeholder.com/400x200?text=No+Image';
+        const loType = a.loType || a.type || lo.type || '';
+
+        const card = document.createElement('div');
+        card.className = 'lo-card';
+
+        const link = document.createElement('a');
+        link.href = `?courseId=${encodeURIComponent((lo.type || 'learningObject') + ':' + lo.id)}`;
+        link.style.textDecoration = 'none';
+        link.style.color = 'inherit';
+
+        const imgEl = document.createElement('img');
+        imgEl.src = img;
+        imgEl.alt = `Image for ${name}`;
+        imgEl.loading = 'lazy';
+
+        const h4 = document.createElement('h4');
+        h4.textContent = name;
+
+        const p = document.createElement('p');
+        p.textContent = desc.length > 220 ? desc.slice(0, 220) + '…' : desc;
+
+        const typeBadge = document.createElement('div');
+        typeBadge.className = 'lo-type';
+        typeBadge.textContent = loType || 'N/A';
+
+        link.appendChild(imgEl);
+        link.appendChild(h4);
+        link.appendChild(p);
+        link.appendChild(typeBadge);
+        card.appendChild(link);
+        container.appendChild(card);
       });
     }
 
