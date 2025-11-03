@@ -307,13 +307,45 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
   <script>
-    // debounce helper
+    // debounce helper (works with async callbacks too)
     function debounce(fn, wait = 250) {
       let t;
       return function(...args) {
         clearTimeout(t);
         t = setTimeout(() => fn.apply(this, args), wait);
       };
+    }
+
+    // Ensure we have all learning objects - if not, fetch them (used by the big search)
+    async function fetchAllLearningObjects() {
+      // If already populated, just return it
+      if (window.allLearningObjects && window.allLearningObjects.length) return window.allLearningObjects;
+
+      const searchUrl = `https://primeapps.adobe.com/almsearch/api/v1/eu/9759/5fc01dd5-de45-408d-9b07-b267d40ebef9/search?size=500&from=0`;
+      const searchPayload = {
+        query: "",
+        filters: { terms: {} },
+        size: 500
+      };
+      try {
+        const res = await fetch(searchUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(searchPayload)
+        });
+        if (!res.ok) {
+          console.warn('fetchAllLearningObjects: search API returned non-OK', res.status);
+          window.allLearningObjects = [];
+          return window.allLearningObjects;
+        }
+        const allData = await res.json();
+        window.allLearningObjects = allData.results || [];
+        return window.allLearningObjects;
+      } catch (err) {
+        console.warn('fetchAllLearningObjects failed', err);
+        window.allLearningObjects = [];
+        return window.allLearningObjects;
+      }
     }
 
     async function fetchDetails() {
@@ -334,33 +366,8 @@
         const data = await response.json();
         renderDetails(data, type);
 
-        // --- FIX: POST search requires a JSON payload. send the expected payload and headers.
-        const searchUrl = `https://primeapps.adobe.com/almsearch/api/v1/eu/9759/5fc01dd5-de45-408d-9b07-b267d40ebef9/search?size=500&from=0`;
-        try {
-          const searchPayload = {
-            query: "",
-            filters: { terms: {} },
-            size: 500
-          };
-          const searchRes = await fetch(searchUrl, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(searchPayload)
-          });
-          if (!searchRes.ok) {
-            console.warn('Search API returned non-OK:', searchRes.status, await searchRes.text().catch(()=>''));
-            window.allLearningObjects = [];
-          } else {
-            const allData = await searchRes.json();
-            window.allLearningObjects = allData.results || [];
-          }
-        } catch (se) {
-          console.warn('Failed to fetch all learning objects for search', se);
-          window.allLearningObjects = [];
-        }
-        // --- END FIX
+        // Populate window.allLearningObjects now (so big search works)
+        await fetchAllLearningObjects();
 
         insertUtilityButtons();
         insertSearchInput();
@@ -380,7 +387,6 @@
 
       const exportBtn = document.createElement('button');
       exportBtn.textContent = 'Download as PDF';
-      // add a class so the export function can disable/enable during generation
       exportBtn.className = 'register-btn export-pdf-btn';
       exportBtn.onclick = exportToPDF;
 
@@ -401,7 +407,7 @@
       headerDiv.appendChild(btnContainer);
     }
 
-    // Export to PDF: create a clean (black-on-white) clone of the container, render it with html2canvas, then build a multi-page PDF
+    // Export to PDF (kept same as before)
     async function exportToPDF() {
       const exportBtn = document.querySelector('.export-pdf-btn');
       if (exportBtn) {
@@ -413,7 +419,6 @@
         const { jsPDF } = window.jspdf;
         const container = document.querySelector('.container');
 
-        // Wait for images inside the container to finish loading to ensure they are captured
         const imgs = Array.from(container.querySelectorAll('img'));
         await Promise.all(imgs.map(img => {
           if (img.complete) return Promise.resolve();
@@ -423,10 +428,8 @@
           });
         }));
 
-        // Clone container so we can remove colors/backgrounds without affecting the live UI
         const clone = container.cloneNode(true);
 
-        // Insert page URL at the top and bottom of the clone (these will appear in PDF)
         const pageUrl = window.location.href;
         const topUrlDiv = document.createElement('div');
         topUrlDiv.style.fontSize = '12px';
@@ -444,10 +447,8 @@
         bottomUrlDiv.textContent = pageUrl;
         clone.appendChild(bottomUrlDiv);
 
-        // Inject a clean style that forces black text and white background, removes borders, shadows and decorative elements
         const cleanStyle = document.createElement('style');
         cleanStyle.textContent = `
-          /* Make everything black text on white background for PDF */
           :root, * {
             color: #000 !important;
             background: transparent !important;
@@ -460,48 +461,38 @@
             -webkit-background-clip: unset !important;
           }
           body, .container { background: #fff !important; }
-          /* Remove card decorations */
           .card, .card-header, .module-card, .sublo-card, .resource-card, .card-content, .chapter-list, .side-info-box {
             background: transparent !important;
             background-color: #fff !important;
             border: none !important;
             box-shadow: none !important;
           }
-          /* Remove visual-only elements */
           .register-btn, .button-container, .expand-btn, .fa-chevron-down, .fa-chevron-up, .expand-icon, .big-search, .big-search-wrap {
             display: none !important;
           }
-          /* Force text colors to black */
           h1,h2,h3,h4,h5,h6, p, span, li, small, a, div {
             color: #000 !important;
             background: transparent !important;
           }
-          /* Remove borders from chapter items */
           .chapter-item { border-bottom: none !important; }
-          /* Make images keep their sizes but no visual filters */
           img { max-width: 100% !important; height: auto !important; filter: none !important; }
-          /* Remove dashed color borders around headings */
           .card-header h2 { border: none !important; -webkit-background-clip: unset !important; -webkit-text-fill-color: #000 !important; background: none !important; }
-          /* Small URL styles (top/bottom) */
           .pdf-url { font-size: 10px; color: #000 !important; margin: 4px 0; word-break: break-all; }
         `;
         clone.insertBefore(cleanStyle, clone.firstChild);
 
-        // Wrap clone in a white wrapper
         const wrapper = document.createElement('div');
         wrapper.style.background = '#fff';
         wrapper.style.padding = '16px';
         wrapper.style.boxSizing = 'border-box';
         wrapper.appendChild(clone);
 
-        // Place wrapper off-screen so rendering doesn't affect the viewport
         wrapper.style.position = 'fixed';
         wrapper.style.left = '-9999px';
         wrapper.style.top = '0';
         wrapper.style.zIndex = '-1000';
         document.body.appendChild(wrapper);
 
-        // Wait for images in the clone to load (they are likely cached but we still wait)
         const imgsClone = Array.from(wrapper.querySelectorAll('img'));
         await Promise.all(imgsClone.map(img => {
           if (img.complete) return Promise.resolve();
@@ -511,7 +502,6 @@
           });
         }));
 
-        // Use html2canvas to render the wrapper. backgroundColor set to white to ensure white pages.
         const canvas = await html2canvas(wrapper, {
           scale: 2,
           useCORS: true,
@@ -522,12 +512,10 @@
           windowHeight: document.documentElement.scrollHeight
         });
 
-        // Create PDF and paginate
         const pdf = new jsPDF('p', 'mm', 'a4');
         const pdfWidth = pdf.internal.pageSize.getWidth();
         const pdfHeight = pdf.internal.pageSize.getHeight();
 
-        // Work out page slicing in px based on canvas aspect ratio
         const canvasWidth = canvas.width;
         const canvasHeight = canvas.height;
         const pageHeightPx = Math.floor(canvasWidth * (pdfHeight / pdfWidth));
@@ -538,13 +526,11 @@
           const sourceY = page * pageHeightPx;
           const fragmentHeight = Math.min(pageHeightPx, canvasHeight - sourceY);
 
-          // create a canvas for this page slice
           const pageCanvas = document.createElement('canvas');
           pageCanvas.width = canvasWidth;
           pageCanvas.height = fragmentHeight;
           const ctx = pageCanvas.getContext('2d');
 
-          // draw the relevant slice from the full canvas
           ctx.drawImage(canvas, 0, sourceY, canvasWidth, fragmentHeight, 0, 0, canvasWidth, fragmentHeight);
 
           const imgData = pageCanvas.toDataURL('image/png');
@@ -566,7 +552,6 @@
         const safeTitle = (document.querySelector('.card-header h2')?.textContent || 'course-details').replace(/[^\w\-_\s]/g, '').trim().replace(/\s+/g, '_');
         pdf.save(`${safeTitle || 'course-details'}.pdf`);
 
-        // Clean up clone wrapper
         document.body.removeChild(wrapper);
 
       } catch (err) {
@@ -590,7 +575,7 @@
       }
     }
 
-    // Enhanced ICS generation: includes LearningObject name, image URL in the description, and page link in LOCATION
+    // Enhanced ICS generation (kept same)
     function generateCalendarReminder() {
       const titleElem = document.querySelector('.card-header h2');
       const imgElem = document.querySelector('.card-header img');
@@ -602,7 +587,6 @@
       const imageUrl = imgElem?.src || '';
       const pageUrl = window.location.href;
 
-      // helper to format ICS datetime (UTC) with optional hour offset
       function icsDateTime(daysOffset = 0, hoursOffset = 0) {
         const d = new Date();
         d.setDate(d.getDate() + daysOffset);
@@ -611,15 +595,12 @@
       }
 
       const dtstamp = icsDateTime(0, 0);
-      const dtstart = icsDateTime(7, 9); // default: 7 days from now at 09:00
-      const dtend = icsDateTime(7, 10);  // +1 hour
+      const dtstart = icsDateTime(7, 9);
+      const dtend = icsDateTime(7, 10);
       const uid = `${Date.now()}@exported.course`;
 
-      // Build description including learning object name and image URL (text) so clients show the info.
       let description = `Don't forget to enroll in ${courseName}!`;
-      if (imageUrl) {
-        description += `\\nImage: ${imageUrl}`;
-      }
+      if (imageUrl) description += `\\nImage: ${imageUrl}`;
       description += `\\nPage: ${pageUrl}`;
 
       let icsContent = [
@@ -636,7 +617,6 @@
         `DESCRIPTION:${escapeICSText(description)}`
       ];
 
-      // If we have an image URL, add an ATTACH line (some calendar clients support this)
       if (imageUrl) {
         icsContent.push(`ATTACH;FMTTYPE=image/jpeg:${imageUrl}`);
         icsContent.push(`X-ALT-DESC;FMTTYPE=text/html:<html><body><p>Don't forget to enroll in <b>${escapeICSText(courseName)}</b></p><img src="${imageUrl}" alt="Course Image" /></body></html>`);
@@ -657,7 +637,6 @@
       }, 0);
     }
 
-    // Escape text for ICS (simple)
     function escapeICSText(text) {
       if (!text) return '';
       return String(text)
@@ -756,7 +735,7 @@
       clearBtn.innerHTML = '<i class="fa-solid fa-xmark"></i>';
       clearBtn.onclick = () => {
         input.value = '';
-        renderSearchResults([]);
+        renderSearchResults([], document.getElementById('bigSearchResults'));
       };
 
       searchBox.appendChild(input);
@@ -781,24 +760,52 @@
         resultsContainer.appendChild(hint);
       }
 
-      // Attach debounced search handler
-      input.addEventListener('input', debounce(() => {
+      // Handler that ensures the LO dataset is available then searches
+      const handleSearch = async () => {
         const q = input.value.trim();
         if (!q) {
           renderSearchResults([], resultsContainer);
           return;
         }
-        const results = performLOSearch(q, window.allLearningObjects || []);
+        // Ensure dataset available
+        if (!window.allLearningObjects || !window.allLearningObjects.length) {
+          await fetchAllLearningObjects();
+        }
+        // perform search safely
+        let results = [];
+        try {
+          results = performLOSearch(q, window.allLearningObjects || []);
+        } catch (err) {
+          console.error('performLOSearch failed', err);
+          results = [];
+        }
         renderSearchResults(results, resultsContainer);
-      }, 250));
+      };
+
+      // Debounced input
+      input.addEventListener('input', debounce(handleSearch, 250));
+
+      // Also allow Enter to trigger an immediate search
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          // Cancel any pending debounced call and run immediately
+          handleSearch();
+        }
+      });
+
+      // click outside -> optionally collapse results (not required, but keep UI tidy)
+      document.addEventListener('click', (e) => {
+        if (!wrapper.contains(e.target) && !resultsContainer.contains(e.target)) {
+          // keep results visible — commented out to let users continue browsing results
+          // resultsContainer.innerHTML = '';
+        }
+      });
     }
 
     // determine if query is a type query (courses, programs, paths, certifications)
     function detectTypeQuery(q) {
       const s = q.toLowerCase().trim();
-      // Normalize words
       if (s.length === 0) return null;
-      // simple checks
       if (s.includes('course')) return 'course';
       if (s.includes('program')) return 'learningProgram';
       if (s.includes('path')) return 'path';
@@ -811,14 +818,12 @@
       if (!query) return [];
       const type = detectTypeQuery(query);
       if (type) {
-        // return all LOs that match the loType
         return allLOs.filter((lo) => {
-          const loType = (lo.attributes?.loType || lo.attributes?.type || '').toString().toLowerCase();
+          const loType = ((lo.attributes?.loType) || (lo.attributes?.type) || (lo.loType) || '').toString().toLowerCase();
           return loType === type.toLowerCase();
         });
       }
       const q = query.toLowerCase();
-      // match on localizedMetadata[0].name or attributes.name
       return allLOs.filter((lo) => {
         const name = (lo.attributes?.localizedMetadata?.[0]?.name || lo.attributes?.name || '').toString().toLowerCase();
         return name.includes(q);
@@ -1188,6 +1193,7 @@
       return d > 0 ? `${d} day(s) ${m} mins` : `${m} mins`;
     }
 
+    // start
     fetchDetails();
   </script>
 </body>
