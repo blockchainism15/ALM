@@ -1,389 +1,1367 @@
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>ALM Learning Objects</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
-  <style>
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
-      background: #f5f8ff;
-      margin: 0; padding: 0;
-    }
-    .banner {
-      background: linear-gradient(317deg, rgb(164, 122, 197), rgb(31, 164, 233, 0.44));
-      color: white;
-      text-align: center;
-      padding: 40px 20px;
-    }
-    .banner h1 {
-      margin: 0; font-size: 2em; letter-spacing: 1px;
-    }
-    .banner button {
-      margin-top: 15px;
-      background: linear-gradient(317deg, rgb(21, 6, 125), rgb(246, 92, 203, 0.44));
-      border: none; color: white; padding: 10px 20px;
-      border-radius: 8px; font-size: 16px; cursor: pointer; transition: 0.3s;
-    }
-    .banner button:hover {
-      background: linear-gradient(317deg, rgb(21, 6, 125), rgb(246, 92, 203, 0.44));
-      opacity: 0.8;
-    }
-    .chatbot-modal {
-      display: none; position: fixed; z-index: 9999;
-      left: 0; top: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.5);
-      justify-content: center; align-items: center;
-    }
-    .chatbot-modal.active { display: flex; }
-    .chatbot-container {
-      width: 600px; background: #fff; border-radius: 12px;
-      box-shadow: 0 8px 24px rgba(60,60,140,.10); overflow: hidden;
-      display: flex; flex-direction: column; max-height: 90vh;
-    }
-    .chatbot-header {
-      display: flex; align-items: center; background: #f1f3fa;
-      padding: 16px 24px;
-      border-bottom: 1px solid #e0e0f7;
-    }
-    .chatbot-header h2 { flex: 1 1; margin: 0; font-size: 1.1em; }
-    .chatbot-close {
-      background: none; border: none; font-size: 1.2em; cursor: pointer; color: #a89eda;
-    }
-    .chatbot-content { display: flex; flex: 1; min-height: 300px; }
-    .chatbot-messages, .chatbot-display {
-      flex: 1 1 0px; padding: 0 10px;
-      display: flex; flex-direction: column;
-      background: #f8faff;
-    }
-    .chatbot-messages-header, .chatbot-display-header {
-      padding: 10px 0; font-weight: 600; color: #555; font-size: 1em;
-      border-bottom: 1px solid #eee;
-    }
-    .chatbot-messages-list {
-      flex: 1 1; overflow-y: auto; max-height: 230px; padding-bottom: 5px;
-    }
-    .chatbot-input-area {
-      display: flex; background: #fafbff;
-      padding: 12px 18px; align-items: center; border-top: 1px solid #eee;
-    }
-    .chatbot-input-area input {
-      flex: 1 1 0px; border: 1px solid #dbdbf1; border-radius: 5px; padding: 7px 10px;
-      font-size: 1em; outline: none; margin-right: 12px;
-    }
-    .chatbot-input-area button {
-      background: #8357d4; color: white; padding: 7px 18px;
-      border: none; border-radius: 6px; font-size: 1em; cursor: pointer;
-      transition: 0.2s;
-    }
-    .chatbot-input-area button:hover { background: #5b3fa8; }
-    .chatbot-results { display: flex; flex-wrap: wrap; gap: 10px; padding: 16px 0;}
-    .chatbot-card {
-      background: #f3f0fa;
-      border-radius: 8px; box-shadow: 0 2px 5px #ddd2;
-      min-width: 180px; max-width: 200px;
-      flex: 1 1 180px; padding: 12px 12px 12px 14px; display: flex;
-      align-items: flex-start; flex-direction: row;
-    }
-    .chatbot-card img {
-      width: 38px; height: 38px; object-fit: cover;
-      border-radius: 6px; margin-right: 13px; background: #efe9ff;
-    }
-    .chatbot-card-content h5 {
-      margin: 0 0 3px 0; font-size: 1.03em; font-weight: 600; letter-spacing: 0;
-    }
-    .chatbot-card-content p { margin: 0 0 6px 0; font-size: 0.93em; color: #634bcf; }
-    .chatbot-message.user {
-      color: #383868; background: #f7eaff;
-      margin: 8px 12px 2px auto; max-width: 84%; border-radius: 10px 10px 2px 10px; padding: 7px 16px;
-      text-align: right;
-    }
-    .chatbot-message.bot {
-      color: #2b2b49; background: #eaf1ff;
-      margin: 8px auto 2px 12px; max-width: 79%; border-radius: 10px 10px 10px 2px; padding: 7px 18px;
-      text-align: left;
-    }
-    .spinner {
-      border: 4px solid #eee; border-top: 4px solid #b5a1e7; border-radius: 50%; width: 22px; height: 22px; animation: spin 0.7s linear infinite; display: inline-block; margin-right: 7px;
-    }
-    @keyframes spin { 100% { transform: rotate(360deg); } }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ALM Learning Objects</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+body {
+font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+background: #f5f8ff;
+margin: 0;
+padding: 0;
+}
+.banner {
+background: linear-gradient(317deg, rgb(164 122 197), rgb(31 164 233 / 44%));
+color: white;
+text-align: center;
+padding: 40px 20px;
+}
+.banner h1 {
+margin: 0;
+font-size: 2em;
+letter-spacing: 1px;
+}
+.banner button {
+margin-top: 15px;
+background: linear-gradient(317deg, rgb(21 6 125), rgb(246 92 203 / 44%));
+border: none;
+color: white;
+padding: 10px 20px;
+border-radius: 8px;
+font-size: 16px;
+cursor: pointer;
+transition: 0.3s;
+}
+.banner button:hover {
+background: linear-gradient(317deg, rgb(21 6 125), rgb(246 92 203 / 44%));
+}
+.main-content {
+display: grid;
+grid-template-columns: 300px 1fr;
+gap: 20px;
+padding: 30px;
+}
+@media (max-width: 900px) {
+.main-content {
+grid-template-columns: 1fr;
+padding: 10px;
+}
+.filters {
+position: fixed;
+left: 0;
+top: 0;
+width: 80vw;
+max-width: 350px;
+height: 100vh;
+overflow-y: auto;
+z-index: 1000;
+background: linear-gradient(317deg, rgba(59, 130, 246, 0.3), rgba(139, 92, 246, 0.3));
+box-shadow: 2px 0 15px rgba(0,0,0,0.13);
+transform: translateX(-100%);
+transition: transform 0.3s;
+}
+.filters.open {
+transform: translateX(0);
+}
+.filter-drawer-overlay {
+display: none;
+position: fixed;
+inset: 0;
+background: rgba(0,0,0,0.3);
+z-index: 999;
+}
+.filter-drawer-overlay.active {
+display: block;
+}
+}
+.filters {
+background: linear-gradient(317deg, rgba(59, 130, 246, 0.3), rgba(139, 92, 246, 0.3));
+border: 1px solid #ddd;
+border-radius: 10px;
+box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+padding: 20px;
+display: flex;
+flex-direction: column;
+gap: 24px;
+height: fit-content;
+position: sticky;
+top: 30px;
+max-height: calc(100vh - 60px);
+overflow-y: auto;
+}
+.filters::-webkit-scrollbar { width: 8px; }
+.filters::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.2); border-radius: 10px; }
+.filters::-webkit-scrollbar-thumb { background: linear-gradient(317deg, #3b82f6, #8b5cf6); border-radius: 10px; }
+.filters::-webkit-scrollbar-thumb:hover { background: linear-gradient(317deg, #2563eb, #7c3aed); }
+.active-filters-chips { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 14px; align-items: center; }
+.filter-chip { background: #e6f0ff; color: #007bff; border-radius: 18px; padding: 5px 14px; font-size: 13px; display: inline-flex; align-items: center; box-shadow: 0 1px 4px rgba(0,0,0,.06); margin-bottom: 3px; }
+.filter-chip .remove-chip { background: none; border: none; color: #007bff; font-size: 15px; cursor: pointer; margin-left: 6px; }
+.clear-all-chips { background: none; border: none; color: #005ecb; font-size: 13px; text-decoration: underline; margin-left: 10px; cursor: pointer; }
+.filter-section { padding: 0 0 12px 0; border-bottom: 1px solid #e8e8e8; }
+.filter-section:last-child { border-bottom: none; }
+.filter-heading { margin: 0; padding: 0; color: #001f3f; font-weight: 600; font-size: 1em; text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer; display: flex; align-items: center; justify-content: space-between; user-select: none; }
+.filter-toggle { font-size: 1.1em; margin-left: 5px; color: #666; transition: transform 0.2s; }
+.filter-content { display: none; margin-top: 10px; animation: fadeIn 0.18s; }
+.filter-section.expanded .filter-content { display: block; }
+@keyframes fadeIn { from { opacity: 0;} to { opacity: 1;} }
+.custom-multiselect { position: relative; margin-bottom: 10px; }
+.custom-multiselect .input-search { width: 97%; padding: 6px; border-radius: 4px; border: 1px solid #ddd; margin-bottom: 3px; font-size: 14px; }
+.custom-multiselect .multi-select-box { border: 1px solid #ccc; border-radius: 6px; background: #f9f9f9; max-height: 140px; overflow-y: auto; position: absolute; left: 0; right: 0; z-index: 2; margin-top: 3px; box-shadow: 0 2px 8px rgba(0,0,0,.08); display: none; }
+.custom-multiselect.open .multi-select-box { display: block; }
+.custom-multiselect .multi-trigger { display: flex; align-items: center; justify-content: space-between; background: #f4faff; border: 1px solid #ccc; border-radius: 6px; padding: 8px 10px; font-size: 14px; cursor: pointer; }
+.custom-multiselect .multi-trigger .badge-count { background: #6088b2; color: #fff; border-radius: 8px; font-size: 11px; padding: 2px 10px; margin-left: 6px; font-weight: 500; }
+.custom-multiselect .multi-trigger .arrow { margin-left: auto; font-size: 13px; }
+.multi-select-options label { display: flex; align-items: center; font-size: 14px; padding: 4px 8px; cursor: pointer; }
+.multi-select-options input[type="checkbox"] { margin-right: 7px; accent-color: #007bff; }
+.select-all-row { padding: 4px 8px; background: #eef6fb; font-size: 13px; cursor: pointer; border-bottom: 1px solid #e6e6e6; }
+.select-all-row:hover { background: #def2ff;}
+.action-buttons-row { display: flex; gap: 12px; margin-top: 14px; }
+#applyFilters { background: linear-gradient(to right, #007bff, #00c6ff); color: white; border: none; border-radius: 8px; font-size: 15px; padding: 10px 24px; cursor: pointer; transition: 0.3s; position: relative; }
+#applyFilters .result-count { background: #fff; color: #007bff; border-radius: 9px; font-size: 12px; padding: 2px 8px; margin-left: 8px; font-weight: 600; }
+#applyFilters[disabled] { opacity: 0.6; cursor: not-allowed; }
+#applyFilters:hover { background: linear-gradient(to right, #005ecb, #00a3d4); }
+#clearFilters { background: #eee; color: #001f3f; border-radius: 8px; font-size: 15px; padding: 10px 18px; border: none; cursor: pointer; }
+#clearFilters:hover { background: #d3eafd; }
+#results { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; }
+.card { position: relative; background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(10px); border-radius: 14px; box-shadow: 0 3px 10px rgba(0,0,0,0.1); text-align: center; text-decoration: none; color: #000; padding: 15px; transition: transform 0.2s, box-shadow 0.2s; overflow: hidden; }
+.card::before, .card::after { content: ""; position: absolute; left: 0; width: 100%; height: 4px; background: linear-gradient(to right, #007bff, #a400ff); }
+.card::before { top: 0; }
+.card::after { bottom: 0; }
+.card:hover { transform: translateY(-5px); box-shadow: 0 5px 20px rgba(0,0,0,0.2); background: rgba(255, 255, 255, 0.85); }
+.card img { width: 100%; height: 260px; object-fit: cover; border-radius: 10px; margin-bottom: 10px; }
+.card h4 { background: linear-gradient(135deg, #4287f5, #8c4bc4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; color: transparent; margin: 8px 0; font-size: 1.1em; }
+.card:hover p { background: linear-gradient(135deg, #4287f5, #8c4bc4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; color: transparent; }
+.rating { color: #4a46c2; font-weight: bold; }
+.loading { text-align: center; font-size: 18px; color: #007bff; margin-top: 20px; }
+#pagination { text-align: center; margin-top: 20px; }
+.no-results { text-align: center; color: #005ecb; font-size: 18px; background: #eef6ff; border-radius: 10px; padding: 20px; margin: 0 0 20px 0; }
+@media (max-width: 900px) { #results { grid-template-columns: 1fr;} }
+
+/* ===== MODERN CHATBOT STYLES ===== */
+.chatbot-modal {
+display: none;
+position: fixed;
+inset: 0;
+background: rgba(0,0,0,0.6);
+backdrop-filter: blur(5px);
+z-index: 10000;
+animation: fadeInModal 0.3s ease;
+}
+@keyframes fadeInModal {
+from { opacity: 0; backdrop-filter: blur(0px); }
+to { opacity: 1; backdrop-filter: blur(5px); }
+}
+.chatbot-modal.open {
+display: flex;
+align-items: center;
+justify-content: center;
+}
+.chatbot-container {
+background: white;
+border-radius: 20px;
+box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+width: 95%;
+max-width: 1400px;
+height: 90vh;
+display: flex;
+flex-direction: column;
+overflow: hidden;
+animation: slideUp 0.4s ease;
+}
+@keyframes slideUp {
+from { transform: translateY(30px); opacity: 0; }
+to { transform: translateY(0); opacity: 1; }
+}
+.chatbot-header {
+background: linear-gradient(135deg, #4287f5 0%, #8c4bc4 100%);
+color: white;
+padding: 18px 24px;
+border-bottom: 1px solid rgba(255,255,255,0.1);
+display: flex;
+justify-content: space-between;
+align-items: center;
+flex-shrink: 0;
+}
+.chatbot-header h2 {
+margin: 0;
+font-size: 1.5rem;
+font-weight: 700;
+display: flex;
+align-items: center;
+gap: 10px;
+}
+.chatbot-close {
+background: rgba(255,255,255,0.2);
+border: none;
+color: white;
+font-size: 26px;
+cursor: pointer;
+width: 40px;
+height: 40px;
+border-radius: 50%;
+display: flex;
+align-items: center;
+justify-content: center;
+transition: all 0.2s;
+}
+.chatbot-close:hover {
+background: rgba(255,255,255,0.3);
+transform: scale(1.1);
+}
+.chatbot-content {
+display: grid;
+grid-template-columns: 1fr 1fr;
+flex: 1;
+gap: 0;
+overflow: hidden;
+}
+@media (max-width: 1200px) {
+.chatbot-content {
+grid-template-columns: 1fr;
+}
+.chatbot-messages {
+display: none !important;
+font-size: 17px;
+  
+}
+.chatbot-display {
+border-radius: 0 !important;
+font-size: 17px;
+  
+}
+}
+.chatbot-messages {
+display: flex;
+flex-direction: column;
+overflow: hidden;
+border-right: 1px solid #e8e8e8;
+background: #ffffff;
+font-size: 17px;
+  
+}
+.chatbot-messages-header {
+padding: 12px 16px;
+background: #f5f7fa;
+border-bottom: 1px solid #e8e8e8;
+font-size: 13px;
+font-weight: 600;
+color: #555;
+}
+.chatbot-messages-list {
+flex: 1;
+overflow-y: auto;
+padding: 16px;
+display: flex;
+flex-direction: column;
+gap: 12px;
+font-size: 17px;
+  
+}
+.chatbot-messages-list::-webkit-scrollbar {
+width: 6px;
+font-size: 17px;
+  
+}
+.chatbot-messages-list::-webkit-scrollbar-track {
+background: #f0f0f0;
+font-size: 17px;
+  
+}
+.chatbot-messages-list::-webkit-scrollbar-thumb {
+background: #d0d0d0;
+border-radius: 3px;
+font-size: 17px;
+  
+}
+.chatbot-messages-list::-webkit-scrollbar-thumb:hover {
+background: #b0b0b0;
+font-size: 17px;
+  
+}
+.chatbot-display {
+display: flex;
+flex-direction: column;
+overflow: hidden;
+background: #fafbfc;
+border-radius: 0;
+font-size: 17px;
+}
+.chatbot-display-header {
+padding: 12px 16px;
+background: #f5f7fa;
+border-bottom: 1px solid #e8e8e8;
+font-size: 17px;
+font-weight: 600;
+color: #555;
+}
+.chatbot-results-container {
+flex: 1;
+overflow-y: auto;
+padding: 16px;
+}
+.chatbot-results-container::-webkit-scrollbar {
+width: 6px;
+}
+.chatbot-results-container::-webkit-scrollbar-track {
+background: #f0f0f0;
+}
+.chatbot-results-container::-webkit-scrollbar-thumb {
+background: #d0d0d0;
+border-radius: 3px;
+}
+.chatbot-results {
+display: grid;
+grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+gap: 12px;
+}
+.chatbot-card {
+background: white;
+border-radius: 12px;
+border: 1px solid #e8e8e8;
+overflow: hidden;
+box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+cursor: pointer;
+transition: all 0.2s;
+}
+.chatbot-card:hover {
+transform: translateY(-4px);
+box-shadow: 0 8px 16px rgba(0,0,0,0.12);
+border-color: #4287f5;
+}
+.chatbot-card img {
+width: 100%;
+height: 100px;
+object-fit: cover;
+background: linear-gradient(135deg, #f0f0f0, #e0e0e0);
+}
+.chatbot-card-content {
+padding: 10px;
+}
+.chatbot-card h5 {
+background: linear-gradient(135deg, #4287f5, #8c4bc4);
+-webkit-background-clip: text;
+-webkit-text-fill-color: transparent;
+background-clip: text;
+margin: 0 0 4px 0;
+font-size: 0.9rem;
+font-weight: 600;
+overflow: hidden;
+text-overflow: ellipsis;
+white-space: nowrap;
+}
+.chatbot-card p {
+font-size: 0.75rem;
+color: #666;
+margin: 2px 0;
+}
+.message {
+margin: 0;
+display: flex;
+gap: 8px;
+font-size: 14px;
+animation: fadeIn 0.3s ease;
+}
+@keyframes fadeIn {
+from { opacity: 0; transform: translateY(10px); }
+to { opacity: 1; transform: translateY(0); }
+}
+.message.bot {
+justify-content: flex-start;
+}
+.message.user {
+justify-content: flex-end;
+}
+.message-content {
+max-width: 90%;
+padding: 10px 14px;
+border-radius: 12px;
+line-height: 1.4;
+word-wrap: break-word;
+}
+.message.bot .message-content {
+background: #e8eef7;
+color: #001f3f;
+border-bottom-left-radius: 4px;
+}
+.message.user .message-content {
+background: linear-gradient(135deg, #4287f5, #8c4bc4);
+color: white;
+border-bottom-right-radius: 4px;
+}
+.query-suggestion {
+background: white;
+padding: 10px 12px;
+border-radius: 8px;
+font-size: 12px;
+color: #4287f5;
+cursor: pointer;
+border: 1px solid #e8e8e8;
+transition: all 0.2s;
+font-weight: 500;
+}
+.query-suggestion:hover {
+background: #e8eef7;
+border-color: #4287f5;
+transform: translateX(2px);
+}
+.chatbot-input-area {
+border-top: 1px solid #e8e8e8;
+padding: 14px 16px;
+background: white;
+display: flex;
+gap: 10px;
+flex-shrink: 0;
+}
+.chatbot-input-area input {
+flex: 1;
+padding: 12px 14px;
+border: 1px solid #e0e0e0;
+border-radius: 10px;
+font-size: 14px;
+transition: all 0.2s;
+}
+.chatbot-input-area input:focus {
+outline: none;
+border-color: #4287f5;
+box-shadow: 0 0 0 3px rgba(66, 135, 245, 0.1);
+}
+.chatbot-input-area input::placeholder {
+color: #999;
+}
+.chatbot-input-area button {
+padding: 12px 24px;
+background: linear-gradient(135deg, #4287f5, #8c4bc4);
+color: white;
+border: none;
+border-radius: 10px;
+cursor: pointer;
+font-weight: 600;
+font-size: 14px;
+transition: all 0.2s;
+display: flex;
+align-items: center;
+gap: 6px;
+white-space: nowrap;
+}
+.chatbot-input-area button:hover {
+transform: translateY(-2px);
+box-shadow: 0 4px 12px rgba(66, 135, 245, 0.3);
+}
+.chatbot-input-area button:active {
+transform: translateY(0);
+}
+.spinner {
+display: inline-block;
+width: 14px;
+height: 14px;
+border: 2px solid #ddd;
+border-top-color: #4287f5;
+border-radius: 50%;
+animation: spin 0.6s linear infinite;
+}
+@keyframes spin {
+to { transform: rotate(360deg); }
+}
+@media (max-width: 768px) {
+.chatbot-container {
+width: 98%;
+height: 95vh;
+border-radius: 16px;
+}
+.chatbot-header h2 {
+font-size: 1.2rem;
+}
+.chatbot-results {
+grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+}
+}
+</style>
 </head>
 <body>
-  <div class="banner">
-    <h1>Explore Adobe Learning Manager Courses</h1>
-    <button onclick="openChatbot()"><i class="fas fa-robot"></i> Explore Now</button>
-  </div>
-  <!-- ... more UI and catalog/explore panels if desired ... -->
+<div class="banner">
+<h1>Explore Adobe Learning Manager Courses</h1>
+<button onclick="openChatbot()"><i class="fas fa-robot"></i> Explore Now</button>
+</div>
+<div class="filter-drawer-overlay" id="drawerOverlay"></div>
+<div class="main-content">
+<!-- Filters -->
+<div class="filters" id="filtersPanel">
+<!-- Chips row -->
+<div class="active-filters-chips" id="activeFiltersChips"></div>
+<!-- Accordion filter sections -->
+<div class="filter-section expanded" data-section="type">
+<div class="filter-heading" onclick="toggleSection(this.parentNode)">
+Training Type
+<span class="filter-toggle">☰</span>
+</div>
+<div class="filter-content">
+<div class="custom-multiselect" id="multiSelect-loType">
+<div class="multi-trigger" onclick="openMultiSelect('loType')">
+<span>Training Type</span>
+<span class="badge-count" id="badgeCount-loType">0</span>
+<span class="arrow">☰</span>
+</div>
+<div class="multi-select-box" id="selectBox-loType"></div>
+</div>
+</div>
+</div>
+<div class="filter-section expanded" data-section="delivery">
+<div class="filter-heading" onclick="toggleSection(this.parentNode)">
+Training Delivery
+<span class="filter-toggle">☰</span>
+</div>
+<div class="filter-content">
+<div class="custom-multiselect" id="multiSelect-deliveryType">
+<div class="multi-trigger" onclick="openMultiSelect('deliveryType')">
+<span>Delivery Types</span>
+<span class="badge-count" id="badgeCount-deliveryType">0</span>
+<span class="arrow">☰</span>
+</div>
+<div class="multi-select-box" id="selectBox-deliveryType"></div>
+</div>
+</div>
+</div>
+<div class="filter-section expanded" data-section="catalogs">
+<div class="filter-heading" onclick="toggleSection(this.parentNode)">
+Catalogs
+<span class="filter-toggle">☰</span>
+</div>
+<div class="filter-content">
+<div class="custom-multiselect" id="multiSelect-catalogNames">
+<div class="multi-trigger" onclick="openMultiSelect('catalogNames')">
+<span>Catalogs</span>
+<span class="badge-count" id="badgeCount-catalogNames">0</span>
+<span class="arrow">▾</span>
+</div>
+<div class="multi-select-box" id="selectBox-catalogNames"></div>
+</div>
+</div>
+</div>
+<div class="filter-section expanded" data-section="tags">
+<div class="filter-heading" onclick="toggleSection(this.parentNode)">
+Tags
+<span class="filter-toggle">☰</span>
+</div>
+<div class="filter-content">
+<div class="custom-multiselect" id="multiSelect-tags">
+<div class="multi-trigger" onclick="openMultiSelect('tags')">
+<span>Tags</span>
+<span class="badge-count" id="badgeCount-tags">0</span>
+<span class="arrow">▾</span>
+</div>
+<div class="multi-select-box" id="selectBox-tags"></div>
+</div>
+</div>
+</div>
+<div class="filter-section expanded" data-section="skills">
+<div class="filter-heading" onclick="toggleSection(this.parentNode)">
+Skills
+<span class="filter-toggle">☰</span>
+</div>
+<div class="filter-content">
+<div class="custom-multiselect" id="multiSelect-loSkillNames">
+<div class="multi-trigger" onclick="openMultiSelect('loSkillNames')">
+<span>Skills</span>
+<span class="badge-count" id="badgeCount-loSkillNames">0</span>
+<span class="arrow">▾</span>
+</div>
+<div class="multi-select-box" id="selectBox-loSkillNames"></div>
+</div>
+</div>
+</div>
+<div class="filter-section expanded" data-section="levels">
+<div class="filter-heading" onclick="toggleSection(this.parentNode)">
+Skill Levels
+<span class="filter-toggle">☰</span>
+</div>
+<div class="filter-content">
+<div class="custom-multiselect" id="multiSelect-loSkillLevels">
+<div class="multi-trigger" onclick="openMultiSelect('loSkillLevels')">
+<span>Skill Levels</span>
+<span class="badge-count" id="badgeCount-loSkillLevels">0</span>
+<span class="arrow">▾</span>
+</div>
+<div class="multi-select-box" id="selectBox-loSkillLevels"></div>
+</div>
+</div>
+</div>
+<div class="action-buttons-row">
+<button id="applyFilters"><span>Apply Filters</span> <span class="result-count" id="resultCount">(0)</span></button>
+<button id="clearFilters">Clear Filters</button>
+</div>
+</div>
+<!-- Results -->
+<div>
+<div id="results"></div>
+<div id="pagination"></div>
+<div id="loading" class="loading" style="display:none;">Loading results...</div>
+</div>
+</div>
 
-  <!-- CHATBOT MODAL -->
-  <div class="chatbot-modal" id="chatbotModal">
-    <div class="chatbot-container">
-      <div class="chatbot-header">
-        <h2><i class="fas fa-robot"></i> Learning Search</h2>
-        <button class="chatbot-close" onclick="closeChatbot()" title="Close"><i class="fas fa-times"></i></button>
-      </div>
-      <div class="chatbot-content">
-        <div class="chatbot-messages">
-          <div class="chatbot-messages-header">Conversation</div>
-          <div class="chatbot-messages-list" id="chatMessages"></div>
-        </div>
-        <div class="chatbot-display">
-          <div class="chatbot-display-header">Results</div>
-          <div class="chatbot-results-container" id="chatDisplay"></div>
-        </div>
-      </div>
-      <div class="chatbot-input-area">
-        <input type="text" id="chatInput" placeholder="Ask me... e.g., Python courses, skill Photoshop, show all catalogs"/>
-        <button onclick="sendChatMessage()"><i class="fas fa-paper-plane"></i> Send</button>
-      </div>
-    </div>
-  </div>
+<!-- CHATBOT MODAL -->
+<div class="chatbot-modal" id="chatbotModal">
+<div class="chatbot-container">
+<div class="chatbot-header">
+<h2><i class="fas fa-robot"></i> Learning Search</h2>
+<button class="chatbot-close" onclick="closeChatbot()" title="Close"><i class="fas fa-times"></i></button>
+</div>
+<div class="chatbot-content">
+<div class="chatbot-messages">
+<div class="chatbot-messages-header">💬 Conversation</div>
+<div class="chatbot-messages-list" id="chatMessages"></div>
+</div>
+<div class="chatbot-display">
+<div class="chatbot-display-header">🎓 Results</div>
+<div class="chatbot-results-container" id="chatDisplay"></div>
+</div>
+</div>
+<div class="chatbot-input-area">
+<input type="text" id="chatInput" placeholder="Ask me... e.g., 'Python courses', 'beginner training'" />
+<button onclick="sendChatMessage()"><i class="fas fa-paper-plane"></i> Send</button>
+</div>
+</div>
+</div>
 
-  <script>
-    // Sample learning object data, simulate API fetch on load (substitute actual live fetch)
-    let knowledgeBase = [
-      {
-        loId: "learningProgram:68644",
-        loType: "learningProgram",
-        deliveryType: "Self Paced",
-        status: "Published",
-        duration: 360,
-        dateCreated: "2024-12-15T07:37:16.000Z",
-        name: "LP3",
-        averageRating: 0,
-        ratingsCount: 0,
-        loSkillNames: ["After Effects*", "Photoshop*"],
-        loSkillLevels: ["1", "2"],
-        thumbnailImageUrl: "https://cpcontents.adobe.com/eu/public/account/9759/thumbnails/learningplans/68644/2025-11-01%2014:10:11.8781916801.11.2025_15.45.21_REC_aa17a2c4c3db4a3cbab3cb659c6a290a.png",
-        loInstances: [
-          { id: "75771", name: "Default Instance", status: "Active", price: 0 }
-        ],
-        catalogInfo: [
-          { id: "27076", name: "Default Catalog" }
-        ]
-      },
-      {
-        loId: "course:2098198",
-        loType: "course",
-        authors: ["HMM"],
-        deliveryType: "Activity",
-        status: "Published",
-        duration: 10800,
-        publishDate: "2024-01-26T15:26:51.000Z",
-        dateCreated: "2024-01-26T15:26:51.000Z",
-        name: "Hiring",
-        description: "Hiring\nLearn how to develop a job description...",
-        averageRating: 0,
-        ratingsCount: 0,
-        loSkillNames: ["General"],
-        loSkillLevels: ["1"],
-        thumbnailImageUrl: "https://hbr.org/resources/images/products/186IC_500.png",
-        loInstances: [
-          { id: "2180306", name: "Default instance", status: "Active", price: 0 }
-        ],
-        catalogInfo: [
-          { id: "27076", name: "Default Catalog" },
-          { id: "31002", name: "Harvard ManageMentor" }
-        ]
-      },
-      {
-        loId: "certification:48063",
-        loType: "certification",
-        tags: ["CE", "Certification"],
-        deliveryType: "Activity",
-        status: "Published",
-        duration: 43200,
-        publishDate: "2025-11-02T14:26:07.000Z",
-        dateCreated: "2025-11-02T14:25:34.000Z",
-        name: "Recurring Certification",
-        description: "Continuing Education empowers professionals to stay ahead...",
-        averageRating: 0,
-        ratingsCount: 0,
-        loSkillNames: ["General"],
-        loSkillLevels: ["1"],
-        thumbnailImageUrl: "https://cpcontents.adobe.com/eu/public/account/9759/thumbnails/certifications/48063/2025-11-02%2014:26:57.776516072attended_ALM_Marking_Attendance_bebd18d1ee2c4fe483faaa3a122bdb79.png",
-        loInstances: [
-          { id: "48297", name: "DEFAULT_INSTANCE_STR", status: "Active", completionDeadline: "30d", price: 0 }
-        ],
-        catalogInfo: [
-          { id: "27076", name: "Default Catalog" }
-        ]
-      }
-    ];
+<script>
+const accountId = "9759";
+const apiKey = "5fc01dd5-de45-408d-9b07-b267d40ebef9";
 
-    // -- Helper: Modal open/close and scroll reset --
-    function openChatbot() {
-      document.getElementById("chatbotModal").classList.add("active");
-      document.getElementById("chatMessages").innerHTML = '';
-      document.getElementById("chatDisplay").innerHTML = '<p style="color:#999;text-align:center;padding:24px 0">Try asking: “Show all certifications”, “catalog Harvard”, “skill Photoshop”.</p>';
-      addBotMessage("Welcome! How can I assist you with your learning catalog today?");
-      setTimeout(() => { document.getElementById('chatInput').focus(); }, 200);
-    }
-    function closeChatbot() {
-      document.getElementById("chatbotModal").classList.remove("active");
-    }
+const filterOptions = {
+loType: [
+{ value: "course", text: "Course" },
+{ value: "learningProgram", text: "Learning Program" },
+{ value: "jobAid", text: "Job Aid" },
+{ value: "certification", text: "Certification" }
+],
+deliveryType: [
+{ value: "selfPaced", text: "Self Paced" },
+{ value: "instructorLed", text: "Activity" },
+{ value: "instructorLed_virtual", text: "Virtual Classroom" },
+{ value: "instructorLed_blended", text: "Blended" }
+],
+catalogNames: [
+{ value: "Default Catalog", text: "Default Catalog" },
+{ value: "Harvard ManageMentor", text: "Harvard ManageMentor" },
+{ value: "Expertise", text: "Expertise" },
+{ value: "Management", text: "Management" }
+],
+tags: [
+{ value: "Online session", text: "Online session" },
+{ value: "quiz", text: "Quiz" },
+{ value: "Certification", text: "Certification" }
+],
+loSkillNames: [
+{ value: "Vector Illustrator", text: "Vector Illustrator" },
+{ value: "General", text: "General" },
+{ value: "Lightroom", text: "Lightroom" }
+],
+loSkillLevels: [
+{ value: "1", text: "Level 1" },
+{ value: "2", text: "Level 2" },
+{ value: "3", text: "Level 3" }
+]
+};
 
-    // Chat message utilities
-    function addBotMessage(msg) {
-      const el = document.createElement('div'); el.className = "chatbot-message bot"; el.innerText = msg;
-      document.getElementById("chatMessages").appendChild(el); document.getElementById("chatMessages").scrollTop = 99999;
-    }
-    function addUserMessage(msg) {
-      const el = document.createElement('div'); el.className = "chatbot-message user"; el.innerText = msg;
-      document.getElementById("chatMessages").appendChild(el); document.getElementById("chatMessages").scrollTop = 99999;
-    }
+const filtersState = {
+loType: [], deliveryType:[], catalogNames:[],
+tags:[], loSkillNames:[], loSkillLevels:[]
+};
 
-    // -- Main upgraded bot query logic --
-    function sendChatMessage() {
-      const input = document.getElementById("chatInput");
-      const query = input.value.trim();
-      if (!query) return;
-      addUserMessage(query);
-      input.value = "";
+let currentPage = 0;
+const pageSize = 500;
+let lastResultCount = 0;
+let knowledgeBase = {};
+let aiTrainingData = {
+skills: {},
+topics: {},
+keywords: {},
+contentIndex: {},
+difficulty: {},
+duration: {}
+};
 
-      // Spinner UI
-      const display = document.getElementById("chatDisplay");
-      display.innerHTML = '<div style="text-align:center;padding:20px"><div class="spinner"></div> AI analyzing query...</div>';
+// ===== ENHANCED AI TRAINING FUNCTIONS =====
 
-      // Lowercased, normalized string
-      const lowerQuery = query.toLowerCase().trim();
+function buildAITrainingIndex(courseData) {
+try {
+const enriched = courseData.enriched || courseData;
 
-      // 1. Match for loType entries
-      const loTypePatterns = [
-        { words: ["course","courses"], type: "course" },
-        { words: ["learning path","learning paths","path","paths"], type: "learningPath" },
-        { words: ["learning program","learning programs","program","programs"], type: "learningProgram" },
-        { words: ["certification","certifications"], type: "certification" },
-        { words: ["job aid","job aids"], type: "jobAid" }
-      ];
-      const catalogWords = ["catalog", "catalogs"];
-      const skillPatterns = ["skill", "skills"];
-      const skillLevelPatterns = ["skill level", "skills level"];
+// Index skills
+if (enriched.skills && enriched.skills.length > 0) {
+enriched.skills.forEach(skill => {
+const key = skill.toLowerCase();
+if (!aiTrainingData.skills[key]) aiTrainingData.skills[key] = [];
+aiTrainingData.skills[key].push(courseData.loId);
+});
+}
 
-      let results = [];
-      let found = false;
+// Index difficulty
+if (enriched.difficulty) {
+const key = enriched.difficulty.toLowerCase();
+if (!aiTrainingData.difficulty[key]) aiTrainingData.difficulty[key] = [];
+aiTrainingData.difficulty[key].push(courseData.loId);
+}
 
-      // --loType filtering
-      for (const {words, type} of loTypePatterns) {
-        for (const w of words) {
-          if (lowerQuery.includes(w)) {
-            results = knowledgeBase.filter(lo => lo.loType && lo.loType.toLowerCase() === type);
-            found = true; break;
-          }
-        }
-        if (found) break;
-      }
-      // Explicit show all catalogs
-      if (!found) for (const w of catalogWords) {
-        if (lowerQuery === `show all ${w}` || lowerQuery === `list all ${w}`) {
-          let catSet = new Set();
-          knowledgeBase.forEach(lo =>
-            Array.isArray(lo.catalogInfo) && lo.catalogInfo.forEach(cat =>
-              cat.name && catSet.add(cat.name)
-            )
-          );
-          displayCatalogCards([...catSet]);
-          addBotMessage(`Found ${catSet.size} catalogs`);
-          return;
-        }
-      }
-      // Catalog search
-      if (!found) for (const w of catalogWords) {
-        if (lowerQuery.includes(w)) {
-          const catKeyword = lowerQuery.replace(w, '').trim();
-          results = knowledgeBase.filter(lo =>
-            Array.isArray(lo.catalogInfo) &&
-            lo.catalogInfo.some(cat =>
-              cat.name && cat.name.toLowerCase().includes(catKeyword)
-            )
-          );
-          found = true; break;
-        }
-      }
-      // Skill/skills
-      if (!found && skillPatterns.some(p => lowerQuery.includes(p))) {
-        const skillKeyword = lowerQuery.replace(/skills?/, "").trim();
-        results = knowledgeBase.filter(lo =>
-          Array.isArray(lo.loSkillNames) &&
-          lo.loSkillNames.some(skill =>
-            skill.toLowerCase().includes(skillKeyword)
-          )
-        ); found = true;
-      }
-      // Skill level: "Skill level 1", etc.
-      if (!found && skillLevelPatterns.some(p => lowerQuery.includes(p))) {
-        const levelMatch = lowerQuery.match(/skill(s)? level\s*(\d+)/);
-        if (levelMatch) {
-          const lv = levelMatch[2];
-          results = knowledgeBase.filter(lo =>
-            Array.isArray(lo.loSkillLevels) &&
-            lo.loSkillLevels.includes(lv)
-          );
-          found = true;
-        }
-      }
-      // Fallback: Search in name
-      if (!found) {
-        results = knowledgeBase.filter(lo =>
-          lo.name && lo.name.toLowerCase().includes(lowerQuery)
+// Index keywords from description - THIS IS KEY FOR PHRASE MATCHING
+if (enriched.description) {
+const desc = enriched.description.toLowerCase();
+// Index individual meaningful words
+const words = desc.split(/[\s\W]+/).filter(w => w.length > 3);
+words.forEach(word => {
+if (!aiTrainingData.keywords[word]) aiTrainingData.keywords[word] = [];
+if (!aiTrainingData.keywords[word].includes(courseData.loId)) {
+aiTrainingData.keywords[word].push(courseData.loId);
+}
+});
+// Also create full description index for phrase matching
+const descKey = desc.substring(0, 50); // Use first 50 chars as key
+aiTrainingData.contentIndex[courseData.loId] = desc;
+}
+
+// Index keywords from name
+const nameWords = (enriched.name || '').toLowerCase().split(/[\s\W]+/).filter(w => w.length > 3);
+nameWords.forEach(word => {
+if (!aiTrainingData.keywords[word]) aiTrainingData.keywords[word] = [];
+if (!aiTrainingData.keywords[word].includes(courseData.loId)) {
+aiTrainingData.keywords[word].push(courseData.loId);
+}
+});
+
+// Index topics/tags
+if (enriched.tags && enriched.tags.length > 0) {
+enriched.tags.forEach(tag => {
+const key = tag.toLowerCase();
+if (!aiTrainingData.topics[key]) aiTrainingData.topics[key] = [];
+aiTrainingData.topics[key].push(courseData.loId);
+});
+}
+
+// Index learning outcomes - NEW FOR CONTENT MATCHING
+if (enriched.learningOutcomes && enriched.learningOutcomes.length > 0) {
+enriched.learningOutcomes.forEach(outcome => {
+const outcomeText = (outcome || '').toLowerCase();
+const words = outcomeText.split(/[\s\W]+/).filter(w => w.length > 3);
+words.forEach(word => {
+if (!aiTrainingData.keywords[word]) aiTrainingData.keywords[word] = [];
+if (!aiTrainingData.keywords[word].includes(courseData.loId)) {
+aiTrainingData.keywords[word].push(courseData.loId);
+}
+});
+});
+}
+
+// Index duration categories
+if (enriched.duration) {
+const mins = parseInt(enriched.duration);
+let category = 'short';
+if (mins > 60) category = 'medium';
+if (mins > 180) category = 'long';
+if (!aiTrainingData.duration[category]) aiTrainingData.duration[category] = [];
+aiTrainingData.duration[category].push(courseData.loId);
+}
+} catch (e) {
+console.warn("Error building training index:", e);
+}
+}
+
+// ===== IMPROVED INTELLIGENT SEARCH WITH PHRASE MATCHING =====
+function intelligentSearch(query) {
+const lowerQuery = query.toLowerCase();
+let matchScores = {};
+let debugLog = [];
+
+// Stop words to ignore
+const stopWords = ['which', 'has', 'the', 'a', 'an', 'and', 'or', 'in', 'of', 'to', 'for', 'with', 'from', 'that', 'this', 'is', 'are', 'it', 'can', 'have', 'shows'];
+
+// Extract meaningful search terms
+const queryTerms = lowerQuery.split(/[\s\W]+/).filter(w => w.length > 2 && !stopWords.includes(w));
+
+console.log("Query:", query);
+console.log("Extracted terms:", queryTerms);
+
+// 1. Search in content index (descriptions, learning outcomes) - HIGHEST PRIORITY
+Object.keys(aiTrainingData.contentIndex).forEach(courseId => {
+const content = aiTrainingData.contentIndex[courseId];
+queryTerms.forEach(term => {
+if (content.includes(term)) {
+const score = content.split(term).length - 1; // Count occurrences
+matchScores[courseId] = (matchScores[courseId] || 0) + (score * 2.5); // Weight x2.5
+}
+});
+});
+
+// 2. Search in skills
+Object.keys(aiTrainingData.skills).forEach(skill => {
+queryTerms.forEach(term => {
+if (skill.includes(term) || term.includes(skill)) {
+aiTrainingData.skills[skill].forEach(id => {
+matchScores[id] = (matchScores[id] || 0) + 3;
+});
+}
+});
+});
+
+// 3. Search in topics/tags
+Object.keys(aiTrainingData.topics).forEach(topic => {
+queryTerms.forEach(term => {
+if (topic.includes(term) || term.includes(topic)) {
+aiTrainingData.topics[topic].forEach(id => {
+matchScores[id] = (matchScores[id] || 0) + 2.5;
+});
+}
+});
+});
+
+// 4. Search in keywords
+Object.keys(aiTrainingData.keywords).forEach(keyword => {
+queryTerms.forEach(term => {
+if (keyword.includes(term) || term.includes(keyword)) {
+aiTrainingData.keywords[keyword].forEach(id => {
+matchScores[id] = (matchScores[id] || 0) + 1.5;
+});
+}
+});
+});
+
+// 5. Specific phrase matching
+if (lowerQuery.includes('video')) {
+const videoTerms = ['video', 'videos', 'animation', 'visual', 'multimedia'];
+Object.keys(aiTrainingData.contentIndex).forEach(courseId => {
+const content = aiTrainingData.contentIndex[courseId];
+videoTerms.forEach(term => {
+if (content.includes(term)) {
+matchScores[courseId] = (matchScores[courseId] || 0) + 2;
+}
+});
+});
+}
+
+// 6. Difficulty matching
+if (lowerQuery.includes('beginner') || lowerQuery.includes('easy')) {
+if (aiTrainingData.difficulty['beginner']) {
+aiTrainingData.difficulty['beginner'].forEach(id => {
+matchScores[id] = (matchScores[id] || 0) + 2;
+});
+}
+}
+if (lowerQuery.includes('advanced') || lowerQuery.includes('expert')) {
+if (aiTrainingData.difficulty['advanced']) {
+aiTrainingData.difficulty['advanced'].forEach(id => {
+matchScores[id] = (matchScores[id] || 0) + 2;
+});
+}
+}
+
+// 7. Duration matching
+if (lowerQuery.includes('short') || lowerQuery.includes('quick') || lowerQuery.includes('brief')) {
+if (aiTrainingData.duration['short']) {
+aiTrainingData.duration['short'].forEach(id => {
+matchScores[id] = (matchScores[id] || 0) + 1.5;
+});
+}
+}
+if (lowerQuery.includes('long') || lowerQuery.includes('comprehensive')) {
+if (aiTrainingData.duration['long']) {
+aiTrainingData.duration['long'].forEach(id => {
+matchScores[id] = (matchScores[id] || 0) + 1.5;
+});
+}
+}
+
+// Sort by relevance score (highest first)
+const results = Object.keys(matchScores)
+.filter(id => matchScores[id] > 0) // Only return courses with matches
+.sort((a, b) => matchScores[b] - matchScores[a])
+.map(id => knowledgeBase[id])
+.filter(course => course);
+
+console.log("Results found:", results.length, "Match scores:", matchScores);
+
+return results;
+}
+
+// ===== CHATBOT FUNCTIONS =====
+
+function openChatbot() {
+document.getElementById('chatbotModal').classList.add('open');
+document.getElementById('chatMessages').innerHTML = '';
+document.getElementById('chatDisplay').innerHTML = '';
+addBotMessage("👋 Hi! I'm an AI-trained assistant. I can search by skills, difficulty, content keywords, and more!");
+addBotMessage("Try: 'courses with video in it', 'Python courses', 'short beginner training', 'advanced management'");
+showQuerySuggestions();
+}
+
+function closeChatbot() {
+document.getElementById('chatbotModal').classList.remove('open');
+}
+
+function showQuerySuggestions() {
+const suggestions = [
+"Show me all courses",
+"Find certifications",
+"Show self-paced trainings",
+"Find learning programs",
+"Show virtual classroom sessions"
+];
+let html = '';
+suggestions.forEach(s => {
+html += `<div class="query-suggestion" onclick="populateAndSend('${s}')">${s}</div>`;
+});
+const msgDiv = document.createElement('div');
+msgDiv.innerHTML = html;
+document.getElementById('chatMessages').appendChild(msgDiv);
+}
+
+function populateAndSend(text) {
+document.getElementById('chatInput').value = text;
+sendChatMessage();
+}
+
+function addBotMessage(text) {
+const msgDiv = document.createElement('div');
+msgDiv.className = 'message bot';
+msgDiv.innerHTML = `<div class="message-content">${text}</div>`;
+document.getElementById('chatMessages').appendChild(msgDiv);
+document.querySelector('.chatbot-messages-list').scrollTop = document.querySelector('.chatbot-messages-list').scrollHeight;
+}
+
+function addUserMessage(text) {
+const msgDiv = document.createElement('div');
+msgDiv.className = 'message user';
+msgDiv.innerHTML = `<div class="message-content">${text}</div>`;
+document.getElementById('chatMessages').appendChild(msgDiv);
+document.querySelector('.chatbot-messages-list').scrollTop = document.querySelector('.chatbot-messages-list').scrollHeight;
+}
+
+async function fetchDetailedCourseData(lo) {
+try {
+const [type, id] = lo.loId.split(':');
+const detailUrl = `https://cpcontents.adobe.com/eu/public/guest/eu/api/${apiKey}/${accountId}/${type}/${id}.json`;
+const res = await fetch(detailUrl);
+const detail = await res.json();
+const data = detail?.data || {};
+const attr = data?.attributes || {};
+const meta = attr?.localizedMetadata?.[0] || {};
+
+const enrichedData = {
+id: lo.loId,
+name: lo.name,
+type: lo.loType,
+deliveryType: lo.deliveryType,
+duration: lo.duration,
+rating: lo.averageRating,
+ratingCount: lo.ratingsCount,
+imageUrl: attr?.imageUrl || "https://img.freepik.com/free-vector/e-learning-icons-flat_1284-3950.jpg?semt=ais_hybrid&w=740&q=80",
+description: meta?.overview || attr?.description || "",
+learningOutcomes: attr?.learningOutcomes || [],
+prerequisites: attr?.prerequisites || "",
+difficulty: attr?.difficulty || "Intermediate",
+author: meta?.author || "",
+skills: lo.loSkillNames || [],
+tags: attr?.tags || [],
+enrollmentCount: attr?.enrollmentCount,
+language: meta?.language || "English",
+catalogs: attr?.catalogs || [],
+audiences: attr?.audiences || []
+};
+
+lo.enriched = enrichedData;
+knowledgeBase[lo.loId] = lo;
+buildAITrainingIndex(lo);
+
+return lo;
+} catch (err) {
+console.warn("Failed to fetch:", lo.loId);
+lo.enriched = { name: lo.name, type: lo.loType };
+knowledgeBase[lo.loId] = lo;
+buildAITrainingIndex(lo);
+return lo;
+}
+}
+
+async function enrichAllCourseData(results) {
+const enrichedResults = [];
+for (let lo of results) {
+enrichedResults.push(await fetchDetailedCourseData(lo));
+}
+return enrichedResults;
+}
+
+function displayChatResults(results) {
+const display = document.getElementById('chatDisplay');
+display.innerHTML = '';
+
+if (!results || results.length === 0) {
+display.innerHTML = '<p style="color:#666;text-align:center;padding:20px;">No courses found. Try different keywords!</p>';
+addBotMessage("✖ No results found. Try different keywords or check spelling!");
+return;
+}
+
+let html = `<div class="chatbot-results">`;
+results.slice(0, 12).forEach(lo => {
+const enriched = lo.enriched || lo;
+const img = enriched.imageUrl || "https://via.placeholder.com/150x100?text=No+Image";
+const name = enriched.name || "Untitled";
+const difficulty = enriched.difficulty || "Intermediate";
+html += `
+<div class="chatbot-card" onclick="window.open('course-details.html?courseId=${lo.loId}', '_blank')">
+<img src="${img}" alt="Course" onerror="this.src='https://via.placeholder.com/150x100?text=No+Image'">
+<div class="chatbot-card-content">
+<h5>${name}</h5>
+<p><strong>${lo.loType}</strong></p>
+<p>⏱️ ${lo.duration || 'N/A'} min</p>
+<p>📊 ${difficulty}</p>
+<p>⭐ ${lo.averageRating || 'N/A'}</p>
+</div>
+</div>`;
+});
+html += '</div>';
+display.innerHTML = html;
+
+addBotMessage(`✔ Found ${results.length} courses matching your search!`);
+}
+
+async function sendChatMessage() {
+  const input = document.getElementById("chatInput");
+  const query = input.value.trim();
+  if (!query) return;
+  addUserMessage(query);
+  input.value = "";
+
+  // Spinner UI while processing
+  const display = document.getElementById("chatDisplay");
+  display.innerHTML = '<div style="text-align:center;padding:20px"><div class="spinner"></div> AI analyzing query...</div>';
+
+  // Normalized query
+  const lowerQuery = query.toLowerCase().trim();
+
+  // Keyword-to-type mapping as per requirements
+  const loTypePatterns = [
+    { words: ["course","courses"], type: "course" },
+    { words: ["learning path","learning paths","path","paths"], type: "learningPath" },
+    { words: ["learning program","learning programs","program","programs"], type: "learningProgram" },
+    { words: ["certification","certifications"], type: "certification" },
+    { words: ["job aid","job aids"], type: "jobAid" }
+  ];
+  const catalogWords = ["catalog", "catalogs"];
+  const skillPatterns = ["skill", "skills"];
+  const skillLevelPatterns = ["skill level", "skills level"];
+
+  let results = [];
+  let found = false;
+
+  // If user asks for a specific loType (course/program/certification/etc)
+  for (const {words, type} of loTypePatterns) {
+    for (const w of words) {
+      if (lowerQuery.includes(w)) {
+        results = knowledgeBase.filter(lo => 
+          lo.loType && lo.loType.toLowerCase() === type
         );
-      }
-      displayChatResults(results);
-      if (results.length > 0) {
-        addBotMessage(`Found ${results.length} results.`);
-      } else {
-        addBotMessage(`No results found. Try a different keyword or check spelling!`);
+        found = true; break;
       }
     }
+    if (found) break;
+  }
 
-    // Display catalog cards
-    function displayCatalogCards(catalogNames) {
-      const display = document.getElementById("chatDisplay");
-      if (catalogNames.length === 0) {
-        display.innerHTML = `<p style="color:#666;text-align:center;padding:20px">No catalogs found.</p>`;
-        return;
-      }
-      let html = `<div class="chatbot-results">`;
-      catalogNames.forEach(name => {
-        html += `<div class="chatbot-card">
-          <div class="chatbot-card-content">
-            <h5>${name}</h5>
-            <p>Catalog</p>
-          </div>
-        </div>`;
-      });
-      html += `</div>`;
-      display.innerHTML = html;
+  // Show all catalogs ("show all catalogs", "list all catalogs")
+  if (!found) for (const w of catalogWords) {
+    if (lowerQuery === `show all ${w}` || lowerQuery === `list all ${w}`) {
+      let catSet = new Set();
+      knowledgeBase.forEach(lo =>
+        Array.isArray(lo.catalogInfo) && lo.catalogInfo.forEach(cat =>
+          cat.name && catSet.add(cat.name)
+        )
+      );
+      displayCatalogCards([...catSet]);
+      addBotMessage(`Found ${catSet.size} catalogs`);
+      return;
     }
+  }
 
-    // -- Show search results as cards --
-    function displayChatResults(results) {
-      const display = document.getElementById("chatDisplay");
-      if (!results || results.length === 0) {
-        display.innerHTML = `<p style="color:#888;padding:20px;text-align:center">No matches found.</p>`;
-        return;
-      }
-      let html = `<div class="chatbot-results">`;
-      results.forEach(obj => {
-        html += `<div class="chatbot-card">
-          ${obj.thumbnailImageUrl ? `<img src="${obj.thumbnailImageUrl}" alt="thumb"/>` : ''}
-          <div class="chatbot-card-content">
-            <h5>${obj.name || ''}</h5>
-            <p>${obj.loType || obj.type || ''}</p>
-            ${obj.deliveryType ? `<small>${obj.deliveryType}</small>` : ''}
-          </div>
-        </div>`;
-      });
-      html += `</div>`;
-      display.innerHTML = html;
+  // Catalog search (if query contains "catalog" but not just an enumeration)
+  if (!found) for (const w of catalogWords) {
+    if (lowerQuery.includes(w)) {
+      const catKeyword = lowerQuery.replace(w, '').trim();
+      results = knowledgeBase.filter(lo =>
+        Array.isArray(lo.catalogInfo) &&
+        lo.catalogInfo.some(cat =>
+          cat.name && cat.name.toLowerCase().includes(catKeyword)
+        )
+      );
+      found = true; break;
     }
+  }
 
-    // Enter to send in chat input
-    document.getElementById('chatInput').addEventListener('keypress', function(e) {
-      if (e.key === 'Enter') sendChatMessage();
-    });
+  // Skill/skills: "skill Photoshop"
+  if (!found && skillPatterns.some(p => lowerQuery.includes(p))) {
+    const skillKeyword = lowerQuery.replace(/skills?/, "").trim();
+    results = knowledgeBase.filter(lo =>
+      Array.isArray(lo.loSkillNames) &&
+      lo.loSkillNames.some(skill =>
+        skill.toLowerCase().includes(skillKeyword)
+      )
+    ); found = true;
+  }
 
-  </script>
+  // Skill level: "skill level 1", etc.
+  if (!found && skillLevelPatterns.some(p => lowerQuery.includes(p))) {
+    const levelMatch = lowerQuery.match(/skill(s)? level\s*(\d+)/);
+    if (levelMatch) {
+      const lv = levelMatch[2];
+      results = knowledgeBase.filter(lo =>
+        Array.isArray(lo.loSkillLevels) &&
+        lo.loSkillLevels.includes(lv)
+      );
+      found = true;
+    }
+  }
+
+  // Fallback: search "name" for keyword
+  if (!found) {
+    results = knowledgeBase.filter(lo =>
+      lo.name && lo.name.toLowerCase().includes(lowerQuery)
+    );
+  }
+
+  displayChatResults(results);
+  if (results.length > 0) {
+    addBotMessage(`Found ${results.length} results.`);
+  } else {
+    addBotMessage(`No results found. Try a different keyword or check spelling!`);
+  }
+}
+
+// ===== ORIGINAL FILTER FUNCTIONS (UNCHANGED) =====
+
+function renderMultiSelect(key) {
+const selectBox = document.getElementById('selectBox-' + key);
+selectBox.innerHTML = '';
+let options = filterOptions[key];
+const searchInp = document.createElement('input');
+searchInp.className = 'input-search';
+searchInp.placeholder = "Search...";
+selectBox.appendChild(searchInp);
+const selectAllRow = document.createElement('div');
+selectAllRow.className = "select-all-row";
+selectAllRow.innerHTML = '<strong>Select All</strong>';
+selectAllRow.onclick = function() {
+const allChecked = filtersState[key].length === options.length;
+filtersState[key] = allChecked ? [] : options.map(o => o.value);
+renderMultiSelect(key);
+updateChips();
+updateBadgeCounts();
+};
+selectBox.appendChild(selectAllRow);
+const optsContainer = document.createElement('div');
+optsContainer.className = "multi-select-options";
+const filteredOpts = (searchInp.value ?
+options.filter(o => o.text.toLowerCase().includes(searchInp.value.toLowerCase()))
+: options);
+filteredOpts.forEach(opt => {
+const label = document.createElement('label');
+const cbx = document.createElement('input');
+cbx.type = "checkbox";
+cbx.value = opt.value;
+cbx.checked = filtersState[key].includes(opt.value);
+cbx.onchange = function() {
+if (cbx.checked) filtersState[key].push(opt.value);
+else filtersState[key] = filtersState[key].filter(v => v !== opt.value);
+updateChips();
+updateBadgeCounts();
+};
+label.appendChild(cbx);
+label.appendChild(document.createTextNode(opt.text));
+optsContainer.appendChild(label);
+})
+selectBox.appendChild(optsContainer);
+searchInp.oninput = () => { renderMultiSelect(key); }
+}
+function openMultiSelect(key) {
+['loType','deliveryType','catalogNames','tags','loSkillNames','loSkillLevels']
+.forEach(k => { document.getElementById('multiSelect-'+k).classList.remove('open'); });
+document.getElementById('multiSelect-'+key).classList.add('open');
+renderMultiSelect(key);
+document.body.addEventListener('click', closeMultiSelectBody, true);
+}
+function closeMultiSelectBody(e){
+if (!e.target.closest('.custom-multiselect')) {
+['loType','deliveryType','catalogNames','tags','loSkillNames','loSkillLevels']
+.forEach(k => document.getElementById('multiSelect-'+k).classList.remove('open'));
+document.body.removeEventListener('click', closeMultiSelectBody, true);
+}
+}
+function updateBadgeCounts() {
+Object.keys(filtersState).forEach(key => {
+document.getElementById('badgeCount-'+key).innerText = filtersState[key].length;
+});
+}
+function toggleSection(sectionDiv){
+sectionDiv.classList.toggle('expanded');
+const arrow = sectionDiv.querySelector('.filter-toggle');
+if (sectionDiv.classList.contains('expanded'))
+arrow.innerHTML = '▼';
+else
+arrow.innerHTML = '▶';
+}
+function updateChips() {
+const chipCont = document.getElementById('activeFiltersChips');
+chipCont.innerHTML = '';
+let hasChips = false;
+Object.keys(filtersState).forEach(key=>{
+filtersState[key].forEach(val=>{
+hasChips = true;
+const opt = filterOptions[key].find(o=>o.value===val);
+const chipDiv = document.createElement('span');
+chipDiv.className = "filter-chip";
+chipDiv.innerHTML = opt.text + ` <button class="remove-chip" title="Remove" onclick="removeChip('${key}','${val}')">&times;</button>`;
+chipCont.appendChild(chipDiv);
+});
+});
+if (hasChips){
+const clearAllBtn = document.createElement('button');
+clearAllBtn.className = "clear-all-chips";
+clearAllBtn.innerText = "Clear All";
+clearAllBtn.onclick = clearAllFilters;
+chipCont.appendChild(clearAllBtn);
+}
+}
+function removeChip(key, value){
+filtersState[key] = filtersState[key].filter(v => v !== value);
+updateChips();
+updateBadgeCounts();
+fetchResults(filtersState, currentPage);
+}
+function clearAllFilters(){
+Object.keys(filtersState).forEach(k=>filtersState[k]=[]);
+updateChips(); updateBadgeCounts();
+fetchResults(filtersState,0);
+}
+async function fetchResults(filters = {}, page = 0) {
+const container = document.getElementById("results");
+const loadingDiv = document.getElementById("loading");
+const paginationDiv = document.getElementById("pagination");
+container.innerHTML = "";
+paginationDiv.innerHTML = "";
+loadingDiv.style.display = "block";
+document.getElementById("applyFilters").disabled = true;
+const apiUrl = `https://primeapps.adobe.com/almsearch/api/v1/eu/${accountId}/${apiKey}/search?size=${pageSize}&from=${page * pageSize}`;
+let filterTerms = {};
+Object.keys(filters).forEach(key=>{
+if (filters[key]?.length) filterTerms[key] = filters[key];
+});
+const body = { query: "", filters: { terms: filterTerms }, size: pageSize };
+try {
+const res = await fetch(apiUrl, {
+method: "POST",
+headers: { "Content-Type": "application/json" },
+body: JSON.stringify(body)
+});
+const data = await res.json();
+loadingDiv.style.display = "none";
+document.getElementById("applyFilters").disabled = false;
+lastResultCount = data?.results?.length || 0;
+document.getElementById('resultCount').innerText = '(' + lastResultCount + ')';
+if (!data.results || data.results.length === 0) {
+container.innerHTML = '<div class="no-results">No courses match your filters.<br><button onclick="clearAllFilters()">Clear filters and try again</button></div>';
+return;
+}
+data.results.forEach(lo => {
+const card = document.createElement("a");
+card.href = `course-details.html?courseId=${lo.loId}`;
+card.className = "card";
+card.target = "_blank";
+const img = document.createElement("img");
+img.src = "https://via.placeholder.com/400x200?text=Loading...";
+img.onerror = () => img.src = "https://cdn.pixabay.com/photo/2023/03/23/04/17/bookkeeper-adelaide-7871094_1280.jpg";
+card.appendChild(img);
+const h4 = document.createElement("h4");
+h4.textContent = lo.name;
+card.appendChild(h4);
+const typeP = document.createElement("p");
+typeP.textContent = `${lo.loType} | ${lo.deliveryType || "N/A"} | Duration: ${lo.duration || "N/A"} mins`;
+card.appendChild(typeP);
+const skillsP = document.createElement("p");
+skillsP.textContent = "Skills: " + (lo.loSkillNames?.join(", ") || "N/A");
+card.appendChild(skillsP);
+const ratingP = document.createElement("p");
+ratingP.innerHTML = `<span class="rating">Rating: ${lo.averageRating || 0}★</span> (${lo.ratingsCount || 0})`;
+card.appendChild(ratingP);
+container.appendChild(card);
+const numericId = lo.loId.split(":")[1];
+fetch(`https://cpcontents.adobe.com/eu/public/guest/eu/api/${apiKey}/${accountId}/${lo.loType}/${numericId}.json`)
+.then(res => res.json())
+.then(detail => {
+if (detail?.data?.attributes?.imageUrl) {
+img.src = detail.data.attributes.imageUrl;
+}
+})
+.catch(() => {});
+});
+paginationDiv.innerHTML = `
+<button ${page === 0 ? "disabled" : ""} onclick="changePage(${page - 1})">Previous</button>
+<button onclick="changePage(${page + 1})">Next</button>
+`;
+} catch (err) {
+console.error(err);
+container.innerHTML = "<p>Error fetching results.</p>";
+loadingDiv.style.display = "none";
+document.getElementById("applyFilters").disabled = false;
+}
+}
+function changePage(newPage) {
+currentPage = newPage;
+fetchResults(filtersState, currentPage);
+}
+document.querySelectorAll('.filter-section').forEach(sec=>{
+sec.querySelector('.filter-heading').onclick = function(){
+toggleSection(sec);
+}
+});
+document.getElementById("applyFilters").addEventListener("click", () => {
+currentPage = 0;
+fetchResults(filtersState);
+});
+document.getElementById("clearFilters").addEventListener("click", () => {
+clearAllFilters();
+});
+updateChips(); updateBadgeCounts();
+fetchResults(filtersState,0);
+const filtersPanel = document.getElementById('filtersPanel');
+const drawerOverlay = document.getElementById('drawerOverlay');
+function openDrawerMobile(){
+filtersPanel.classList.add('open');
+drawerOverlay.classList.add('active');
+drawerOverlay.onclick = closeDrawerMobile;
+}
+function closeDrawerMobile(){
+filtersPanel.classList.remove('open');
+drawerOverlay.classList.remove('active');
+}
+if(window.innerWidth<900){
+const filterToggleBtn = document.createElement('button');
+filterToggleBtn.innerText = 'Filters';
+filterToggleBtn.style.position = 'fixed';
+filterToggleBtn.style.bottom = '24px';
+filterToggleBtn.style.left = '20px';
+filterToggleBtn.style.zIndex = 9999;
+filterToggleBtn.style.background = '#007bff';
+filterToggleBtn.style.color = '#fff';
+filterToggleBtn.style.border = 'none';
+filterToggleBtn.style.borderRadius = '18px';
+filterToggleBtn.style.fontSize = '16px';
+filterToggleBtn.style.padding = '10px 20px';
+filterToggleBtn.style.boxShadow = '0 2px 8px rgba(0,0,0,.12)';
+filterToggleBtn.onclick = openDrawerMobile;
+document.body.appendChild(filterToggleBtn);
+}
+
+function scrollToContent() {
+document.querySelector(".main-content").scrollIntoView({ behavior: "smooth" });
+}
+</script>
 </body>
 </html>
