@@ -214,8 +214,6 @@
       -webkit-text-fill-color: transparent;
       font-weight: bold;
     }
-
-    /* NOTE: big-search bar & results styles removed to disable top LO-level search */
   </style>
 </head>
 
@@ -229,47 +227,6 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
   <script>
-    // debounce helper (works with async callbacks too)
-    function debounce(fn, wait = 250) {
-      let t;
-      return function(...args) {
-        clearTimeout(t);
-        t = setTimeout(() => fn.apply(this, args), wait);
-      };
-    }
-
-    // Ensure we have all learning objects - if not, fetch them (used by the big search)
-    async function fetchAllLearningObjects() {
-      // If already populated, just return it
-      if (window.allLearningObjects && window.allLearningObjects.length) return window.allLearningObjects;
-
-      const searchUrl = `https://primeapps.adobe.com/almsearch/api/v1/eu/9759/5fc01dd5-de45-408d-9b07-b267d40ebef9/search?size=500&from=0`;
-      const searchPayload = {
-        query: "",
-        filters: { terms: {} },
-        size: 500
-      };
-      try {
-        const res = await fetch(searchUrl, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(searchPayload)
-        });
-        if (!res.ok) {
-          console.warn('fetchAllLearningObjects: search API returned non-OK', res.status);
-          window.allLearningObjects = [];
-          return window.allLearningObjects;
-        }
-        const allData = await res.json();
-        window.allLearningObjects = allData.results || [];
-        return window.allLearningObjects;
-      } catch (err) {
-        console.warn('fetchAllLearningObjects failed', err);
-        window.allLearningObjects = [];
-        return window.allLearningObjects;
-      }
-    }
-
     async function fetchDetails() {
       const content = document.getElementById('content');
       const params = new URLSearchParams(window.location.search);
@@ -288,12 +245,21 @@
         const data = await response.json();
         renderDetails(data, type);
 
-        // Populate window.allLearningObjects now (kept for compatibility; top-level LO search removed)
-        await fetchAllLearningObjects();
+        fetch(
+          `https://primeapps.adobe.com/almsearch/api/v1/eu/9759/5fc01dd5-de45-408d-9b07-b267d40ebef9/search?size=500&from=0`,
+          {
+            method: 'POST',
+          }
+        )
+          .then((r) => r.json())
+          .then((allData) => {
+            window.allLearningObjects = allData.results || [];
+            const relatedHtml = renderRelatedCourses(data, window.allLearningObjects);
+            if (relatedHtml) content.insertAdjacentHTML('beforeend', relatedHtml);
+          });
 
         insertUtilityButtons();
         insertSearchInput();
-        // insertBigSearchBar() removed to disable the top LO-level search bar
       } catch (e) {
         console.error(e);
         content.innerHTML = "<p>Failed to load course details.</p>";
@@ -309,6 +275,7 @@
 
       const exportBtn = document.createElement('button');
       exportBtn.textContent = 'Download as PDF';
+      // add a class so the export function can disable/enable during generation
       exportBtn.className = 'register-btn export-pdf-btn';
       exportBtn.onclick = exportToPDF;
 
@@ -329,7 +296,7 @@
       headerDiv.appendChild(btnContainer);
     }
 
-    // Export to PDF (kept same as before)
+    // Export to PDF: create a clean (black-on-white) clone of the container, render it with html2canvas, then build a multi-page PDF
     async function exportToPDF() {
       const exportBtn = document.querySelector('.export-pdf-btn');
       if (exportBtn) {
@@ -341,6 +308,7 @@
         const { jsPDF } = window.jspdf;
         const container = document.querySelector('.container');
 
+        // Wait for images inside the container to finish loading to ensure they are captured
         const imgs = Array.from(container.querySelectorAll('img'));
         await Promise.all(imgs.map(img => {
           if (img.complete) return Promise.resolve();
@@ -350,14 +318,15 @@
           });
         }));
 
+        // Clone container so we can remove colors/backgrounds without affecting the live UI
         const clone = container.cloneNode(true);
 
+        // Insert page URL at the top and bottom of the clone (these will appear in PDF)
         const pageUrl = window.location.href;
         const topUrlDiv = document.createElement('div');
         topUrlDiv.style.fontSize = '12px';
         topUrlDiv.style.marginBottom = '8px';
         topUrlDiv.style.wordBreak = 'break-all';
-        topUrlDiv.className = 'pdf-url';
         topUrlDiv.textContent = pageUrl;
         clone.insertBefore(topUrlDiv, clone.firstChild);
 
@@ -365,12 +334,13 @@
         bottomUrlDiv.style.fontSize = '12px';
         bottomUrlDiv.style.marginTop = '8px';
         bottomUrlDiv.style.wordBreak = 'break-all';
-        bottomUrlDiv.className = 'pdf-url';
         bottomUrlDiv.textContent = pageUrl;
         clone.appendChild(bottomUrlDiv);
 
+        // Inject a clean style that forces black text and white background, removes borders, shadows and decorative elements
         const cleanStyle = document.createElement('style');
         cleanStyle.textContent = `
+          /* Make everything black text on white background for PDF */
           :root, * {
             color: #000 !important;
             background: transparent !important;
@@ -383,38 +353,48 @@
             -webkit-background-clip: unset !important;
           }
           body, .container { background: #fff !important; }
+          /* Remove card decorations */
           .card, .card-header, .module-card, .sublo-card, .resource-card, .card-content, .chapter-list, .side-info-box {
             background: transparent !important;
             background-color: #fff !important;
             border: none !important;
             box-shadow: none !important;
           }
-          .register-btn, .button-container, .expand-btn, .fa-chevron-down, .fa-chevron-up, .expand-icon, .big-search, .big-search-wrap {
+          /* Remove visual-only elements */
+          .register-btn, .button-container, .expand-btn, .fa-chevron-down, .fa-chevron-up, .expand-icon {
             display: none !important;
           }
+          /* Force text colors to black */
           h1,h2,h3,h4,h5,h6, p, span, li, small, a, div {
             color: #000 !important;
             background: transparent !important;
           }
+          /* Remove borders from chapter items */
           .chapter-item { border-bottom: none !important; }
+          /* Make images keep their sizes but no visual filters */
           img { max-width: 100% !important; height: auto !important; filter: none !important; }
+          /* Remove dashed color borders around headings */
           .card-header h2 { border: none !important; -webkit-background-clip: unset !important; -webkit-text-fill-color: #000 !important; background: none !important; }
+          /* Small URL styles (top/bottom) */
           .pdf-url { font-size: 10px; color: #000 !important; margin: 4px 0; word-break: break-all; }
         `;
         clone.insertBefore(cleanStyle, clone.firstChild);
 
+        // Wrap clone in a white wrapper
         const wrapper = document.createElement('div');
         wrapper.style.background = '#fff';
         wrapper.style.padding = '16px';
         wrapper.style.boxSizing = 'border-box';
         wrapper.appendChild(clone);
 
+        // Place wrapper off-screen so rendering doesn't affect the viewport
         wrapper.style.position = 'fixed';
         wrapper.style.left = '-9999px';
         wrapper.style.top = '0';
         wrapper.style.zIndex = '-1000';
         document.body.appendChild(wrapper);
 
+        // Wait for images in the clone to load (they are likely cached but we still wait)
         const imgsClone = Array.from(wrapper.querySelectorAll('img'));
         await Promise.all(imgsClone.map(img => {
           if (img.complete) return Promise.resolve();
@@ -424,6 +404,7 @@
           });
         }));
 
+        // Use html2canvas to render the wrapper. backgroundColor set to white to ensure white pages.
         const canvas = await html2canvas(wrapper, {
           scale: 2,
           useCORS: true,
@@ -434,10 +415,12 @@
           windowHeight: document.documentElement.scrollHeight
         });
 
+        // Create PDF and paginate
         const pdf = new jsPDF('p', 'mm', 'a4');
         const pdfWidth = pdf.internal.pageSize.getWidth();
         const pdfHeight = pdf.internal.pageSize.getHeight();
 
+        // Work out page slicing in px based on canvas aspect ratio
         const canvasWidth = canvas.width;
         const canvasHeight = canvas.height;
         const pageHeightPx = Math.floor(canvasWidth * (pdfHeight / pdfWidth));
@@ -448,11 +431,13 @@
           const sourceY = page * pageHeightPx;
           const fragmentHeight = Math.min(pageHeightPx, canvasHeight - sourceY);
 
+          // create a canvas for this page slice
           const pageCanvas = document.createElement('canvas');
           pageCanvas.width = canvasWidth;
           pageCanvas.height = fragmentHeight;
           const ctx = pageCanvas.getContext('2d');
 
+          // draw the relevant slice from the full canvas
           ctx.drawImage(canvas, 0, sourceY, canvasWidth, fragmentHeight, 0, 0, canvasWidth, fragmentHeight);
 
           const imgData = pageCanvas.toDataURL('image/png');
@@ -474,6 +459,7 @@
         const safeTitle = (document.querySelector('.card-header h2')?.textContent || 'course-details').replace(/[^\w\-_\s]/g, '').trim().replace(/\s+/g, '_');
         pdf.save(`${safeTitle || 'course-details'}.pdf`);
 
+        // Clean up clone wrapper
         document.body.removeChild(wrapper);
 
       } catch (err) {
@@ -497,7 +483,7 @@
       }
     }
 
-    // Enhanced ICS generation (kept same)
+    // Enhanced ICS generation: includes LearningObject name, image URL in the description, and page link in LOCATION
     function generateCalendarReminder() {
       const titleElem = document.querySelector('.card-header h2');
       const imgElem = document.querySelector('.card-header img');
@@ -509,6 +495,7 @@
       const imageUrl = imgElem?.src || '';
       const pageUrl = window.location.href;
 
+      // helper to format ICS datetime (UTC) with optional hour offset
       function icsDateTime(daysOffset = 0, hoursOffset = 0) {
         const d = new Date();
         d.setDate(d.getDate() + daysOffset);
@@ -517,12 +504,16 @@
       }
 
       const dtstamp = icsDateTime(0, 0);
-      const dtstart = icsDateTime(7, 9);
-      const dtend = icsDateTime(7, 10);
+      const dtstart = icsDateTime(7, 9); // default: 7 days from now at 09:00 (local -> converted by toISOString to UTC)
+      const dtend = icsDateTime(7, 10);  // +1 hour
       const uid = `${Date.now()}@exported.course`;
 
+      // Build description including learning object name and image URL (text) so clients show the info.
+      // Also include ATTACH for the image if available (many clients will show it).
       let description = `Don't forget to enroll in ${courseName}!`;
-      if (imageUrl) description += `\\nImage: ${imageUrl}`;
+      if (imageUrl) {
+        description += `\\nImage: ${imageUrl}`;
+      }
       description += `\\nPage: ${pageUrl}`;
 
       let icsContent = [
@@ -539,6 +530,7 @@
         `DESCRIPTION:${escapeICSText(description)}`
       ];
 
+      // If we have an image URL, add an ATTACH line (some calendar clients support this)
       if (imageUrl) {
         icsContent.push(`ATTACH;FMTTYPE=image/jpeg:${imageUrl}`);
         icsContent.push(`X-ALT-DESC;FMTTYPE=text/html:<html><body><p>Don't forget to enroll in <b>${escapeICSText(courseName)}</b></p><img src="${imageUrl}" alt="Course Image" /></body></html>`);
@@ -559,6 +551,7 @@
       }, 0);
     }
 
+    // Escape text for ICS (simple)
     function escapeICSText(text) {
       if (!text) return '';
       return String(text)
@@ -595,7 +588,7 @@
             const id = course.id || '';
             return `
             <div style="border:1px solid #ddd; border-radius:8px; padding:10px; width:180px; background:white;">
-              <a href="?courseId=${encodeURIComponent((course.type || 'learningObject') + ':' + id)}">
+              <a href="?courseId=${id}">
                 <img src="${img}" style="width:100%;height:auto; border-radius:6px;" alt="Course" />
                 <p style="font-weight:600; margin:5px 0;color:#445;">${name}</p>
               </a>
@@ -634,11 +627,6 @@
         });
       });
     }
-
-    // NOTE: Top-level big LO search functionality removed:
-    // - insertBigSearchBar(), detectTypeQuery(), performLOSearch(), renderSearchResults() have been deleted
-    // - big-search related CSS removed above
-    // This keeps all other course-level features intact.
 
     async function renderDetails(data, type) {
       const content = document.getElementById('content');
@@ -756,13 +744,200 @@
             d.setDate(d.getDate() + days);
             deadline = d.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
           }
+        } else if (!isNaN(Date.parse(val))) {
+          const d = new Date(val);
+          deadline = d.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
         }
       }
 
-      // ... rest of original file unchanged ...
+      return `
+    <div class="side-info-box">
+      <strong>Certification Details:</strong><br />
+      <span><b>Validity:</b> ${validity}</span><br />
+      <span><b>State:</b> ${state}</span><br />
+      <span><b>Completion Deadline:</b> ${deadline}</span>
+    </div>
+  `;
     }
 
-    // Start
+    function extractSkillInfo(data) {
+      const inc = data.included || [];
+      const s = inc.find((i) => i.type === 'skill');
+      const sl = inc.find((i) => i.type === 'skillLevel');
+      if (!s || !sl) return null;
+      return {
+        name: s.attributes?.name || 'Skill',
+        level: sl.attributes?.level || 'N/A',
+        maxCredits: sl.attributes?.maxCredits || 'N/A',
+      };
+    }
+
+    function getFormatColor(type) {
+      const map = {
+        INTERACTIVE: '#0078ff',
+        VIDEO: '#e67e22',
+        PDF: '#d32f2f',
+        DOC: '#1976d2',
+        DOCX: '#1976d2',
+        AUDIO: '#9c27b0',
+        PPT: '#6a1b9a',
+        PPTX: '#6a1b9a',
+      };
+      return map[type?.toUpperCase()] || '#2e7d32';
+    }
+
+    function renderModules(data) {
+      const inc = data.included || [];
+      const loInst = inc.filter((i) => i.type === 'learningObjectInstance');
+      const loRes = inc.filter((i) => i.type === 'learningObjectResource');
+      const res = inc.filter((i) => i.type === 'resource');
+      if (!loInst.length) return '<p>No modules available.</p>';
+
+      return loInst
+        .map((inst) => {
+          const refs = inst.relationships?.loResources?.data || [];
+          const matched = loRes.filter((lr) => refs.some((r) => r.id === lr.id));
+          let html = '';
+          matched.forEach((lr) => {
+            const m = lr.attributes?.localizedMetadata?.[0];
+            const name = m?.name || 'Module';
+            const resourceType = lr.attributes?.resourceType || 'N/A';
+            const resRefs = lr.relationships?.resources?.data || [];
+            const related = res.filter((r) => resRefs.some((rr) => rr.id === r.id));
+
+            html += `
+      <div class="module-card">
+        <div class="module-header">
+          <span>${name}</span>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span style="font-size:0.9em; color:#6a5acd;">${resourceType}</span>
+            <!-- expand button -->
+            <button class="expand-btn" aria-label="Expand module">
+              <i class="fa-solid fa-chevron-down expand-icon"></i>
+            </button>
+          </div>
+        </div>
+        <div class="chapter-list" style="display:none;">
+          ${related
+            .map((r) => {
+              const a = r.attributes || {};
+              const t = a.contentType;
+              const display = ['CP', 'SCORM12', 'SCORM2004'].includes(t)
+                ? 'Interactive'
+                : t || a.resourceType || 'N/A';
+              const color = getFormatColor(display);
+              return `
+            <div class="resource-card">
+              <div class="chapter-item">
+                <i class="fa-solid fa-circle-play"></i>
+                <span>${a.name}</span>
+                <small class="format-label" style="color:${color};">
+                  (${a.desiredDuration || 0} mins - ${display})
+                </small>
+              </div>
+            </div>`;
+            })
+            .join('')}
+        </div>
+      </div>`;
+          });
+          return html;
+        })
+        .join('');
+    }
+
+    function renderSubLOs(data) {
+      const inc = data.included || [];
+      const subCourses = inc.filter((i) => i.type === 'learningObject' && i.attributes?.loType === 'course');
+      if (!subCourses.length) return '<p>No related courses available.</p>';
+
+      return subCourses
+        .map((sub) => {
+          const a = sub.attributes || {};
+          const m = a.localizedMetadata?.[0] || {};
+          const name = m.name || a.name || 'Untitled Course';
+          const desc = m.overview || a.description || '';
+          const img = a.imageUrl || 'https://via.placeholder.com/100x80?text=No+Image';
+          const dur = a.duration ? formatDuration(a.duration) : 'N/A';
+
+          const subInc = inc.filter((i) => i.relationships?.learningObject?.data?.id === sub.id || i.id === sub.id);
+          const loInst = subInc.filter((i) => i.type === 'learningObjectInstance');
+          const loRes = subInc.filter((i) => i.type === 'learningObjectResource');
+          // <<== FIXED: use top-level included resources so related resource objects are found
+          const res = inc.filter((i) => i.type === 'resource');
+
+          let resourceHTML = '';
+          loInst.forEach((inst) => {
+            const refs = inst.relationships?.loResources?.data || [];
+            const matched = loRes.filter((lr) => refs.some((r) => r.id === lr.id));
+            matched.forEach((lr) => {
+              const meta = lr.attributes?.localizedMetadata?.[0];
+              const moduleName = meta?.name || 'Module';
+              const resourceType = lr.attributes?.resourceType || 'N/A';
+              // gather related resources for this learningObjectResource
+              const resRefs = lr.relationships?.resources?.data || [];
+              const related = res.filter((r) => resRefs.some((rr) => rr.id === r.id));
+              resourceHTML += `
+        <div class="module-card">
+          <div class="module-header">
+            <span>${moduleName}</span>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span style="font-size:0.9em; color:#6a5acd;">${resourceType}</span>
+              <button class="expand-btn" aria-label="Expand module">
+                <i class="fa-solid fa-chevron-down expand-icon"></i>
+              </button>
+            </div>
+          </div>
+          <div class="chapter-list" style="display:none;">
+            ${related
+              .map((r) => {
+                const a = r.attributes || {};
+                const t = a.contentType;
+                const display = ['CP', 'SCORM12', 'SCORM2004'].includes(t)
+                  ? 'Interactive'
+                  : t || a.resourceType || 'N/A';
+                const color = getFormatColor(display);
+                return `
+              <div class="resource-card">
+                <div class="chapter-item">
+                  <i class="fa-solid fa-circle-play"></i>
+                  <span>${a.name}</span>
+                  <small class="format-label" style="color:${color};">
+                    (${a.desiredDuration || 0} mins - ${display})
+                  </small>
+                </div>
+              </div>`;
+              })
+              .join('')}
+          </div>
+        </div>`;
+            });
+          });
+
+          return `
+    <div class="sublo-card">
+      <div class="sublo-header">
+        <div style="display:flex;align-items:center;gap:0.8rem;">
+          <img src="${img}" style="width:60px;height:60px;border-radius:8px;object-fit:cover;" alt="Course Image" />
+          <span>${name} (${a.loType})</span>
+        </div>
+        <small>${dur}</small>
+      </div>
+      <div class="chapter-list">
+        <p>${desc || 'No description available.'}</p>
+        ${resourceHTML || '<p>No resources available.</p>'}
+      </div>
+    </div>`;
+        })
+        .join('');
+    }
+
+    function formatDuration(mins) {
+      const d = Math.floor(mins / 1440),
+        m = mins % 1440;
+      return d > 0 ? `${d} day(s) ${m} mins` : `${m} mins`;
+    }
+
     fetchDetails();
   </script>
 </body>
