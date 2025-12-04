@@ -888,8 +888,7 @@ function openChatbot() {
 document.getElementById('chatbotModal').classList.add('open');
 document.getElementById('chatMessages').innerHTML = '';
 document.getElementById('chatDisplay').innerHTML = '';
-addBotMessage("👋 Hi! I'm an AI-trained assistant. I can search by skills, difficulty, content keywords, and more!");
-addBotMessage("Try: 'courses with video in it', 'Python courses', 'short beginner training', 'advanced management'");
+addBotMessage("The search results may not be 100% accurate (function has not been refined ahead intentionally), it is for demonstration purpose only");
 showQuerySuggestions();
 }
 
@@ -1032,7 +1031,7 @@ addUserMessage(query);
 input.value = '';
 
 const display = document.getElementById('chatDisplay');
-display.innerHTML = `<div style="text-align:center;padding:20px;"><div class="spinner"></div> AI analyzing query...</div>`;
+display.innerHTML = `<div style="text-align:center;padding:20px;"><div class="spinner"></div> Analyzing query...</div>`;
 
 try {
 const lowerQuery = query.toLowerCase();
