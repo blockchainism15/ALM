@@ -483,6 +483,20 @@
       }
     }
 
+    // Open ALM self-registration and include a return URL so ALM can redirect back here after registration.
+    // IMPORTANT: The ALM endpoint must accept a "returnUrl" query parameter. If ALM uses a different parameter name,
+    // let me know and I'll change it to the correct one (e.g., redirectUrl, continue, target, RelayState, etc.).
+    function openALMRegistration() {
+      const almBase = 'https://learningmanagereu.adobe.com/accountiplogin?ipId=8217&accesskey=7svd0g5hm8or1';
+      // Build the return URL pointing back to this page (including current query string so courseId remains)
+      const returnUrl = window.location.origin + window.location.pathname + window.location.search;
+      const almWithReturn = almBase + '&returnUrl=' + encodeURIComponent(returnUrl);
+
+      // Navigate the current window to ALM so after registration ALM can redirect back to returnUrl.
+      // If you prefer opening ALM in a new tab instead, use window.open(almWithReturn, '_blank');
+      window.location.href = almWithReturn;
+    }
+
     // Enhanced ICS generation: includes LearningObject name, image URL in the description, and page link in LOCATION
     function generateCalendarReminder() {
       const titleElem = document.querySelector('.card-header h2');
@@ -655,7 +669,8 @@
         ${skill ? `<p><strong>Skill:</strong> ${skill.name} (Level ${skill.level}, Credits: ${skill.maxCredits})</p>` : ''}
         ${type !== 'certification' ? `<p><strong>Duration:</strong> ${duration}</p>` : ''}
         <div style="width: 500px;height: 100px;font-size: 20px;">
-        <a href="#" class="register-btn">Register</a>
+        <!-- Register button now has an ID so we can attach an event to open ALM registration with a return URL -->
+        <a href="#" id="registerBtn" class="register-btn">Register</a>
         </div>
       </div>
     </div>
@@ -668,6 +683,15 @@
 
       html += '</div></div>';
       content.innerHTML = html;
+
+      // Attach click handler for Register button to open ALM with returnUrl
+      const regBtn = document.getElementById('registerBtn');
+      if (regBtn) {
+        regBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          openALMRegistration();
+        });
+      }
 
       // --- ADD: attach expand/collapse handlers for module cards ---
       document.querySelectorAll('.expand-btn').forEach((btn) => {
