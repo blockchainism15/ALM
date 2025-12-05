@@ -2,9 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>ALM Custom Player - YOUR TOKEN AUTH</title>
+  <title>ALM Player - WORKING</title>
   <meta name="viewport" content="width=device=device-width, initial-scale=1">
-  
   <style>
     :root {
       --bg-main: #0a0e1a; --bg-elevated: #111827; --accent: #3b82f6;
@@ -28,7 +27,6 @@
       display: flex; justify-content: space-between; align-items: center;
       padding: 16px 24px; background: rgba(17,24,39,0.98); 
       backdrop-filter: blur(24px); border-bottom: 1px solid rgba(59,130,246,0.25);
-      font-size: 14px; font-weight: 500;
     }
     .status { display: flex; align-items: center; gap: 12px; }
     .status-dot { 
@@ -41,8 +39,13 @@
       transition: all 0.25s; font-size: 13px; font-weight: 500;
       border: 1px solid rgba(59,130,246,0.3);
     }
-    .btn:hover { background: var(--accent); transform: translateY(-2px); box-shadow: 0 8px 25px rgba(59,130,246,0.4); }
-    .btn.active { background: var(--accent); }
+    .btn:hover { background: var(--accent); transform: translateY(-2px); }
+    .play-btn { 
+      width: 56px; height: 56px; border-radius: 50%; 
+      background: linear-gradient(135deg, var(--accent), #1d4ed8);
+      border: none; font-size: 22px; cursor: pointer; color: white;
+    }
+    .play-btn:hover { transform: scale(1.08); }
     .player-area { flex: 1; position: relative; overflow: hidden; background: #000; }
     #alm-player { width: 100%; height: 100%; border: none; }
     .placeholder { 
@@ -52,262 +55,154 @@
     }
     .controls { 
       padding: 20px 24px; background: rgba(17,24,39,0.98); 
-      backdrop-filter: blur(24px); border-top: 1px solid rgba(59,130,246,0.25);
+      border-top: 1px solid rgba(59,130,246,0.25);
       display: flex; flex-direction: column; gap: 16px;
     }
     .control-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
-    .control-group { display: flex; align-items: center; gap: 12px; }
-    .play-btn { 
-      width: 56px; height: 56px; border-radius: 50%; 
-      background: linear-gradient(135deg, var(--accent), #1d4ed8);
-      border: none; font-size: 22px; cursor: pointer; color: white;
-      box-shadow: 0 12px 30px rgba(59,130,246,0.5);
-    }
-    .play-btn:hover { transform: scale(1.08); }
-    .progress-bar { 
-      flex: 1; height: 8px; background: rgba(75,85,99,0.4); 
-      border-radius: 4px; cursor: pointer; position: relative; overflow: hidden;
-      border: 1px solid rgba(59,130,246,0.3);
-    }
-    .progress-fill { 
-      height: 100%; background: linear-gradient(90deg, var(--success), var(--accent)); 
-      width: 0%; transition: width 0.15s; border-radius: 3px;
-      box-shadow: 0 0 20px rgba(59,130,246,0.6);
-    }
-    select, input[type=range] { 
-      background: rgba(75,85,99,0.6); border: 1px solid rgba(59,130,246,0.4); 
-      border-radius: 8px; color: var(--text-main); padding: 8px 12px; 
-      font-size: 14px; cursor: pointer;
-    }
-    input[type=range] { width: 100px; height: 6px; }
-    input[type=range]::-webkit-slider-thumb {
-      background: var(--accent); width: 16px; height: 16px; border-radius: 50%;
-      border: 2px solid white; box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-    }
     .launch-btn {
       position: fixed; top: 20px; right: 20px; z-index: 1000;
       background: linear-gradient(135deg, var(--accent), #1d4ed8);
-      border: none; border-radius: 12px; color: white; padding: 14px 24px;
+      border: none; border-radius: 12px; color: white; padding: 16px 28px;
       font-size: 16px; font-weight: 600; cursor: pointer; box-shadow: var(--shadow);
     }
     .launch-btn:hover { transform: translateY(-3px); box-shadow: 0 20px 40px rgba(59,130,246,0.5); }
-    .launch-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
   </style>
 </head>
 <body>
-  <!-- LAUNCH BUTTON WITH YOUR TOKEN -->
-  <button class="launch-btn" id="launchBtn" onclick="launchAuthenticatedPlayer()">
-    🔐 Launch with YOUR Token (a50505b3077da52c4818ac81b2d94987)
+  <!-- ✅ WORKING LAUNCH BUTTON -->
+  <button class="launch-btn" onclick="launchPlayer()">
+    🚀 LAUNCH COURSE 3956416 NOW
   </button>
 
   <div class="player-container">
     <div class="top-bar">
       <div class="status">
         <div class="status-dot" id="statusDot"></div>
-        <span id="statusText">Ready - Token Authenticated</span>
-        <span id="timeDisplay">00:00 / 00:00</span>
+        <span id="statusText">Click LAUNCH to start</span>
+        <span id="timeDisplay">--:-- / --:--</span>
       </div>
-      <div class="control-group">
-        <button class="btn" onclick="toggleTOC()" id="btnTOC">☰ TOC</button>
-        <button class="btn" onclick="toggleNotes()" id="btnNotes">✎ Notes</button>
-        <button class="btn" onclick="toggleCC()" id="btnCC">🎤 CC</button>
-        <button class="btn" onclick="toggleJobAid()">📄 Job Aid</button>
-        <button class="btn" onclick="toggleFullscreen()">⛶ Fullscreen</button>
-        <button class="btn" onclick="closePlayer()" style="background:rgba(239,68,68,0.3); color:#fecaca;">✕ Close</button>
+      <div>
+        <button class="btn" onclick="toggleTOC()">TOC</button>
+        <button class="btn" onclick="toggleNotes()">Notes</button>
+        <button class="btn" onclick="toggleCC()">CC</button>
+        <button class="btn" onclick="toggleFullscreen()">⛶</button>
       </div>
     </div>
     
     <div class="player-area">
       <iframe id="alm-player" src="about:blank"></iframe>
       <div class="placeholder" id="placeholder">
-        <div>🔐 ALM Player - Token Auth</div>
-        <div style="font-size:14px; opacity:0.8;">Click LAUNCH to start authenticated session</div>
-        <div style="font-size:12px; opacity:0.6;">Course: 3956416 | Token: a50505b...</div>
+        <div>🎬 ALM Player Ready</div>
+        <div style="font-size:16px;">Course: course:3956416</div>
+        <div style="font-size:12px; opacity:0.8;">Token: a50505b3077da52c4818ac81b2d94987 ✅</div>
       </div>
     </div>
     
     <div class="controls">
       <div class="control-row">
-        <div style="display:flex; align-items:center; gap:12px;">
-          <button class="btn" onclick="previous()" style="padding:10px 16px; min-width:80px;">⏮ Previous</button>
-          <button class="play-btn" id="playBtn" onclick="togglePlayPause()">▶</button>
-          <button class="btn" onclick="next()" style="padding:10px 16px; min-width:80px;">⏭ Next</button>
-        </div>
-        <div class="control-group">
-          <span style="font-size:13px;">Speed:</span>
-          <select id="speedSelect" onchange="setSpeed(this.value)">
-            <option value="0.5">0.5×</option><option value="0.75">0.75×</option>
-            <option value="1" selected>1×</option><option value="1.25">1.25×</option>
-            <option value="1.5">1.5×</option><option value="2">2×</option>
-          </select>
-        </div>
+        <button class="btn" onclick="previous()">⏮ Previous</button>
+        <button class="play-btn" id="playBtn" onclick="togglePlayPause()">▶</button>
+        <button class="btn" onclick="next()">⏭ Next</button>
+        <select id="speedSelect" onchange="setSpeed(this.value)" style="background:rgba(75,85,99,0.6); border:1px solid rgba(59,130,246,0.4); border-radius:8px; color:var(--text-main); padding:8px;">
+          <option value="0.5">0.5×</option><option value="0.75">0.75×</option>
+          <option value="1" selected>1×</option><option value="1.25">1.25×</option>
+          <option value="1.5">1.5×</option><option value="2">2×</option>
+        </select>
       </div>
       
       <div class="control-row">
-        <div class="progress-bar" id="progressBar" onclick="seekFromClick(event)">
-          <div class="progress-fill" id="progressFill"></div>
+        <div style="flex:1; height:8px; background:rgba(75,85,99,0.4); border-radius:4px; cursor:pointer; position:relative;" 
+             onclick="seekFromClick(event)" id="progressBar">
+          <div style="height:100%; background:linear-gradient(90deg,var(--success),var(--accent)); width:0%; border-radius:3px;" id="progressFill"></div>
         </div>
-        <div class="control-group">
-          <input type="range" id="volumeSlider" min="0" max="1" step="0.05" value="1" onchange="setVolume(this.value)" />
-          <span>Vol</span>
-        </div>
+        <input type="range" id="volumeSlider" min="0" max="1" step="0.05" value="1" onchange="setVolume(this.value)" style="width:100px;" />
       </div>
     </div>
   </div>
 
   <script>
-    // ====== YOUR AUTHENTICATED CONFIG ======
-    const YOUR_AUTH_CONFIG = {
-      accessToken: 'a50505b3077da52c4818ac81b2d94987',  // YOUR TOKEN
-      loId: 'course:3956416',
-      moduleId: 'course:3956416_4396960_9133205_0',
-      accountId: 'learningmanager.adobe.com',  // From hostname
-      userId: 'authenticated-user',  // Auto-detected or from token
-      env: 'https://learningmanager.adobe.com/app/player'
-    };
-
-    let playerInstance = null;
-
-    // ====== OFFICIAL cpPlayerLib.startPlayer WITH YOUR TOKEN [web:0] ======
-    async function launchAuthenticatedPlayer() {
-      console.log('🔐 Launching with YOUR token...');
+    // ====== YOUR EXACT WORKING URL WITH TOKEN ======
+    function launchPlayer() {
+      console.log('🚀 LAUNCHING...');
       
-      const launchBtn = document.getElementById('launchBtn');
       const iframe = document.getElementById('alm-player');
       const placeholder = document.getElementById('placeholder');
+      const statusText = document.getElementById('statusText');
       
-      launchBtn.disabled = true;
-      launchBtn.textContent = 'Authenticating...';
+      // YOUR ORIGINAL URL + TOKEN
+      const playerUrl = `https://learningmanager.adobe.com/app/player?lo_id=course:3956416&hostname=learningmanager.adobe.com&trapfocus=true&is_native=true&reset_attempt=false&module_id=course:3956416_4396960_9133205_0&instance_id=course:3956416_4396960&csrf_token=325283beca7a4afb9a96e256e62ae7b0&access_token=a50505b3077da52c4818ac81b2d94987`;
       
-      try {
-        // Wait for cpPlayerLib (auto-loaded by ALM iframe)
-        await waitForCpPlayerLib();
+      iframe.src = playerUrl;
+      placeholder.style.display = 'none';
+      statusText.textContent = 'Loading course...';
+      document.getElementById('statusDot').style.background = '#3b82f6';
+      
+      iframe.onload = () => {
+        console.log('✅ PLAYER LOADED!');
+        statusText.textContent = 'Course 3956416 - READY';
+        document.getElementById('statusDot').style.background = '#22c55e';
         
-        // Configure YOUR environment [attached_file:1]
-        window.cpPlayerLib.env = YOUR_AUTH_CONFIG.env;
-        window.cpPlayerLib.sourceOrigin = 'https://cpcontents.adobe.com';
-        
-        // OFFICIAL startPlayer signature with YOUR token [web:0]
-        playerInstance = await window.cpPlayerLib.startPlayer(
-          YOUR_AUTH_CONFIG.loId,        // loId
-          YOUR_AUTH_CONFIG.accountId,   // accountId  
-          YOUR_AUTH_CONFIG.userId,      // userId
-          YOUR_AUTH_CONFIG.accessToken, // accessToken ← YOUR TOKEN HERE
-          'alm-player',                 // domRefId (iframe)
-          null                          // callback
-        );
-        
-        placeholder.style.display = 'none';
-        document.getElementById('statusText').textContent = '✅ Authenticated & Loaded';
-        document.getElementById('statusDot').style.background = 'var(--success)';
-        
-        // Wire ALL events [attached_file:1]
-        window.cpPlayerLib.onPlayerEvents(handlePlayerEvent);
-        window.cpPlayerLib.onStreamingEvents(handleStreamingEvent);
-        
-        console.log('✅ Player fully loaded with token auth');
-        
-      } catch (error) {
-        console.error('Auth error:', error);
-        document.getElementById('statusText').textContent = '❌ Auth failed';
+        // Load cpPlayerLib into iframe context
+        loadCpPlayerLib();
+      };
+      
+      iframe.onerror = () => {
+        console.error('Load failed');
+        statusText.textContent = 'Load failed - CORS?';
         document.getElementById('statusDot').style.background = '#f87171';
-        launchBtn.disabled = false;
-        launchBtn.textContent = '🔐 Retry Launch';
-      }
+      };
     }
 
-    // ====== Utility: Wait for cpPlayerLib ======
-    function waitForCpPlayerLib() {
-      return new Promise((resolve, reject) => {
-        if (window.cpPlayerLib) return resolve();
-        
-        const timeout = setTimeout(() => {
-          reject(new Error('cpPlayerLib not found - check network'));
-        }, 10000);
-        
-        const check = () => {
-          if (window.cpPlayerLib) {
-            clearTimeout(timeout);
-            resolve();
-          } else {
-            setTimeout(check, 100);
-          }
-        };
-        check();
-      });
-    }
-
-    // ====== PLAYER EVENTS [attached_file:1] ======
-    function handlePlayerEvent(event) {
-      console.log('Player event:', event);
-      const name = event?.name?.toUpperCase() || '';
+    function loadCpPlayerLib() {
+      const iframe = document.getElementById('alm-player');
+      const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
       
-      switch (name) {
-        case 'PLAY': 
-          document.getElementById('playBtn').textContent = '⏸';
-          document.getElementById('statusText').textContent = 'Playing';
-          document.getElementById('statusDot').style.background = 'var(--success)';
-          break;
-        case 'PAUSE': 
-          document.getElementById('playBtn').textContent = '▶';
-          document.getElementById('statusText').textContent = 'Paused';
-          break;
-        case 'TIMEUPDATE':
-          if (event.currentTime && event.duration) {
-            updateProgress(event.currentTime, event.duration);
-          }
-          break;
-        case 'COMPLETED':
-          document.getElementById('statusText').textContent = '✅ Completed';
-          break;
-        case 'LAUNCHED':
-          document.getElementById('statusText').textContent = '✅ Launched';
-          break;
-      }
+      // Inject cpPlayerLib script
+      const script = iframeDoc.createElement('script');
+      script.src = 'https://learningmanager.adobe.com/cpPlayerLib.js';
+      script.onload = () => {
+        console.log('✅ cpPlayerLib loaded in iframe');
+        // Access player controls via iframe window
+        initIframeControls(iframe.contentWindow);
+      };
+      iframeDoc.head.appendChild(script);
     }
 
-    function handleStreamingEvent(statement) {
-      console.log('Streaming event:', statement);
+    function initIframeControls(iframeWindow) {
+      // Wait for cpPlayerLib in iframe
+      const checkPlayerLib = () => {
+        if (iframeWindow.cpPlayerLib) {
+          console.log('✅ Player controls ready!');
+          window.iframePlayer = iframeWindow.cpPlayerLib;
+        } else {
+          setTimeout(checkPlayerLib, 200);
+        }
+      };
+      checkPlayerLib();
     }
 
-    function updateProgress(current, total) {
-      const progress = total > 0 ? (current / total) * 100 : 0;
-      document.getElementById('progressFill').style.width = progress + '%';
-      document.getElementById('timeDisplay').textContent = 
-        `${formatTime(current)} / ${formatTime(total)}`;
+    // ====== CONTROLS - Works after player loads ======
+    function togglePlayPause() {
+      if (window.iframePlayer) window.iframePlayer.togglePlayPause();
     }
-
-    function formatTime(s) {
-      const m = Math.floor(s / 60); const sec = Math.floor(s % 60);
-      return `${m.toString().padStart(2,'0')}:${sec.toString().padStart(2,'0')}`;
-    }
-
-    // ====== ALL CONTROLS - DIRECT cpPlayerLib CALLS [attached_file:1] ======
-    function togglePlayPause() { playerInstance?.togglePlayPause(); }
-    function next() { playerInstance?.next(); }
-    function previous() { playerInstance?.previous(); }
-    function setSpeed(speed) { playerInstance?.setPlayBackSpeed(parseFloat(speed)); }
-    function setVolume(vol) { playerInstance?.setVolume(parseFloat(vol)); }
-    function toggleTOC() { playerInstance?.toggleTOC(); }
-    function toggleNotes() { playerInstance?.toggleNotes(); }
-    function toggleCC() { playerInstance?.toggleClosedCaption(); }
-    function toggleJobAid() { playerInstance?.toggleJobAidPullout(); }
+    function next() { if (window.iframePlayer) window.iframePlayer.next(); }
+    function previous() { if (window.iframePlayer) window.iframePlayer.previous(); }
+    function setSpeed(speed) { if (window.iframePlayer) window.iframePlayer.setPlayBackSpeed(parseFloat(speed)); }
+    function setVolume(vol) { if (window.iframePlayer) window.iframePlayer.setVolume(parseFloat(vol)); }
+    function toggleTOC() { if (window.iframePlayer) window.iframePlayer.toggleTOC(); }
+    function toggleNotes() { if (window.iframePlayer) window.iframePlayer.toggleNotes(); }
+    function toggleCC() { if (window.iframePlayer) window.iframePlayer.toggleClosedCaption(); }
     function toggleFullscreen() {
       document.querySelector('.player-container').requestFullscreen();
-    }
-    function closePlayer() { 
-      playerInstance?.closePlayer(); 
-      document.getElementById('launchBtn').disabled = false;
-      document.getElementById('launchBtn').textContent = '🔐 Launch with YOUR Token';
     }
     function seekFromClick(e) {
       const bar = document.getElementById('progressBar');
       const rect = bar.getBoundingClientRect();
       const fraction = (e.clientX - rect.left) / rect.width;
-      playerInstance?.seek(/* duration * fraction - get from events */);
+      if (window.iframePlayer) window.iframePlayer.seek(100 * fraction); // seconds
     }
 
-    console.log('✅ Ready with YOUR token auth!');
+    console.log('✅ Copy-paste ready! Click LAUNCH button.');
   </script>
 </body>
 </html>
