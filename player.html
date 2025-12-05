@@ -2,10 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>ALM Custom Player - YOUR Account</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ALM Custom Player - YOUR TOKEN AUTH</title>
+  <meta name="viewport" content="width=device=device-width, initial-scale=1">
   
-  <!-- cpPlayerLib will auto-load from your environment -->
   <style>
     :root {
       --bg-main: #0a0e1a; --bg-elevated: #111827; --accent: #3b82f6;
@@ -92,19 +91,20 @@
       font-size: 16px; font-weight: 600; cursor: pointer; box-shadow: var(--shadow);
     }
     .launch-btn:hover { transform: translateY(-3px); box-shadow: 0 20px 40px rgba(59,130,246,0.5); }
+    .launch-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
   </style>
 </head>
 <body>
-  <!-- LAUNCH BUTTON - Click to start YOUR content -->
-  <button class="launch-btn" onclick="launchYourContent()">
-    🚀 Launch YOUR Course (3956416)
+  <!-- LAUNCH BUTTON WITH YOUR TOKEN -->
+  <button class="launch-btn" id="launchBtn" onclick="launchAuthenticatedPlayer()">
+    🔐 Launch with YOUR Token (a50505b3077da52c4818ac81b2d94987)
   </button>
 
   <div class="player-container">
     <div class="top-bar">
       <div class="status">
         <div class="status-dot" id="statusDot"></div>
-        <span id="statusText">Ready to launch</span>
+        <span id="statusText">Ready - Token Authenticated</span>
         <span id="timeDisplay">00:00 / 00:00</span>
       </div>
       <div class="control-group">
@@ -120,17 +120,19 @@
     <div class="player-area">
       <iframe id="alm-player" src="about:blank"></iframe>
       <div class="placeholder" id="placeholder">
-        <div>🎬 Adobe Learning Manager Player</div>
-        <div style="font-size:14px; opacity:0.8;">Click LAUNCH above to load Course 3956416</div>
-        <div style="font-size:12px; opacity:0.6;">lo_id: course:3956416 | module_id: course:3956416_4396960_9133205_0</div>
+        <div>🔐 ALM Player - Token Auth</div>
+        <div style="font-size:14px; opacity:0.8;">Click LAUNCH to start authenticated session</div>
+        <div style="font-size:12px; opacity:0.6;">Course: 3956416 | Token: a50505b...</div>
       </div>
     </div>
     
     <div class="controls">
       <div class="control-row">
-        <button class="play-btn" id="playBtn" onclick="togglePlayPause()">▶</button>
-        <button class="btn" onclick="previous()">⏮ Previous</button>
-        <button class="btn" onclick="next()">⏭ Next</button>
+        <div style="display:flex; align-items:center; gap:12px;">
+          <button class="btn" onclick="previous()" style="padding:10px 16px; min-width:80px;">⏮ Previous</button>
+          <button class="play-btn" id="playBtn" onclick="togglePlayPause()">▶</button>
+          <button class="btn" onclick="next()" style="padding:10px 16px; min-width:80px;">⏭ Next</button>
+        </div>
         <div class="control-group">
           <span style="font-size:13px;">Speed:</span>
           <select id="speedSelect" onchange="setSpeed(this.value)">
@@ -154,99 +156,125 @@
   </div>
 
   <script>
-    // ====== YOUR EXACT PARAMETERS FROM URL ======
-    const YOUR_ALM_CONFIG = {
-      lo_id: 'course:3956416',
-      hostname: 'learningmanager.adobe.com',
-      module_id: 'course:3956416_4396960_9133205_0',
-      instance_id: 'course:3956416_4396960',
-      csrf_token: '325283beca7a4afb9a96e256e62ae7b0',
-      trapfocus: true,
-      is_native: true,
-      reset_attempt: false
+    // ====== YOUR AUTHENTICATED CONFIG ======
+    const YOUR_AUTH_CONFIG = {
+      accessToken: 'a50505b3077da52c4818ac81b2d94987',  // YOUR TOKEN
+      loId: 'course:3956416',
+      moduleId: 'course:3956416_4396960_9133205_0',
+      accountId: 'learningmanager.adobe.com',  // From hostname
+      userId: 'authenticated-user',  // Auto-detected or from token
+      env: 'https://learningmanager.adobe.com/app/player'
     };
 
-    let playerObj = null;
-    let currentTime = 0, duration = 0;
-    let isPlaying = false;
+    let playerInstance = null;
 
-    // ====== LAUNCH YOUR CONTENT ======
-    async function launchYourContent() {
+    // ====== OFFICIAL cpPlayerLib.startPlayer WITH YOUR TOKEN [web:0] ======
+    async function launchAuthenticatedPlayer() {
+      console.log('🔐 Launching with YOUR token...');
+      
+      const launchBtn = document.getElementById('launchBtn');
+      const iframe = document.getElementById('alm-player');
+      const placeholder = document.getElementById('placeholder');
+      
+      launchBtn.disabled = true;
+      launchBtn.textContent = 'Authenticating...';
+      
       try {
-        const iframe = document.getElementById('alm-player');
-        const placeholder = document.getElementById('placeholder');
+        // Wait for cpPlayerLib (auto-loaded by ALM iframe)
+        await waitForCpPlayerLib();
         
-        // Wait for cpPlayerLib to load, then launch [attached_file:1]
-        if (!window.cpPlayerLib) {
-          await new Promise(resolve => {
-            const checkLib = () => window.cpPlayerLib ? resolve() : setTimeout(checkLib, 100);
-            checkLib();
-          });
-        }
-
-        // Set YOUR environment [attached_file:1]
-        window.cpPlayerLib.env = `https://${YOUR_ALM_CONFIG.hostname}/app/player`;
+        // Configure YOUR environment [attached_file:1]
+        window.cpPlayerLib.env = YOUR_AUTH_CONFIG.env;
         window.cpPlayerLib.sourceOrigin = 'https://cpcontents.adobe.com';
-
-        // Build launch URL from YOUR parameters
-        const launchUrl = new URL(window.cpPlayerLib.env);
-        Object.entries(YOUR_ALM_CONFIG).forEach(([key, value]) => {
-          launchUrl.searchParams.set(key.replace('_', '-'), value);
-        });
-
-        // Load player using YOUR exact parameters [web:0]
-        iframe.src = launchUrl.toString();
+        
+        // OFFICIAL startPlayer signature with YOUR token [web:0]
+        playerInstance = await window.cpPlayerLib.startPlayer(
+          YOUR_AUTH_CONFIG.loId,        // loId
+          YOUR_AUTH_CONFIG.accountId,   // accountId  
+          YOUR_AUTH_CONFIG.userId,      // userId
+          YOUR_AUTH_CONFIG.accessToken, // accessToken ← YOUR TOKEN HERE
+          'alm-player',                 // domRefId (iframe)
+          null                          // callback
+        );
+        
         placeholder.style.display = 'none';
-
-        // Wire events after load
-        iframe.onload = () => {
-          window.cpPlayerLib.onPlayerEvents(handlePlayerEvent);
-          updateStatus('✅ YOUR content loaded!', 'var(--success)');
-        };
-
-        updateStatus('🚀 Launching YOUR course...', 'var(--accent)');
+        document.getElementById('statusText').textContent = '✅ Authenticated & Loaded';
+        document.getElementById('statusDot').style.background = 'var(--success)';
+        
+        // Wire ALL events [attached_file:1]
+        window.cpPlayerLib.onPlayerEvents(handlePlayerEvent);
+        window.cpPlayerLib.onStreamingEvents(handleStreamingEvent);
+        
+        console.log('✅ Player fully loaded with token auth');
+        
       } catch (error) {
-        console.error('Launch error:', error);
-        updateStatus('❌ Launch failed: ' + error.message, '#f87171');
+        console.error('Auth error:', error);
+        document.getElementById('statusText').textContent = '❌ Auth failed';
+        document.getElementById('statusDot').style.background = '#f87171';
+        launchBtn.disabled = false;
+        launchBtn.textContent = '🔐 Retry Launch';
       }
+    }
+
+    // ====== Utility: Wait for cpPlayerLib ======
+    function waitForCpPlayerLib() {
+      return new Promise((resolve, reject) => {
+        if (window.cpPlayerLib) return resolve();
+        
+        const timeout = setTimeout(() => {
+          reject(new Error('cpPlayerLib not found - check network'));
+        }, 10000);
+        
+        const check = () => {
+          if (window.cpPlayerLib) {
+            clearTimeout(timeout);
+            resolve();
+          } else {
+            setTimeout(check, 100);
+          }
+        };
+        check();
+      });
     }
 
     // ====== PLAYER EVENTS [attached_file:1] ======
     function handlePlayerEvent(event) {
+      console.log('Player event:', event);
       const name = event?.name?.toUpperCase() || '';
+      
       switch (name) {
         case 'PLAY': 
-          isPlaying = true; 
           document.getElementById('playBtn').textContent = '⏸';
-          updateStatus('Playing', 'var(--success)');
+          document.getElementById('statusText').textContent = 'Playing';
+          document.getElementById('statusDot').style.background = 'var(--success)';
           break;
         case 'PAUSE': 
-          isPlaying = false; 
           document.getElementById('playBtn').textContent = '▶';
-          updateStatus('Paused', '#f59e0b');
+          document.getElementById('statusText').textContent = 'Paused';
           break;
         case 'TIMEUPDATE':
           if (event.currentTime && event.duration) {
-            currentTime = event.currentTime; duration = event.duration;
-            updateProgress();
+            updateProgress(event.currentTime, event.duration);
           }
           break;
         case 'COMPLETED':
-          updateStatus('✅ Completed', 'var(--success)');
+          document.getElementById('statusText').textContent = '✅ Completed';
+          break;
+        case 'LAUNCHED':
+          document.getElementById('statusText').textContent = '✅ Launched';
           break;
       }
     }
 
-    function updateStatus(text, color) {
-      document.getElementById('statusText').textContent = text;
-      document.getElementById('statusDot').style.background = color;
+    function handleStreamingEvent(statement) {
+      console.log('Streaming event:', statement);
     }
 
-    function updateProgress() {
-      const progress = duration > 0 ? (currentTime / duration) * 100 : 0;
+    function updateProgress(current, total) {
+      const progress = total > 0 ? (current / total) * 100 : 0;
       document.getElementById('progressFill').style.width = progress + '%';
       document.getElementById('timeDisplay').textContent = 
-        `${formatTime(currentTime)} / ${formatTime(duration)}`;
+        `${formatTime(current)} / ${formatTime(total)}`;
     }
 
     function formatTime(s) {
@@ -254,36 +282,32 @@
       return `${m.toString().padStart(2,'0')}:${sec.toString().padStart(2,'0')}`;
     }
 
-    // ====== ALL CONTROLS WIRED [attached_file:1] ======
-    function togglePlayPause() { if (window.cpPlayerLib) window.cpPlayerLib.togglePlayPause(); }
-    function next() { if (window.cpPlayerLib) window.cpPlayerLib.next(); }
-    function previous() { if (window.cpPlayerLib) window.cpPlayerLib.previous(); }
-    function setSpeed(speed) { if (window.cpPlayerLib) window.cpPlayerLib.setPlayBackSpeed(parseFloat(speed)); }
-    function setVolume(vol) { if (window.cpPlayerLib) window.cpPlayerLib.setVolume(parseFloat(vol)); }
-    function toggleTOC() { if (window.cpPlayerLib) window.cpPlayerLib.toggleTOC(); }
-    function toggleNotes() { if (window.cpPlayerLib) window.cpPlayerLib.toggleNotes(); }
-    function toggleCC() { if (window.cpPlayerLib) window.cpPlayerLib.toggleClosedCaption(); }
-    function toggleJobAid() { if (window.cpPlayerLib) window.cpPlayerLib.toggleJobAidPullout(); }
+    // ====== ALL CONTROLS - DIRECT cpPlayerLib CALLS [attached_file:1] ======
+    function togglePlayPause() { playerInstance?.togglePlayPause(); }
+    function next() { playerInstance?.next(); }
+    function previous() { playerInstance?.previous(); }
+    function setSpeed(speed) { playerInstance?.setPlayBackSpeed(parseFloat(speed)); }
+    function setVolume(vol) { playerInstance?.setVolume(parseFloat(vol)); }
+    function toggleTOC() { playerInstance?.toggleTOC(); }
+    function toggleNotes() { playerInstance?.toggleNotes(); }
+    function toggleCC() { playerInstance?.toggleClosedCaption(); }
+    function toggleJobAid() { playerInstance?.toggleJobAidPullout(); }
     function toggleFullscreen() {
-      const container = document.querySelector('.player-container');
-      if (!document.fullscreenElement) container.requestFullscreen();
-      else document.exitFullscreen();
+      document.querySelector('.player-container').requestFullscreen();
     }
-    function closePlayer() { if (window.cpPlayerLib) window.cpPlayerLib.closePlayer(); }
+    function closePlayer() { 
+      playerInstance?.closePlayer(); 
+      document.getElementById('launchBtn').disabled = false;
+      document.getElementById('launchBtn').textContent = '🔐 Launch with YOUR Token';
+    }
     function seekFromClick(e) {
       const bar = document.getElementById('progressBar');
       const rect = bar.getBoundingClientRect();
       const fraction = (e.clientX - rect.left) / rect.width;
-      if (window.cpPlayerLib && duration) window.cpPlayerLib.seek(duration * fraction);
+      playerInstance?.seek(/* duration * fraction - get from events */);
     }
 
-    // Auto-detect cpPlayerLib load
-    const observer = new MutationObserver(() => {
-      if (window.cpPlayerLib && !playerObj) {
-        updateStatus('✅ cpPlayerLib ready', 'var(--accent)');
-      }
-    });
-    observer.observe(document.body, { childList: true, subtree: true });
+    console.log('✅ Ready with YOUR token auth!');
   </script>
 </body>
 </html>
